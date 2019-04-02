@@ -118,6 +118,14 @@ try {
   process.exit(1);
 }
 
+{
+  // No type support for these properties (@types/mongoose@5.3.24)
+  // (see https://mongoosejs.com/docs/schematypes.html#booleans)
+  const B: any = mongoose.Schema.Types.Boolean;
+  // Convert uppercase strings 'TRUE' and 'FALSE' to Boolean
+  B.convertToTrue.add('TRUE');
+  B.convertToFalse.add('FALSE');
+}
 
 const validate = (cfg.dryrun !== false && cfg.dryrun !== 'false');
 
