@@ -29,7 +29,6 @@ interface Config {
     options: {};
   };
   dryrun?: {};
-  updateBy?: {};
   _?: Array<{}>;
 }
 
@@ -68,7 +67,6 @@ if (cfg.h || cfg.help) {
       --help               display help information
       --config [rcfile]    load configuration from rcfile
       --dryrun [dryrun]    validate CSV data (default: true)
-      --updateBy [username]  username to use for saving history
   `);
   process.exit(1);
 }
@@ -84,12 +82,6 @@ if (!cfg._ || !Array.isArray(cfg._) || (cfg._.length === 0)) {
 if (!fs.existsSync(realPath)) {
   console.error('Error: ' + realPath + ' does not exist.');
   console.error('Please input a valid csv file path.');
-  process.exit(1);
-}
-
-const updateBy = cfg.updateBy ? String(cfg.updateBy).trim().toUpperCase() : '';
-if (!updateBy) {
-  console.error(`Error: Parameter 'updateBy' is required`);
   process.exit(1);
 }
 

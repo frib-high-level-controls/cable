@@ -35,7 +35,6 @@ interface Config {
     options: {};
   };
   dryrun?: {};
-  updateBy?: {};
   _?: Array<{}>;
   metadata: {
     syssubsystem_path?: string;
@@ -83,7 +82,6 @@ if (cfg.h || cfg.help) {
       --help               display help information
       --config [rcfile]    load configuration from rcfile
       --dryrun [dryrun]    validate CSV data (default: true)
-      --updateBy [username]  username to use for saving history
   `);
   process.exit(1);
 }
