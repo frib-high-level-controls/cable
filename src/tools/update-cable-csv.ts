@@ -257,7 +257,7 @@ function updateCable(change: any[], i: number, callback: (err?: any) => void) {
         changeHistory: c._id,
       };
 
-      cable.update(update, { new: true }, (err2) => {
+      cable.updateOne(update, { new: true }, (err2) => {
         if (err2) {
           console.error(err2.toString());
           callback(err2);

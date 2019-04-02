@@ -236,7 +236,7 @@ function updateRequest(change: any, i: number, callback: (err?: any) => void) {
       return;
     }
 
-    request.update(update, { new: true }, (err2) => {
+    request.updateOne(update, { new: true }, (err2) => {
       if (err2) {
         console.error(err2.toString());
         callback(err2);

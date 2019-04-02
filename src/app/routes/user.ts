@@ -125,7 +125,7 @@ function updateUserProfile(user: User, res: express.Response) {
       update.mobile = result[0].mobile;
     }
 
-    user.update(update, (err0) => {
+    user.updateOne(update, (err0) => {
       if (err0) {
         return res.status(500).json(err0);
       }
