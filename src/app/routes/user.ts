@@ -339,7 +339,7 @@ export function init(app: express.Application) {
       if (err) {
         error(err);
         return res.status(500).json({
-          error: err.mesage,
+          error: err.message,
         });
       }
       return res.json(user);

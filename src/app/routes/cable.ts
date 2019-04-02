@@ -948,7 +948,7 @@ export function init(app: express.Application) {
         }).lean().exec(function multiChangesCB(err2, multiChanges: IMultiChange[]) {
           if (err2) {
             error(err2);
-            return res.status(500).send(err1.message);
+            return res.status(500).send(err2.message);
           }
           res.json(changes.concat(multiChanges));
         });
