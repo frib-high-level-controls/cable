@@ -771,7 +771,7 @@ var lastVisitedOnColumn = dateColumn('Last visited', 'lastVisitedOn');
 /*table tools*/
 
 var oTableTools = {
-  "sSwfPath": "/datatables/swf/copy_csv_xls_pdf.swf",
+  "sSwfPath": basePath + "/datatables/swf/copy_csv_xls_pdf.swf",
   "aButtons": [
     "copy",
     "print", {
