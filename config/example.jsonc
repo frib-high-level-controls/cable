@@ -1,0 +1,99 @@
+{
+  // Example application configuration in pseudo-JSON format.
+  // Comments (// or /* */) will be ignored, but must be within
+  // the JSON data structure (ie not outside of the top level object).
+  "app": {
+    "port": "3000",
+    "addr": "localhost", /* use "0.0.0.0" to bind to all interfaces */
+    "trust_proxy": false /* see details: https://expressjs.com/en/guide/behind-proxies.html */
+    //"session_life": 3600000,
+    // For production generate a random string using python:
+    // >>> import os, base64
+    // >>> print base64.b64encode(os.urandom(50)).decode('ascii')
+    // Or using JavaScript (NodeJS)
+    // > var crypto = require('crypto');
+    // > console.log(crypto.randomBytes(50).toString('base64'));
+    //"session_secret": "secret"
+  },
+  // MongoDB connection configuration using JavaScript client library
+  // (For available options see: http://mongodb.github.io/node-mongodb-native/3.1/api/MongoClient.html)
+  "mongo": {
+    // "user": "username",
+    // "pass": "password",
+    "host": "localhost:27017", // Supports a comma separated list
+    // "addr": "localhost",    // Deprecated: use 'host' instead
+    // "port": "27017",        // Deprecated: use 'host' instead
+    "db": "webapp-dev",
+    "options": {
+      // Authentication configuration 
+      // "authSource": "admin",
+      // "authMechanism": "MDEFAULT",
+
+      // ReplicaSet configuration
+      // "replicaSet": "cluster-foo",
+
+      // Connection configuration
+      // "connectTimeoutMS": 30000,
+      // "socketTimeoutMS": 360000,
+      // "reconnectTries": 30,
+      // "reconnectInterval": 1000,
+      // "autoReconnect": true,
+      // "keepAlive": true,
+
+      // SSL configuration
+      // "ssl": false,
+      // "sslValidate": true,
+      // "sslCA": "",
+      // "sslCert": "",
+      // "sslKey": "",
+      // "sslPass": "",
+      // "sslCRL": "",
+
+      // Use the "new" URL parser (Remove deprecation warning in Mongoose 5.x!)
+      "useNewUrlParser": true
+    }
+  },
+  "cas": {
+    // The CAS protocol version (CAS1.0 | CAS2.0 | CAS3.0)
+    //"version": "CAS1.0",
+    // The base URL for the CAS service
+    "cas_url": "https://example.com/cas",
+    // The application service URL used in the CAS protocol
+    //"service_url": "/cas"
+    // The application service base URL. The service_url will be
+    // resolved against this base URL. If the service_url is not
+    // provided then the original request URL will be used instead.
+    "service_base_url": "http://webapp.service.com"
+  },
+  "forgapi": {
+    // The base URL for the FORG API
+    "url": "https://example.com/"
+    // Options passed to the underlying request agent
+    //"agentOptions": {
+    //  // Useful for testing with self-signed certs
+    //  "rejectUnauthorized": true
+    //}
+  },
+  "ad": {
+    "url": "ldap://example.com",
+    "adminDn": "cn=user,ou=Group,dc=example,dc=com",
+    "adminPassword": "passw0rd",
+    "searchBase": "ou=Group,dc=example,dc=com",
+    "searchFilter": "(&(objectClass=user)(sAMAccountName=_id))",
+    "nameFilter": "(&(objectClass=user)(displayName=_name))",
+    "objAttributes": ["sAMAccountName","displayName","company", "mail"],
+    "rawAttributes": ["photo"]
+  },
+  "access_tokens": [
+    // "ExampleToken"
+  ],
+  "metadata": {
+    "syssubsystem_path":"",
+    "penetration_path":"",
+    "wbs_frib_path":"",
+    "wbs_rea6_path":"",
+    "rooms_frib_path":"",
+    "rooms_nscl_path":"",
+    "rooms_srf_path":""
+  }
+}

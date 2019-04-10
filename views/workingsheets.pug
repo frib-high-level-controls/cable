@@ -1,0 +1,87 @@
+extends layout.pug
+
+block head
+  meta(charset='utf-8')
+  title My Working Sheets
+  meta(name='viewport', content='width=device-width, initial-scale=1.0')
+  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
+  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
+  link(rel='stylesheet', href=basePath + '/datatables/css/dataTables.bootstrap.css')
+  link(rel='stylesheet', href=basePath + '/ui-lightness/jquery-ui-1.10.2.custom.css')
+  link(rel='stylesheet', href=basePath + '/font-awesome-4.2.0/css/font-awesome.css')
+  link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+
+block content
+  .container-fluid
+    #message
+    .modal.hide.fade#modal(tabindex='-1', role='dialog', data-backdrop='static', aria-labelledby='modalLabel', aria-hidden='true')
+      .modal-header
+        h3#modalLabel
+      .modal-body
+      .modal-footer
+    .btn-toolbar
+      .btn-group
+        button.btn.btn-primary#reload(type='button')
+          i.fa.fa-refresh.fa-lg
+            | &nbsp;Reload
+      .btn-group
+        button.btn.btn-primary#bar(type='button')
+          i.fa.fa-bar-chart.fa-lg
+            | &nbsp;Bar chart
+    .tabbable.tabs-left#tabs
+      ul.nav.nav-tabs
+        li.active
+          a(href='#active', data-toggle='tab') Active cables
+        li
+          a(href='#obsoleted', data-toggle='tab') Obsoleted cables
+      .tab-content
+        .tab-pane.active#active
+          .btn-toolbar
+            .btn-group
+              button.btn.btn-warning#obsolte(type='button')
+                i.fa.fa-trash.fa-lg
+                | &nbsp;Obsolete
+            .btn-group
+              button.btn.btn-info#active-select-all(type='button')
+                i.fa.fa-list.fa-lg
+                | &nbsp;Select all in current view
+            .btn-group
+              button.btn.btn-info#active-select-none(type='button')
+                i.fa.fa-square-o.fa-lg
+                | &nbsp;Clear selection
+            .btn-group(data-toggle='buttons-radio')
+              button.btn.btn-info.active#active-wrap(type='button') Wrap
+              button.btn.btn-info#active-unwrap(type='button') Unwrap
+          .table-overflow
+            table.table.table-bordered.table-hover#active-table
+        .tab-pane#obsoleted
+          .btn-toolbar
+            //- .btn-group
+            //-   button.btn.btn-info#obsoleted-select-all
+            //-     i.fa.fa-list.fa-lg
+            //-     | &nbsp;Select all in current view
+            //- .btn-group
+            //-   button.btn.btn-info#obsoleted-select-none
+            //-     i.fa.fa-square-o.fa-lg
+            //-     | &nbsp;Clear selection
+            .btn-group(data-toggle='buttons-radio')
+              button.btn.btn-info.active#obsoleted-wrap(type='button') Wrap
+              button.btn.btn-info#obsoleted-unwrap(type='button') Unwrap
+          .table-overflow
+            table.table.table-bordered.table-hover#obsoleted-table
+
+block js
+  script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
+  script(type='text/javascript', src=basePath + '/datatables/js/jquery.dataTables.js')
+  script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
+  script(type='text/javascript', src=basePath + '/datatables/js/ZeroClipboard.js')
+  script(type='text/javascript', src=basePath + '/datatables/js/TableTools.js')
+  script(type='text/javascript', src=basePath + '/datatables/js/dataTables.bootstrap.js')
+  script(type='text/javascript', src=basePath + '/dependencies/moment.js')
+  script(type='text/javascript', src=basePath + '/dependencies/lodash.js')
+  script(type='text/javascript', src=basePath + '/javascripts/table.js')
+  script(type='text/javascript', src=basePath + '/javascripts/util.js')
+  script(type='text/javascript', src=basePath + '/dependencies/Chart.js')
+  script(type='text/javascript', src=basePath + '/javascripts/workingsheets.js')
+
+

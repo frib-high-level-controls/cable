@@ -1,0 +1,71 @@
+extends layout.pug
+
+block head
+  meta(charset='utf-8')
+  title FRIB Cable :: user profile
+  meta(name='viewport', content='width=device-width, initial-scale=1.0')
+  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
+  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
+  link(rel='stylesheet', href=basePath + '/font-awesome-4.2.0/css/font-awesome.css')
+  link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+
+block content
+  script.
+    var roles = !{JSON.stringify(user.roles)};
+    var wbs = [];
+  if (user.wbs !== undefined)
+    script.
+      wbs = !{JSON.stringify(user.wbs)};
+  .container(style='margin-top: 10px')
+    #message
+    .well#profile
+      img(src=basePath + '/adusers/' + user.adid + '/photo', alt=user.adid)
+      dl
+        dt Name
+        dd #{user.name}
+        dt Email
+        dd #{user.email}
+        dt Office
+        dd #{user.office}
+        dt Office phone
+        dd #{user.phone}
+        dt Mobile phone
+        dd #{user.mobile}
+        dt Last visited on
+        dd #{user.lastVisitedOn}
+        dt Notice subscribed
+        dd #{user.subscribe}
+        dt Priviledges
+        dd#roles
+          label.checkbox.inline
+            input(type='checkbox', value='manager')
+            | manager
+          label.checkbox.inline
+            input(type='checkbox', value='admin')
+            | admin
+          = ' '
+
+          if (myRoles.indexOf('admin') !== -1)
+            button.hide.btn.btn-small.btn-primary#modify(type='submit') Modify
+            = ' '
+        dt WBS responsibility
+        dd
+          ul#wbs
+            if (user.wbs)
+              each n in user.wbs
+                li
+                  span.wbs #{n}
+                  if (myRoles.indexOf('admin') !== -1)
+                    = ' '
+                    button.btn.btn-small.btn-warning.remove-wbs
+                      i.fa.fa-trash-o.fa-lg
+          if (myRoles.indexOf('admin') !== -1)
+            .btn-group
+              button.btn.btn-small.btn-primary#add Add WBS
+      button.btn#cacel(type='button', onclick='window.open("", "_self", "");window.close(); return false;') Close window
+
+block js
+  script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
+  script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
+  script(type='text/javascript', src=basePath + '/dependencies/moment.js')
+  script(type='text/javascript', src=basePath + '/javascripts/user.js')

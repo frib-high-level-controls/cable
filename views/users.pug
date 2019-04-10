@@ -1,0 +1,62 @@
+extends layout.pug
+
+block head
+  meta(charset='utf-8')
+  title FRIB Cable user management
+  meta(name='viewport', content='width=device-width, initial-scale=1.0')
+  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
+  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
+  link(rel='stylesheet', href=basePath + '/datatables/css/dataTables.bootstrap.css')
+  link(rel='stylesheet', href=basePath + '/font-awesome-4.2.0/css/font-awesome.css')
+  link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+
+block content
+  .container(style='margin-top: 10px')
+    .well
+      form.form-inline
+        input.typeahead.input#username(type='text', placeholder='Last, First', name='name')
+        != ' '
+        label.checkbox.inline
+          input#manager(type='checkbox', value='manager')
+          | manager
+        != ' '
+        label.checkbox.inline
+          input#admin(type='checkbox', value='admin')
+          | admin
+        != ' '
+        button.btn.btn-primary#add(type='submit') Add
+    #message
+    .modal.hide.fade#modal(tabindex='-1', role='dialog', data-backdrop='static', aria-labelledby='modalLabel', aria-hidden='true')
+      .modal-header
+        h3#modalLabel
+      .modal-body
+      .modal-footer
+    h3 User list
+    .btn-toolbar
+      .btn-group
+        button.btn.btn-info#user-reload(type='button')
+          i.fa.fa-refresh.fa-lg
+            | &nbsp;Reload users
+      .btn-group
+        button.btn.btn-info#user-modify(type='button')
+          i.fa.fa-wrench.fa-lg
+            | &nbsp;Modify role
+      .btn-group
+        button.btn.btn-warning#user-update(type='button')
+          i.fa.fa-wrench.fa-lg
+            | &nbsp;Update profile from AD
+
+    table.table.table-bordered.table-hover#users
+
+block js
+  script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
+  script(type='text/javascript', src=basePath + '/datatables/js/jquery.dataTables.js')
+  script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
+  script(type='text/javascript', src=basePath + '/datatables/js/ZeroClipboard.js')
+  script(type='text/javascript', src=basePath + '/datatables/js/TableTools.js')
+  script(type='text/javascript', src=basePath + '/datatables/js/dataTables.bootstrap.js')
+  script(type='text/javascript', src=basePath + '/dependencies/typeahead.js')
+  script(type='text/javascript', src=basePath + '/dependencies/moment.js')
+  script(type='text/javascript', src=basePath + '/javascripts/table.js')
+  script(type='text/javascript', src=basePath + '/javascripts/util.js')
+  script(type='text/javascript', src=basePath + '/javascripts/users.js')

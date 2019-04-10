@@ -1,0 +1,27 @@
+doctype html
+html
+  head
+    meta(http-equiv='X-UA-Compatible', content='IE=Edge')
+    link(rel='icon', href=basePath + '/favicon.ico?v=1')
+    script(type='text/javascript') var basePath = '#{basePath}';
+    block head
+  body
+    .navbar.navbar-inverse.navbar-fixed-top
+      .navbar-inner
+        .container-fluid
+          button.btn.btn-navbar(type='button', data-toggle='collapse', data-target='.nav-collapse')
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          a.brand(href='http://www.frib.msu.edu/') FRIB
+          .nav-collapse.collapse
+            ul.nav
+              li.active
+                a(href=basePath + '/') Cable
+              li
+                a(href='https://controls.frib.msu.edu/', target='_blank') Controls
+              li
+                a(href=basePath + '/logout') Logout
+    block content
+
+    block js

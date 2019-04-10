@@ -1,0 +1,171 @@
+extends layout.pug
+
+block head
+  meta(charset='utf-8')
+  title FRIB Cable App
+  meta(name='viewport', content='width=device-width, initial-scale=1.0')
+  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
+  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
+  link(rel='stylesheet', href=basePath + '/datatables/css/dataTables.bootstrap.css')
+  link(rel='stylesheet', href=basePath + '/font-awesome-4.2.0/css/font-awesome.css')
+  link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+
+block content
+  .container-fluid
+    .btn-toolbar
+      .btn-group
+        a.btn.btn-primary#new(href='./requests/new', target='_blank')
+          i.fa.fa-file-o.fa-lg
+          | &nbsp;New Request
+      .btn-group
+        button.btn.btn-primary#reload(type='button')
+          i.fa.fa-refresh.fa-lg
+          | &nbsp;Reload
+      .btn-group
+        button.btn.btn-primary#clone(type='button')
+          i.fa.fa-copy.fa-lg
+          | &nbsp;Clone
+      .btn-group.dropdown
+        a.btn.dropdown-toggle#meta(data-toggle='dropdown')
+          i.fa.fa-gears.fa-lg
+          | &nbsp;Meta
+          span.caret
+        ul.dropdown-menu
+          li#cabletypes
+            a(href='./cabletypes/', target='_blank') FRIB approved cable types
+          li#wbs
+            a(href='./frib/wbs', target='_blank') FRIB work breakdown structure
+          li#wbs
+            a(href='./rea6/wbs', target='_blank') ReA 6 work breakdown structure
+      .btn-group
+        a.btn(href='./profile', target='_blank')
+          i.fa.fa-user.fa-lg
+          | &nbsp;Profile
+      .btn-group
+        a.btn.btn-info#allcables(href='./allcables', target='_blank')
+          i.fa.fa-institution.fa-lg
+          | &nbsp;All cables
+      .btn-group
+        a.btn.btn-info(href='./about', target='_blank')
+          i.fa.fa-info.fa-lg
+          |&nbsp;About
+    #message
+    .modal.hide.fade#modal(tabindex='-1', role='dialog', data-backdrop='static', aria-labelledby='modalLabel', aria-hidden='true')
+      .modal-header
+        h3#modalLabel
+      .modal-body
+      .modal-footer
+    .tabbable.tabs-left#tabs
+      ul.nav.nav-tabs
+        li.active
+          a(href='#saved', data-toggle='tab') Saved requests
+        li
+          a(href='#submitted', data-toggle='tab') Submitted requests
+        li
+          a(href='#rejected', data-toggle='tab') Rejected requests
+        li
+          a(href='#approved', data-toggle='tab') Approved requests
+        li
+          a(href='#cables', data-toggle='tab') Cables
+      .tab-content
+        .tab-pane.active#saved
+          .btn-toolbar
+            .btn-group
+              button.btn.btn-primary#saved-submit(type='button')
+                i.fa.fa-check-square-o.fa-lg
+                | &nbsp;Submit for approval
+            .btn-group
+              button.btn.btn-warning#saved-delete(type='button')
+                i.fa.fa-trash-o.fa-lg
+                | &nbsp;Delete
+            .btn-group
+              button.btn.btn-info#saved-select-all(type='button', data-toggle='tooltip', title='select all the items in the table no matter visiable or not')
+                i.fa.fa-list.fa-lg
+                | &nbsp;Select all
+            .btn-group
+              button.btn.btn-info#saved-select-none(type='button')
+                i.fa.fa-square-o.fa-lg
+                | &nbsp;Clear selection
+            .btn-group(data-toggle='buttons-radio')
+              button.btn.btn-info.active#saved-wrap(type='button') Wrap
+              button.btn.btn-info#saved-unwrap(type='button') Unwrap
+          .table-scroll
+            table.table.table-bordered.table-hover#saved-table
+        .tab-pane#submitted
+          .btn-toolbar
+            .btn-group
+              button.btn.btn-warning#submitted-revert(type='button')
+                i.fa.fa-step-backward.fa-lg
+                | &nbsp;Revert to saved
+            .btn-group
+              button.btn.btn-info#submitted-select-all(type='button', data-toggle='tooltip', title='select all the items in the table no matter visiable or not')
+                i.fa.fa-list.fa-lg
+                | &nbsp;Selection all
+            .btn-group
+              button.btn.btn-info#submitted-select-none(type='button')
+                i.fa.fa-square-o.fa-lg
+                | &nbsp;Clear selection
+            .btn-group(data-toggle='buttons-radio')
+              button.btn.btn-info.active#submitted-wrap(type='button') Wrap
+              button.btn.btn-info#submitted-unwrap(type='button') Unwrap
+          .table-scroll
+            table.table.table-bordered.table-hover#submitted-table
+
+        .tab-pane#approved
+          .btn-toolbar
+            .btn-group
+              button.btn.btn-info#approved-select-all(type='button', data-toggle='tooltip', title='select all the items in the table no matter visiable or not')
+                i.fa.fa-list.fa-lg
+                | &nbsp;Selection all
+            .btn-group
+              button.btn.btn-info#approved-select-none(type='button')
+                i.fa.fa-square-o.fa-lg
+                | &nbsp;Clear selection
+            .btn-group(data-toggle='buttons-radio')
+              button.btn.btn-info.active#approved-wrap(type='button') Wrap
+              button.btn.btn-info#approved-unwrap(type='button') Unwrap
+          .table-scroll
+            table.table.table-bordered.table-hover#approved-table
+        .tab-pane#rejected
+          .btn-toolbar
+            .btn-group
+              button.btn.btn-warning#rejected-delete(type='button')
+                i.fa.fa-trash.fa-lg
+                | &nbsp;Delete
+            .btn-group
+              button.btn.btn-info#rejected-select-all(type='button', data-toggle='tooltip', title='select all the items in the table no matter visiable or not')
+                i.fa.fa-list.fa-lg
+                | &nbsp;Selection all
+            .btn-group
+              button.btn.btn-info#rejected-select-none(type='button')
+                i.fa.fa-square-o.fa-lg
+                | &nbsp;Clear selection
+            .btn-group(data-toggle='buttons-radio')
+              button.btn.btn-info.active#rejected-wrap(type='button') Wrap
+              button.btn.btn-info#rejected-unwrap(type='button') Unwrap
+          .table-scroll
+            table.table.table-bordered.table-hover#rejected-table
+
+        .tab-pane#cables
+          .btn-toolbar
+            .btn-group(data-toggle='buttons-radio')
+              button.btn.btn-info.active#cables-wrap(type='button') Wrap
+              button.btn.btn-info#cables-unwrap(type='button') Unwrap
+          .table-scroll
+            table.table.table-bordered.table-hover#cables-table
+
+block js
+  script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
+  script(type='text/javascript', src=basePath + '/datatables/js/jquery.dataTables.js')
+  script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
+  script(type='text/javascript', src=basePath + '/datatables/js/ZeroClipboard.js')
+  script(type='text/javascript', src=basePath + '/datatables/js/TableTools.js')
+  script(type='text/javascript', src=basePath + '/datatables/js/dataTables.bootstrap.js')
+  script(type='text/javascript', src=basePath + '/jquery/jquery.validate.js')
+  script(type='text/javascript', src=basePath + '/dependencies/moment.js')
+  script(type='text/javascript', src=basePath + '/dependencies/lodash.js')
+  script(type='text/javascript', src=basePath + '/javascripts/ajaxhelper.js')
+  script(type='text/javascript', src=basePath + '/javascripts/table.js')
+  script(type='text/javascript', src=basePath + '/javascripts/main.js')
+
+

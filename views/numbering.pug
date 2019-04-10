@@ -1,0 +1,49 @@
+extends layout.pug
+
+block head
+  meta(charset='utf-8')
+  title FRIB Cable Numbering
+  meta(name='viewport', content='width=device-width, initial-scale=1.0')
+  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
+  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
+  link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+
+block content
+  .container
+    #message
+    table.table-condensed
+      thaed
+        tr
+          th System
+          th Sub system
+          th Signal type
+          th Sequence
+      tbody
+        tr
+          td
+            select.input-small#system(disabled=true)
+              option(value='', disabled=true) choose
+          td
+            select.input-small#sub(disabled=true)
+          td
+            select.input-small#signal(disabled=true)
+              option(value='', disabled=true) choose
+          td
+            input.input-small#sequence(type='text', placeholder='######', disabled=true)
+    .well
+      p Decoding information
+      p System: &nbsp;
+        b
+          span#sys-val TBD
+        | &nbsp;Sub system: &nbsp;
+        b
+          span#sub-val TBD
+        | &nbsp;Signel type: &nbsp;
+        b
+          span#signal-val TBD
+
+block js
+  script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
+  script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
+  script(type='text/javascript', src=basePath + '/javascripts/knockout-2.2.1.js')
+  script(type='text/javascript', src=basePath + '/javascripts/number.js')

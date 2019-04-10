@@ -1,26 +1,31 @@
-# Node modules #
+# IDE configure file
+.idea/
+.vscode/
+
+# NPM package installations
 node_modules/
 
-# special folders #
-logs/
-doc/
-# config/
-config/ad.json
-config/auth.json
+# NPM debug log
+npm-debug.log
 
-# Git related files. #
-*.orig
+# Ignore Typescript cache
+.tscache
 
-# CTag
-.tags
-.tags_sorted_by_file
+# Ignore grunt-ts crumb
+.baseDir.ts
 
+# Ignore build directory
+/app/
+/tools/
+/public/javascripts
 
-# Editor bread crumbs. #
-*~
-# sublime stuff#
-*.sublime-project
-*.sublime-workspace
+# Ignore test directory
+/test/app/
+/test/apptest/
 
-# npm log #
-npm-debug.log*
+# Ignore configuration files
+/config/
+
+# Ignore test coverage results
+/.nyc_output
+
