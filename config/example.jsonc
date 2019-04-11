@@ -50,7 +50,11 @@
       // "sslCRL": "",
 
       // Use the "new" URL parser (Remove deprecation warning in Mongoose 5.x!)
-      "useNewUrlParser": true
+      "useNewUrlParser": true,
+      // Force use of  createIndex() instead of ensureIndex()
+      "useCreateIndex": true,
+      // Use `findOneAndUpdate()` instead of deprecated `findAndModify()`
+      "useFindAndModify": false
     }
   },
   "cas": {
