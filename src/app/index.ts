@@ -58,6 +58,7 @@ interface Config {
     trust_proxy: {};
     session_life: {};
     session_secret: {};
+    web_env?: {};
   };
   mongo: {
     user?: {};
@@ -439,6 +440,18 @@ async function doStart(): Promise<express.Application> {
   app.set('views', path.resolve(__dirname, '..', 'views'));
   app.set('view engine', 'pug');
   app.set('view cache', (env === 'production') ? true : false);
+
+  // add 'webenv' property to response locals for use in view
+  app.use((req, res, next) => {
+    res.locals.webenv = 'development';
+    if (process.env.WEB_ENV) {
+      res.locals.webenv = process.env.WEB_ENV;
+    }
+    if (cfg.app.web_env) {
+      res.locals.webenv = String(cfg.app.web_env);
+    }
+    next();
+  });
 
   // Session configuration
   app.use(session({

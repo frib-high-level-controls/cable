@@ -13,7 +13,8 @@ html
             span.icon-bar
             span.icon-bar
             span.icon-bar
-          a.brand(href='http://www.frib.msu.edu/') FRIB
+          if webenv !== 'production'
+            p.nav.navbar-text.pull-right(style='background-color:red;color:black;') &nbsp;TEST&nbsp;
           .nav-collapse.collapse
             ul.nav
               li.active

@@ -13,7 +13,9 @@
     // Or using JavaScript (NodeJS)
     // > var crypto = require('crypto');
     // > console.log(crypto.randomBytes(50).toString('base64'));
-    //"session_secret": "secret"
+    //"session_secret": "secret",
+    // Specifies the web (or client) environment to customize UI
+    //"web_env": "development"
   },
   // MongoDB connection configuration using JavaScript client library
   // (For available options see: http://mongodb.github.io/node-mongodb-native/3.1/api/MongoClient.html)
