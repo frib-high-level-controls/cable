@@ -34,7 +34,10 @@ function highlightedEvent() {
 }
 
 
-function filterEvent() {
+function filterEvent(opt) {
+  opt = opt || {}
+  opt.selectedClass = opt.selectedClass || 'row-selected';
+  opt.checkboxClass = opt.checkboxClass || 'select-row'
   $('.filter').on('change', 'input', function (e) {
     var bodyTable;
     var tableScroll = $(this).closest('.dataTables_scroll');
@@ -60,6 +63,7 @@ function filterEvent() {
       index = $('tfoot.filter th', table).index(th);
       $('thead.filter th:nth-child(' + (index + 1) + ') input', wrapper).val(this.value);
     }
+    fnDeselect(bodyTable.dataTable(), opt.selectedClass, opt.checkboxClass);
     bodyTable.dataTable().fnFilter(this.value, index);
     var scrollDiv;
     if ($(this).closest('.table-overflow').length) {
