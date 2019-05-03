@@ -101,8 +101,8 @@
     "rooms_frib_path":"",
     "rooms_nscl_path":"",
     "rooms_srf_path":"",
-    "project_path":"",
-    "tray_section_path":"",
+    "projects_path":"",
+    "tray_sections_path":"",
     "shared_dir_path":""
   }
 }
