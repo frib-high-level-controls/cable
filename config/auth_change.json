@@ -1,5 +1,0 @@
-{
-  "cas": "https://liud-dev.nscl.msu.edu/cas",
-  "service": "http://localhost:3000/login",
-  "tokens": [ "TestToken" ]
-}
