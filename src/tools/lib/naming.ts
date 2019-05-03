@@ -7,17 +7,19 @@
  * @return  {string[]}   the three codes, an array with less than three elements indicates error.
  */
 
-export function encode(cat: string, sub: string, sig: string, numbering: any) {
+export function encode(proj: string, cat: string, sub: string, sig: string, numbering: any) {
   let c;
   let b;
   let g;
   const result: [string|null, string|null, string|null] = [null, null, null];
   for (c in numbering) {
     if (numbering.hasOwnProperty(c) && numbering[c].name === cat) {
+      if (!Array.isArray(numbering[c].projects) || !numbering[c].projects.includes(proj)) {
+        continue;
+      }
       result[0] = c;
       for (b in numbering[c].subcategory) {
         if (numbering[c].subcategory.hasOwnProperty(b) && numbering[c].subcategory[b] === sub) {
-          result.push(b);
           result[1] = b;
         }
       }

@@ -189,10 +189,10 @@ function createRequest(i: number): Request | undefined {
     }
     return createRequest(i + 1);
   }
-  namecodes = naming.encode(request[3], request[4], request[5], syssub);
+  namecodes = naming.encode(request[0], request[3], request[4], request[5], syssub);
   if (!namecodes[0] || !namecodes[1] || !namecodes[2])  {
     // tslint:disable:max-line-length
-    console.log('Line ' + lines[i] + ': cannot encode the name of: ' + request[3] + '/' + request[4] + '/' + request[5]);
+    console.log('Line ' + lines[i] + ': cannot encode the name of: ' + request[0] + '/' + request[3] + '/' + request[4] + '/' + request[5]);
     if (i === requests.length - 1) {
       jobDone();
       return;

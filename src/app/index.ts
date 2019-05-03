@@ -26,7 +26,9 @@ import * as promises from './shared/promises';
 import * as status from './shared/status';
 import * as tasks from './shared/tasks';
 
-import ldapjs = require('./lib/ldapjs-client');
+import * as ldapjs from './lib/ldapjs-client';
+
+import * as request from './model/request';
 
 import routes = require('./routes');
 import * as about from './routes/about';
@@ -92,6 +94,9 @@ interface Config {
     rooms_frib_path?: {};
     rooms_nscl_path?: {};
     rooms_srf_path?: {};
+    tray_sections_path?: {};
+    projects_path?: {};
+    shared_dir_path?: {};
   };
 }
 
@@ -119,6 +124,23 @@ const activeSockets = new Set<net.Socket>();
 let activeFinished = Promise.resolve();
 
 const readFile = util.promisify(fs.readFile);
+
+const statFile = util.promisify(fs.stat);
+
+async function readJSON(filepath: unknown): Promise<any> {
+  return JSON.parse(await readFile(String(filepath), 'utf8'));
+}
+
+const fileWatchers: fs.FSWatcher[] = [];
+
+async function watchJSON(filepath: string, cb: (err: any, data: any) => void): Promise<void> {
+  cb(null, await readJSON(filepath));
+  fileWatchers.push(fs.watch(filepath, (eventType) => {
+    if (eventType === 'change') {
+      readJSON(filepath).then((d) => cb(null, d), (err) => cb(err, null));
+    }
+  }));
+}
 
 // read the application name and version
 async function readNameVersion(): Promise<[string | undefined, string | undefined]> {
@@ -397,44 +419,140 @@ async function doStart(): Promise<express.Application> {
   if (!cfg.metadata.syssubsystem_path) {
     throw new Error('System-Subsystem data file path is required');
   }
-  const sysSub = JSON.parse(await readFile(String(cfg.metadata.syssubsystem_path), 'utf8'));
-  info('System-Subsytem data file read: %s', cfg.metadata.syssubsystem_path);
+  await watchJSON(String(cfg.metadata.syssubsystem_path), (err, data) => {
+    if (err) {
+      warn('Error reading System-Subsystem data file after change: %s', err);
+      return;
+    }
+    cable.setSysSubData(data);
+    request.setSysSubData(data);
+    numbering.setSysSubData(data);
+    info('System-Subsytem data file read: %s', cfg.metadata.syssubsystem_path);
+  });
 
   if (!cfg.metadata.penetration_path) {
     throw new Error('Penetration data file path is required');
   }
-  const penetration = JSON.parse(await readFile(String(cfg.metadata.penetration_path), 'utf8'));
-  info('Penetration data file read: %s', cfg.metadata.penetration_path);
+  await watchJSON(String(cfg.metadata.penetration_path), (err, data) => {
+    if (err) {
+      warn('Error reading penetration data file after change: %s', err);
+      return;
+    }
+    numbering.setPenetrationData(data);
+    info('Penetration data file read: %s', cfg.metadata.penetration_path);
+  });
+
+  let wbsFRIB = {};
+  let wbsREA6 = {};
 
   if (!cfg.metadata.wbs_frib_path) {
     throw new Error('WBS (FRIB) data file path is required');
   }
-  const wbsFRIB = JSON.parse(await readFile(String(cfg.metadata.wbs_frib_path), 'utf8'));
-  info('WBS (FRIB) data file read: %s', cfg.metadata.wbs_frib_path);
+  await watchJSON(String(cfg.metadata.wbs_frib_path), (err, data) => {
+    if (err) {
+      warn('Error reading WBS (FRIB) data file after change: %s', err);
+      return;
+    }
+    wbsFRIB = data;
+    wbs.setWBSConfig({ frib: wbsFRIB, rea6: wbsREA6 });
+    info('WBS (FRIB) data file read: %s', cfg.metadata.wbs_frib_path);
+  });
 
   if (!cfg.metadata.wbs_rea6_path) {
     throw new Error('WBS (REA6) data file path is required');
   }
-  const wbsREA6 = JSON.parse(await readFile(String(cfg.metadata.wbs_rea6_path), 'utf8'));
-  info('WBS (REA6) data file read: %s', cfg.metadata.wbs_rea6_path);
+  await watchJSON(String(cfg.metadata.wbs_rea6_path), (err, data) => {
+    if (err) {
+      warn('Error reading WBS (REA6) data file after change: %s', err);
+      return;
+    }
+    wbsREA6 = data;
+    wbs.setWBSConfig({ frib: wbsFRIB, rea6: wbsREA6 });
+    info('WBS (REA6) data file read: %s', cfg.metadata.wbs_rea6_path);
+  });
+
+  let roomsFRIB = {};
+  let roomsNSCL = {};
+  let roomsSRF = {};
 
   if (!cfg.metadata.rooms_frib_path) {
     throw new Error('Rooms (FRIB) data file path is required');
   }
-  const roomsFRIB = JSON.parse(await readFile(String(cfg.metadata.rooms_frib_path), 'utf8'));
-  info('Rooms (FRIB) data file read: %s', cfg.metadata.rooms_frib_path);
+  await watchJSON(String(cfg.metadata.rooms_frib_path), (err, data) => {
+    if (err) {
+      warn('Error reading Rooms (FRIB) data file after change: %s', err);
+      return;
+    }
+    roomsFRIB = data;
+    room.setBuildingConfig({ frib: roomsFRIB, nscl: roomsNSCL, srf: roomsSRF });
+    info('Rooms (FRIB) data file read: %s', cfg.metadata.rooms_frib_path);
+  });
 
   if (!cfg.metadata.rooms_nscl_path) {
     throw new Error('Rooms (NSCL) data file path is required');
   }
-  const roomsNSCL = JSON.parse(await readFile(String(cfg.metadata.rooms_nscl_path), 'utf8'));
-  info('Rooms (NSCL) data file read: %s', cfg.metadata.rooms_nscl_path);
+  await watchJSON(String(cfg.metadata.rooms_nscl_path), (err, data) => {
+    if (err) {
+      warn('Error reading Rooms (NSCL) data file after change: %s', err);
+      return;
+    }
+    roomsNSCL = data;
+    room.setBuildingConfig({ frib: roomsFRIB, nscl: roomsNSCL, srf: roomsSRF });
+    info('Rooms (NSCL) data file read: %s', cfg.metadata.rooms_nscl_path);
+  });
 
   if (!cfg.metadata.rooms_srf_path) {
-    throw new Error('Rooms (NSCL) data file path is required');
+    throw new Error('Rooms (SRF) data file path is required');
   }
-  const roomsSRF = JSON.parse(await readFile(String(cfg.metadata.rooms_srf_path), 'utf8'));
-  info('Rooms (SRF) data file read: %s', cfg.metadata.rooms_srf_path);
+  await watchJSON(String(cfg.metadata.rooms_srf_path), (err, data) => {
+    if (err) {
+      warn('Error reading Rooms (SRF) data file after change: %s', err);
+      return;
+    }
+    roomsSRF = data;
+    room.setBuildingConfig({ frib: roomsFRIB, nscl: roomsNSCL, srf: roomsSRF });
+    info('Rooms (SRF) data file read: %s', cfg.metadata.rooms_srf_path);
+  });
+
+  if (!cfg.metadata.projects_path) {
+    throw new Error('Projects data file path is required');
+  }
+  await watchJSON(String(cfg.metadata.projects_path), (err, data) => {
+    if (err) {
+      warn('Error reading Projects data file after change: %s', err);
+      return;
+    }
+    cable.setProjects(data);
+    request.setProjects(data);
+    info('Projects data file read: %s', cfg.metadata.projects_path);
+  });
+
+  if (!cfg.metadata.tray_sections_path) {
+    throw new Error('Tray Sections data file path is required');
+  }
+  await watchJSON(String(cfg.metadata.tray_sections_path), (err, data) => {
+    if (err) {
+      warn('Error reading Tray Sections data file after change: %s', err);
+      return;
+    }
+    cable.setTraySections(data);
+    request.setTraySections(data);
+    info('Tray Sections data file read: %s', cfg.metadata.tray_sections_path);
+  });
+
+  if (!cfg.metadata.shared_dir_path) {
+    throw new Error('Shared docs directory path is required');
+  } else {
+    let fstats: fs.Stats;
+    try {
+      fstats = await statFile(String(cfg.metadata.shared_dir_path));
+    } catch (err) {
+      throw new Error(`Shared docs directory path is not found: ${cfg.metadata.shared_dir_path}`);
+    }
+    if (!fstats.isDirectory()) {
+      throw new Error(`Shared docs path is not a directory: ${cfg.metadata.shared_dir_path}`);
+    }
+  }
 
   // view engine configuration
   app.set('views', path.resolve(__dirname, '..', 'views'));
@@ -485,6 +603,9 @@ async function doStart(): Promise<express.Application> {
   // static file configuration
   app.use(express.static(path.resolve(__dirname, '..', 'public')));
 
+  // shared additional static documents
+  app.use('/shared', express.static(String(cfg.metadata.shared_dir_path)));
+
   // Redirect requests ending in '/' and set response locals 'basePath'
   app.use(handlers.basePathHandler());
 
@@ -492,7 +613,7 @@ async function doStart(): Promise<express.Application> {
   app.use(bodyparser.json());
   app.use(bodyparser.urlencoded({
     extended: false,
-  })  );
+  }));
 
   app.get('/login', auth.ensureAuthenticated, (req, res: any) => {
     if (!req.session) {
@@ -524,28 +645,17 @@ async function doStart(): Promise<express.Application> {
   user.setLDAPClient(adClient);
   user.init(app);
 
-  wbs.setWBSConfig({ frib: wbsFRIB, rea6: wbsREA6 });
   wbs.init(app);
 
-  room.setBuildingConfig({ frib: roomsFRIB, nscl: roomsNSCL, srf: roomsSRF });
   room.init(app);
 
-  cable.setSysSubData(sysSub);
   cable.init(app);
 
   cabletype.init(app);
 
   profile.init(app);
 
-  app.get('/numbering', numbering.index);
-
-  app.get('/penetration', (req, res) => {
-    res.json(penetration);
-  });
-
-  app.get('/sys-sub', (req, res) => {
-    res.json(sysSub);
-  });
+  app.use(numbering.getRouter());
 
   app.use('/status', status.router);
 
@@ -586,6 +696,12 @@ async function doStop(): Promise<void> {
       soc.destroy();
     }
   }
+
+  // Close all file watchers
+  for (const w of fileWatchers) {
+    w.close();
+  }
+  info('FS watchers closed: %s', fileWatchers.length);
 
   // Unbind AD Client
   if (adClient) {

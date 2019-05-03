@@ -5,12 +5,8 @@ legend Basic information
   .controls
     select.input#project(type='text', name='basic.project', required)
       option(value='', disabled=true, selected) choose
-      option(value='FRIB') FRIB
-      option(value='REA') ReA
-      option(value='SECAR') SECAR
-      option(value='BECOLA') BECOLA
-      option(value='SRFHB') SRF HB
-      option(value='BUSINESS') Business
+      for project in projects
+        option(value=project.value)= project.title
 .control-group
   .control-label WBS
   .controls
@@ -26,6 +22,8 @@ legend Basic information
       select.input#cat(disabled=true, name='basic.originCategory', required)
         option(value='', disabled=true, selected) choose
       span.add-on &nbsp;
+    span &nbsp;See&nbsp;
+      a(href=basePath + '/shared/frib_cable_map.png', target='_blank') Map
 .control-group
   .control-label Origin subcategory
   .controls
@@ -44,17 +42,8 @@ legend Basic information
   .control-label Tray section
   .controls
     select.input#tray-section(name='basic.traySection')
-      option HPRF
-      option DC
-      option VLLS
-      option LLS
-      option HVDC
-      option MLS
-      option AC
-      option MV-AC
-      option REF
-      option PPS
-      option N/A
+      for traySect in traySects
+        option(value=traySect.value)= traySect.title
 .control-group
   .control-label Type
   .controls

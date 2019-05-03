@@ -8,42 +8,106 @@ block head
   link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
 
+  style
+    |  table.specification {
+    |    padding-top: 20px;
+    |    padding-bottom: 100px;
+    |    border-spacing: 4px 1px;
+    |    border-collapse: separate;
+    |  }
+    |  table.specification th {
+    |    padding:40px 10px;
+    |    font-size:80px;
+    |  }
+    |  table.specification td {
+    |    text-align: center;
+    |    padding:10px 20px;
+    |    font-size: x-large;
+    |  }
+    |  a.target {
+    |    display: block;
+    |    position: relative;
+    |    top: -40px;
+    |    visibility: hidden;'
+    |  }
+    |  .category-background {
+    |    background-color:#ff4848;
+    |  }
+    |  .subcategory-background {
+    |    background-color:#febd47;
+    |  }
+    |  .signal-background {
+    |  background-color:#68bd68;
+    |  }
+    |  .serial-background {
+    |    background-color:#7ab8fe;
+    |  }
+    |  .category-border-left {
+    |    border-left:1px solid #ff4848 !important;
+    |  }
+    |  .subcategory-border-left {
+    |    border-left:1px solid #febd47 !important;
+    |  }
+    |  .signal-border-left {
+    |    border-left:1px solid #68bd68 !important;
+    |  }
+
 block content
   .container
     #message
-    table.table-condensed
-      thaed
-        tr
-          th System
-          th Sub system
-          th Signal type
-          th Sequence
-      tbody
-        tr
-          td
-            select.input-small#system(disabled=true)
-              option(value='', disabled=true) choose
-          td
-            select.input-small#sub(disabled=true)
-          td
-            select.input-small#signal(disabled=true)
-              option(value='', disabled=true) choose
-          td
-            input.input-small#sequence(type='text', placeholder='######', disabled=true)
-    .well
-      p Decoding information
-      p System: &nbsp;
-        b
-          span#sys-val TBD
-        | &nbsp;Sub system: &nbsp;
-        b
-          span#sub-val TBD
-        | &nbsp;Signel type: &nbsp;
-        b
-          span#signal-val TBD
+    div(style='text-align:center;')
+      h2 Cable Number Specification
+    .row
+      .span8.offset2
+        table.specification
+          thead
+            tr
+              th.category-background    0
+              th.subcategory-background 0
+              th.signal-background      A
+              th.serial-background      000000
+          tbody
+            tr
+              td.category-background    &nbsp;Category&nbsp;&nbsp;
+              td.subcategory-background Subcategory
+              td.signal-background      Signal Classification
+              td.serial-background      Serial Number
+
+    .container
+      .row
+        .span8.offset2
+          table.table.table-bordered
+            thead
+              tr
+                td Jump to Category
+              tr
+                td
+                  for cat, catkey in sysSub
+                    a(href='#category' + catkey) #{catkey}&nbsp;&nbsp;
+
+          table.table.table-bordered.table-striped
+            thead
+              tr
+                th.category-border-left    Category
+                th.subcategory-border-left Subcategory
+                th.signal-border-left      Signal Classification
+            tbody
+              for cat, catkey in sysSub
+                tr
+                  td.category-border-left
+                    a.target(id='category' + catkey)
+                    strong #{catkey}:&nbsp;
+                    span= cat.name
+                  td.subcategory-border-left
+                    for name, key in cat.subcategory
+                      div
+                        span(style='font-weight:bold;') #{key}:&nbsp;
+                        span= name
+                  td.signal-border-left
+                    for sig, key in cat.signal
+                      div
+                        span(style='font-weight:bold;') #{key}:&nbsp;
+                        span= sig.name
 
 block js
-  script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
   script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
-  script(type='text/javascript', src=basePath + '/javascripts/knockout-2.2.1.js')
-  script(type='text/javascript', src=basePath + '/javascripts/number.js')

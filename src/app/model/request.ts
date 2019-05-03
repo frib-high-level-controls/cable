@@ -1,6 +1,8 @@
 /*jslint es5:true*/
 import * as mongoose from 'mongoose';
 
+import * as Debug from 'debug';
+
 export interface ICableRequest {
   basic: {
     project: string;
@@ -191,16 +193,62 @@ export interface MultiChange extends IMultiChange, mongoose.Document {
   // nothing extra now
 }
 
+const debug = Debug('cable:model:request');
+
 const Schema = mongoose.Schema;
 const Mixed = Schema.Types.Mixed;
 const ObjectId = Schema.Types.ObjectId;
 
 // shared configuration for request and cable schemas
-const projectValues = ['FRIB', 'REA', 'SECAR', 'BECOLA', 'SRFHB', 'BUSINESS'];
-const originCategoryValues = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B'];
-const originSubcategoryValues = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-const signalClassificationValues = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N'];
-const traySectionValues = ['HPRF', 'DC', 'VLLS', 'LLS', 'HVDC', 'MLS', 'AC', 'MV-AC', 'REF', 'PPS', 'N/A'];
+const projectValues: string[] = [];
+const originCategoryValues: string[] = [];
+const originSubcategoryValues: string[] = [];
+const signalClassificationValues: string[] = [];
+const traySectionValues: string[] = [];
+
+export function setSysSubData(sysSub: any) {
+  const cats = new Set();
+  const subs = new Set();
+  const sigs = new Set();
+  for (const cat of  Object.keys(sysSub)) {
+    cats.add(cat);
+    for (const sub of Object.keys(sysSub[cat].subcategory)) {
+      subs.add(sub);
+      for (const sig of Object.keys(sysSub[cat].signal)) {
+        sigs.add(sig);
+      }
+    }
+  }
+  // Note that this replaces the current values in the same array!
+  originCategoryValues.splice(0, originCategoryValues.length, ...Array.from(cats).sort());
+  debug('Origin Category values updated: [%s]', originCategoryValues);
+  originSubcategoryValues.splice(0, originSubcategoryValues.length, ...Array.from(subs).sort());
+  debug('Origin Subcategory values updated: [%s]', originSubcategoryValues);
+  signalClassificationValues.splice(0, signalClassificationValues.length, ...Array.from(sigs).sort());
+  debug('Signal Classification values updated: [%s]', signalClassificationValues);
+}
+
+export function setProjects(projs: any) {
+  const values: string[] = [];
+  for (const proj of projs) {
+    if (proj.value) {
+      values.push(String(proj.value));
+    }
+  }
+  projectValues.splice(0, projectValues.length, ...values);
+  debug('Project values updated: [%s]', projectValues);
+}
+
+export function setTraySections(traysects: any) {
+  const values: string[] = [];
+  for (const traysect of traysects) {
+    if (traysect.value) {
+      values.push(String(traysect.value));
+    }
+  }
+  traySectionValues.splice(0, traySectionValues.length, ...values);
+  debug('Tray Section values updated: [%s]', traySectionValues);
+}
 
 // request status
 // 0: saved
@@ -212,7 +260,10 @@ const requestSchema = new Schema({
   basic: {
     project: {
       type: String,
-      enum: projectValues,
+      validate: {
+        validator: (v: any) => projectValues.includes(v),
+        message: (p: any) => `Value '${p.value}' is not a member of enum [${projectValues.join()}]`,
+      },
       uppercase: true,
       required: true,
     },
@@ -223,24 +274,36 @@ const requestSchema = new Schema({
     },
     originCategory: {
       type: String,
-      enum: originCategoryValues,
+      validate: {
+        validator: (v: any) => originCategoryValues.includes(v),
+        message: (p: any) => `Value '${p.value}' is not a member of enum [${originCategoryValues.join()}]`,
+      },
       required: true,
     },
     originSubcategory: {
       type: String,
-      enum: originSubcategoryValues,
+      validate: {
+        validator: (v: any) => originSubcategoryValues.includes(v),
+        message: (p: any) => `Value '${p.value}' is not a member of enum [${originSubcategoryValues.join()}]`,
+      },
       required: true,
     },
     signalClassification: {
       type: String,
-      enum: signalClassificationValues,
+      validate: {
+        validator: (v: any) => signalClassificationValues.includes(v),
+        message: (p: any) => `Value '${p.value}' is not a member of enum [${signalClassificationValues.join()}]`,
+      },
       required: true,
     },
     cableType: String,
     service: String,
     traySection: {
       type: String,
-      enum: traySectionValues,
+      validate: {
+        validator: (v: any) => traySectionValues.includes(v),
+        message: (p: any) => `Value '${p.value}' is not a member of enum [${traySectionValues.join()}]`,
+      },
     },
     tags: [String],
     quantity: {
@@ -343,7 +406,10 @@ const cableSchema = new Schema({
   basic: {
     project: {
       type: String,
-      enum: projectValues,
+      validate: {
+        validator: (v: any) => projectValues.includes(v),
+        message: (p: any) => `Value '${p.value}' is not a member of enum [${projectValues.join()}]`,
+      },
       uppercase: true,
       required: true,
     },
@@ -354,24 +420,36 @@ const cableSchema = new Schema({
     },
     originCategory: {
       type: String,
-      enum: originCategoryValues,
+      validate: {
+        validator: (v: any) => originCategoryValues.includes(v),
+        message: (p: any) => `Value '${p.value}' is not a member of enum [${originCategoryValues.join()}]`,
+      },
       required: true,
     },
     originSubcategory: {
       type: String,
-      enum: originSubcategoryValues,
+      validate: {
+        validator: (v: any) => originSubcategoryValues.includes(v),
+        message: (p: any) => `Value '${p.value}' is not a member of enum [${originSubcategoryValues.join()}]`,
+      },
       required: true,
     },
     signalClassification: {
       type: String,
-      enum: signalClassificationValues,
+      validate: {
+        validator: (v: any) => signalClassificationValues.includes(v),
+        message: (p: any) => `Value '${p.value}' is not a member of enum [${signalClassificationValues.join()}]`,
+      },
       required: true,
     },
     cableType: String,
     service: String,
     traySection: {
       type: String,
-      enum: traySectionValues,
+      validate: {
+        validator: (v: any) => traySectionValues.includes(v),
+        message: (p: any) => `Value '${p.value}' is not a member of enum [${traySectionValues.join()}]`,
+      },
     },
     tags: [String],
   },

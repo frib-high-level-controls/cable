@@ -57,6 +57,18 @@ export function setSysSubData(data: any) {
   sysSub = data;
 }
 
+let projects: any;
+
+export function setProjects(data: any) {
+  projects = data;
+}
+
+let traySects: any;
+
+export function setTraySections(data: any) {
+  traySects = data;
+}
+
 function pad(num: number) {
   let s = num.toString();
   if (s.length === 6) {
@@ -279,6 +291,8 @@ export function init(app: express.Application) {
 
   app.get('/requests/new', auth.ensureAuthenticated, (req, res) => {
     return res.render('request', {
+      traySects: traySects,
+      projects: projects,
       sysSub: sysSub,
       roles: req.session ? req.session.roles : [],
     });
@@ -383,6 +397,8 @@ export function init(app: express.Application) {
       return;
     }
     return res.render('request', {
+      traySects: traySects,
+      projects: projects,
       sysSub: sysSub,
       id: req.params.id,
       roles: req.session.roles,

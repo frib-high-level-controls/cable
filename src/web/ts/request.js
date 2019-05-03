@@ -60,6 +60,23 @@ function sendRequest(data, initModel, binder) {
 
 // system/subsystem/signal
 
+function updateCat(json) {
+  var proj = $('#project option:selected').val();
+  $('#cat').prop('disabled', false);
+  $('#cat option').remove();
+  $('#cat').append($('<option>', {
+    value: ''
+  }).text('choose').prop('disabled', true));
+  $.each(json, function (k, v) {
+    if (v && v.projects && ~v.projects.indexOf(proj)) {
+      $('#cat').append($('<option>', {
+        value: k
+      }).text(v.name));
+    }
+  });
+  $('#cat').next('.add-on').text($('#cat option:selected').val());
+}
+
 function updateSub(json) {
   var cat = $('#cat option:selected').val();
   $('#sub').prop('disabled', false);
@@ -107,7 +124,12 @@ function update(select, json) {
 
 
 function css() {
-  update('#cat', sysSub);
+  $('#project').change(function () {
+    updateCat(sysSub);
+    updateSub(sysSub);
+    updateSignal(sysSub);
+  });
+
   $('#cat').change(function () {
     updateSub(sysSub);
     updateSignal(sysSub);
@@ -123,7 +145,13 @@ function css() {
   });
 }
 
-function setCSS(cat, sub, signal) {
+function setCSS(proj, cat, sub, signal) {
+  if (proj) {
+    $('#project').val(proj);
+    updateCat(sysSub);
+    updateSub(sysSub);
+    updateSignal(sysSub);
+  }
   if (cat) {
     $('#cat').val(cat);
     $('#cat').next('.add-on').text(cat);
@@ -252,10 +280,12 @@ $(function () {
       dataType: 'json'
     }).done(function (json) {
       // load the data
+      var proj;
       var cat;
       var sub;
       var signal;
       if (json.basic) {
+        proj = json.basic.project || null;
         cat = json.basic.originCategory || null;
         sub = json.basic.originSubcategory || null;
         signal = json.basic.signalClassification || null;
@@ -264,7 +294,7 @@ $(function () {
       var savedBinder = new Binder.FormBinder(requestForm, json);
       savedBinder.deserialize();
 
-      setCSS(cat, sub, signal);
+      setCSS(proj, cat, sub, signal);
 
 
       $('form[name="request"]').fadeTo('slow', 1);
