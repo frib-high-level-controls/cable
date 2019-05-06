@@ -8,6 +8,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import * as csv from 'csv-parse';
+import * as Debug from 'debug';
 import * as mongoose from 'mongoose';
 import rc = require('rc');
 
@@ -31,6 +32,8 @@ interface Config {
   dryrun?: {};
   _?: Array<{}>;
 }
+
+const debug = Debug('update-cable-csv');
 
 let inputPath: string = '';
 let realPath: string = '';
@@ -124,7 +127,7 @@ function splitTags(s?: string) {
 }
 
 function updateCable(change: any[], i: number, callback: (err?: any) => void) {
-  console.log('processing change ' + i);
+  debug('processing change %s', i);
   Cable.findOne({ number: change[0] }).exec((err, cable) => {
     if (err) {
       console.error(err.toString());
@@ -290,7 +293,7 @@ parser.on('readable', () => {
 
   while (record) {
     line += 1;
-    console.log('read ' + line + ' lines ...');
+    debug('read %s lines ...', line);
     if (line === 1) {
       if (record[0] !== 'number') {
         console.error('Error: first column must be number');

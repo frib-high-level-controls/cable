@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import * as csv from 'csv-parse';
+import * as Debug from 'debug';
 import * as mongoose from 'mongoose';
 import rc = require('rc');
 import * as validator from 'validator';
@@ -44,6 +45,8 @@ interface Config {
     tray_sections_path?: string;
   };
 }
+
+const debug = Debug('import-cable-request');
 
 let inputPath: string = '';
 let realPath: string = '';
@@ -382,7 +385,7 @@ parser.on('readable', () => {
   let record = parser.read();
   while (record) {
     line += 1;
-    console.log('read ' + line + ' lines ...');
+    debug('read %s lines ...', line);
     if (line === 2) {
       version = record[0];
       console.log('template version: ' + version);
