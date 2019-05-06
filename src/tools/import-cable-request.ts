@@ -19,6 +19,8 @@ import {
   ICableRequest,
 } from '../app/model/request';
 
+import * as cable from '../app/model/request';
+
 import naming = require('./lib/naming');
 
 interface Config {
@@ -38,6 +40,8 @@ interface Config {
   _?: Array<{}>;
   metadata: {
     syssubsystem_path?: string;
+    projects_path?: string;
+    tray_sections_path?: string;
   };
 }
 
@@ -117,6 +121,25 @@ try {
   console.error('system-subsystem data read error: %s', err);
   process.exit(1);
 }
+cable.setSysSubData(syssub);
+
+let projects: any;
+try {
+   projects = JSON.parse(fs.readFileSync(String(cfg.metadata.projects_path), 'utf8'));
+} catch (err) {
+  console.error('project data read error: %s', err);
+  process.exit(1);
+}
+cable.setProjects(projects);
+
+let traysects: any;
+try {
+  traysects = JSON.parse(fs.readFileSync(String(cfg.metadata.tray_sections_path), 'utf8'));
+} catch (err) {
+ console.error('tray section data read error: %s', err);
+ process.exit(1);
+}
+cable.setTraySections(traysects);
 
 {
   // No type support for these properties (@types/mongoose@5.3.24)
