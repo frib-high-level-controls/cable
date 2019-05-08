@@ -1,6 +1,6 @@
 {
   "name": "cable",
-  "version": "1.4.3",
+  "version": "1.4.4-DEV",
   "private": true,
   "scripts": {
     "build-all": "grunt clean build-all",
