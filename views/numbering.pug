@@ -37,7 +37,7 @@ block head
     |    background-color:#febd47;
     |  }
     |  .signal-background {
-    |  background-color:#68bd68;
+    |    background-color:#68bd68;
     |  }
     |  .serial-background {
     |    background-color:#7ab8fe;
@@ -83,7 +83,8 @@ block content
               tr
                 td
                   for cat, catkey in sysSub
-                    a(href='#category' + catkey) #{catkey}&nbsp;&nbsp;
+                    a(href='#category' + catkey) #{catkey}
+                    span &nbsp;&nbsp;
 
           table.table.table-bordered.table-striped
             thead
