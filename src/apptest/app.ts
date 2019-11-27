@@ -21,7 +21,7 @@ import * as forgapi from './shared/mock-forgapi';
 import * as mongod from './shared/mongod';
 
 // application states
-export type State = State;
+export { State } from '../app';
 
 // application singleton
 let app: express.Application;
