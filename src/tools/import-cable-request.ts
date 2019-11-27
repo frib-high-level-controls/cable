@@ -13,7 +13,7 @@ import * as csv from 'csv-parse';
 import * as Debug from 'debug';
 import * as mongoose from 'mongoose';
 import rc = require('rc');
-import * as validator from 'validator';
+import validator from 'validator';
 
 import {
   CableRequest,
