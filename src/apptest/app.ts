@@ -21,7 +21,7 @@ import * as forgapi from './shared/mock-forgapi';
 import * as mongod from './shared/mongod';
 
 // application states
-export type State = State;
+export { State } from '../app';
 
 // application singleton
 let app: express.Application;
@@ -63,7 +63,7 @@ async function doStart(): Promise<express.Application> {
   // status monitor start
   await status.monitor.start();
 
-  // configure Mongoose (MongoDB)
+  // start local MongoDB server (optional)
   let mongoPort = 27017;
   if (process.env.WEBAPP_START_MONGOD === 'true') {
     mongoPort = await mongod.start();
@@ -73,7 +73,10 @@ async function doStart(): Promise<express.Application> {
   const mongoUrl = `mongodb://localhost:${mongoPort}/webapp-test`;
 
   const mongoOptions: mongoose.ConnectionOptions = {
+    // remove deprecation warnings
+    useFindAndModify: false,
     useNewUrlParser: true,
+    useCreateIndex: true,
   };
 
   await mongoose.connect(mongoUrl, mongoOptions);

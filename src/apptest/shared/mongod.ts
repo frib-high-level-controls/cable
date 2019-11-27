@@ -98,29 +98,39 @@ export async function start(options?: { dbpath?: boolean | string }): Promise<nu
       } else {
         warn('MongoDB exit with code: %s, signal: %s', code, sig);
       }
+      if (mongod && !mongod.stdout) {
+        reject(new Error('MongoDB process standard output is null'));
+      } else {
+        reject(new Error('MongoDB terminated before startup completed'));
+      }
       mongod = null;
-      reject(new Error('MongoDB terminated before startup completed'));
     });
 
-    mongod.stdout.on('data', (data) => {
-      for (const line of data.toString().split('\n')) {
-        if (line) {
-          if (line.endsWith(`port ${dbport}`)) {
-            debug('MongoDB is now listening on port %s', dbport);
-            resolve(dbport);
+    if (mongod.stdout) {
+      mongod.stdout.on('data', (data) => {
+        for (const line of data.toString().split('\n')) {
+          if (line) {
+            if (line.endsWith(`port ${dbport}`)) {
+              debug('MongoDB is now listening on port %s', dbport);
+              resolve(dbport);
+            }
+            dbout(line);
           }
-          dbout(line);
         }
-      }
-    });
+      });
+    } else {
+      mongod.kill();
+    }
 
-    mongod.stderr.on('data', (data) => {
-      for (const line of data.toString().split('\n')) {
-        if (line) {
-          dberr(line);
+    if (mongod.stderr) {
+      mongod.stderr.on('data', (data) => {
+        for (const line of data.toString().split('\n')) {
+          if (line) {
+            dberr(line);
+          }
         }
-      }
-    });
+      });
+    }
   });
 }
 

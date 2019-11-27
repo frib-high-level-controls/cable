@@ -68,7 +68,7 @@ export abstract class PassportAbstractProvider<S extends Strategy, AO extends Au
   }
 
   public getUser(req: Request): auth.IUser | undefined {
-    return req.user;
+    return req.user ? req.user as auth.IUser : undefined;
   }
 
   protected abstract getStrategy(): S;

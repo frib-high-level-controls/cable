@@ -282,6 +282,7 @@ async function doStart(): Promise<express.Application> {
     }
   }
 
+  // Configure the server bind address and port
   app.set('port', String(cfg.app.port));
   app.set('addr', String(cfg.app.addr));
 
@@ -559,15 +560,11 @@ async function doStart(): Promise<express.Application> {
   app.set('view engine', 'pug');
   app.set('view cache', (env === 'production') ? true : false);
 
-  // add 'webenv' property to response locals for use in view
+  // Configure 'webenv' property and add to response locals
+  const webenv = cfg.app.web_env || process.env.WEB_ENV || 'development';
+  app.set('webenv', webenv);
   app.use((req, res, next) => {
-    res.locals.webenv = 'development';
-    if (process.env.WEB_ENV) {
-      res.locals.webenv = process.env.WEB_ENV;
-    }
-    if (cfg.app.web_env) {
-      res.locals.webenv = String(cfg.app.web_env);
-    }
+    res.locals.webenv = webenv;
     next();
   });
 
