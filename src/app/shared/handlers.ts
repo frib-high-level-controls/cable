@@ -6,13 +6,11 @@ import * as express from 'express';
 import {
   ErrorFormatter as VErrorFormatter,
   Result as VResult,
-  ValidationChain,
-  validationResult as vresult,
-} from 'express-validator/check';
-
-import {
   SanitizationChain,
-} from 'express-validator/filter';
+  ValidationChain,
+  ValidationError as VError,
+  validationResult as vresult,
+} from 'express-validator';
 
 import * as HttpStatusCodes from 'http-status-codes';
 
@@ -26,22 +24,14 @@ type RequestHandler = express.RequestHandler;
 type ErrorRequestHandler = express.ErrorRequestHandler;
 
 type C = ValidationChain | SanitizationChain;
-type VLocation = 'body' | 'params' | 'query' | 'headers' | 'cookies'; // copied from location.d.ts
-
-interface VError {
-  location: VLocation;
-  param: string;
-  msg: any;
-  value: any;
-}
 
 export {
   body as check,
-} from 'express-validator/check';
+} from 'express-validator';
 
 export {
   sanitizeBody as sanitize,
-} from 'express-validator/filter';
+} from 'express-validator';
 
 export const HttpStatus = HttpStatusCodes;
 
@@ -349,11 +339,12 @@ export const pkgErrorDetailFormatter: VErrorFormatter = (verror): webapi.PkgErro
  * Get the validation results from the request. If 'format' is true then convert the result
  * to a PkgErrorDetail object. A custom validation error formatter may also be provided.
  */
+
 export function validationResult(req: Request, formatWith?: false): VResult<VError>;
 export function validationResult(req: Request, formatWith: true): VResult<webapi.PkgErrorDetail>;
-export function validationResult<T = VError>(req: Request, formatWith: VErrorFormatter<T> ): VResult<T>;
-export function validationResult<T = VError>(req: Request, formatWith?: boolean | VErrorFormatter<T> ): VResult<T> {
-  const result = vresult<T>(req);
+export function validationResult<T>(req: Request, formatWith: VErrorFormatter<T> ): VResult<T>;
+export function validationResult<T>(req: Request, formatWith?: boolean | VErrorFormatter<T> ): VResult<VError | T> {
+  const result = vresult(req);
   if (!formatWith) {
     return result;
   }
