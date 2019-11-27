@@ -19,7 +19,7 @@ import * as tasks from '../app/shared/tasks';
 import * as forgapi from './shared/mock-forgapi';
 
 // application states
-export type State = State;
+export { State } from '../app';
 
 // application singleton
 let app: express.Application;
