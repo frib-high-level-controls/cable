@@ -56,6 +56,19 @@ module.exports = function(grunt) {
         },
       },
     },
+    webpack: {
+      options: {
+        stats: !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+      },
+      prod: function() {
+        return require('./src/web/webpack.config');
+      },
+      watch: function() {
+        var cfg = require('./src/web/webpack.config');
+        cfg.watch = true;
+        return cfg;
+      }
+    },
     tslint: {
       options: {
         configuration: 'tslint.json',
@@ -81,6 +94,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-ts');
   grunt.loadNpmTasks('grunt-tslint');
+  grunt.loadNpmTasks('grunt-webpack');
   grunt.loadNpmTasks('grunt-contrib-clean');
 
   grunt.registerTask('save_version_file', 'Save version information to app/verison.json', function () {
@@ -135,7 +149,8 @@ module.exports = function(grunt) {
   grunt.registerTask('build', [
     'save_version_file',
     'ts:app',
-    'ts:web',
+    // 'ts:web',
+    'webpack:prod',
   ]);
 
   grunt.registerTask('build-tests', [

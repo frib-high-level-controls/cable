@@ -2,27 +2,25 @@ doctype html
 html
   head
     meta(http-equiv='X-UA-Compatible', content='IE=Edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
     link(rel='icon', href=basePath + '/favicon.ico?v=1')
     script(type='text/javascript') var basePath = '#{basePath}';
     block head
   body
-    .navbar.navbar-inverse.navbar-fixed-top
-      .navbar-inner
-        .container-fluid
-          button.btn.btn-navbar(type='button', data-toggle='collapse', data-target='.nav-collapse')
-            span.icon-bar
-            span.icon-bar
-            span.icon-bar
-          if webenv !== 'production'
-            p.nav.navbar-text.pull-right(style='background-color:red;color:black;') &nbsp;TEST&nbsp;
-          .nav-collapse.collapse
-            ul.nav
-              li.active
-                a(href=basePath + '/') Cable
-              li
-                a(href='https://controls.frib.msu.edu/', target='_blank') Controls
-              li
-                a(href=basePath + '/logout') Logout
-    block content
+    nav.navbar.navbar-dark.bg-dark.navbar-expand-sm.fixed-top
+      a.navbar-brand(href=basePath + '/') Cable
+      button.navbar-toggler(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+        span.sr-only Toggle navigation
+        span.navbar-toggler-icon
+      .navbar-collapse.collapse
+        ul.navbar-nav.mr-auto
+          //- li
+          //-   a(href='https://controls.frib.msu.edu/', target='_blank') Controls
+        ul.navbar-nav
+          li
+            a.nav-link(href=basePath + '/logout') Logout
+
+    #page
+      block content
 
     block js
