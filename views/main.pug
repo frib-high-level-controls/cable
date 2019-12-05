@@ -9,6 +9,7 @@ block head
   //- link(rel='stylesheet', href=basePath + '/datatables/css/dataTables.bootstrap.css')
   //- link(rel='stylesheet', href=basePath + '/font-awesome-4.2.0/css/font-awesome.css')
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+  script(type='text/javascript' src=basePath + '/dist/main.js')
 
 block content
   .container-fluid
@@ -33,13 +34,13 @@ block content
             span.caret
           ul.dropdown-menu
             li#cabletypes
-              a(href='./cabletypes/', target='_blank') FRIB approved cable types
+              a.dropdown-item(href='./cabletypes/', target='_blank') FRIB approved cable types
             li#wbs
-              a(href='./frib/wbs', target='_blank') FRIB work breakdown structure
+              a.dropdown-item(href='./frib/wbs', target='_blank') FRIB work breakdown structure
             li#wbs
-              a(href='./rea6/wbs', target='_blank') ReA 6 work breakdown structure
+              a.dropdown-item(href='./rea6/wbs', target='_blank') ReA 6 work breakdown structure
             li
-              a(href='./numbering', target='_blank') Cable Number Specification
+              a.dropdown-item(href='./numbering', target='_blank') Cable Number Specification
         .btn-group.mr-2
           a.btn.btn-secondary(href='./profile', target='_blank')
             i.fa.fa-user.fa-lg
@@ -47,17 +48,21 @@ block content
         .btn-group.mr-2
           a.btn.btn-info#allcables(href='./allcables', target='_blank')
             i.fa.fa-university.fa-lg
-            | &nbsp;All cables
+            | &nbsp;All Cables
         .btn-group.mr-2
           a.btn.btn-info(href='./about', target='_blank')
             i.fa.fa-info.fa-lg
             |&nbsp;About
+    hr
+
     #message
     .modal.hide.fade#modal(tabindex='-1', role='dialog', data-backdrop='static', aria-labelledby='modalLabel', aria-hidden='true')
-      .modal-header
-        h3#modalLabel
-      .modal-body
-      .modal-footer
+      .modal-dialog
+        .modal-content
+          .modal-header
+            h3#modalLabel
+          .modal-body
+          .modal-footer
     .row.m-2
       .nav.flex-column.nav-pills.col-1#v-pills-tabs(role='tablist')
         a.nav-link.active(href='#saved', data-toggle='tab', role='tab') Saved requests
@@ -65,13 +70,13 @@ block content
         a.nav-link(href='#rejected', data-toggle='pill', role='tab') Rejected requests
         a.nav-link(href='#approved', data-toggle='pill', role='tab') Approved requests
         a.nav-link(href='#cables', data-toggle='pill', role='tab') Cables
-      .tab-content.col-11#v-pills-tabContent
+      .tab-content.col#v-pills-tabContent(style='overflow-y: scroll;')
         .tab-pane.show.active#saved(role='tabpanel')
           .btn-toolbar
             .btn-group.mr-2
               button.btn.btn-primary#saved-submit(type='button')
                 i.fa.fa-check-square.fa-lg
-                | &nbsp;Submit for approval
+                | &nbsp;Submit for Approval
             .btn-group.mr-2
               button.btn.btn-warning#saved-delete(type='button')
                 i.fa.fa-trash-alt.fa-lg
@@ -79,11 +84,11 @@ block content
             .btn-group.mr-2
               button.btn.btn-info#saved-select-all(type='button', data-toggle='tooltip', title='select all the items in the table no matter visiable or not')
                 i.fa.fa-list.fa-lg
-                | &nbsp;Select all
+                | &nbsp;Select All
             .btn-group.mr-2
               button.btn.btn-info#saved-select-none(type='button')
                 i.fa.fa-square.fa-lg
-                | &nbsp;Clear selection
+                | &nbsp;Clear Selection
             .btn-group.mr-2(data-toggle='buttons-radio')
               button.btn.btn-info.active#saved-wrap(type='button') Wrap
               button.btn.btn-info#saved-unwrap(type='button') Unwrap
@@ -94,15 +99,15 @@ block content
             .btn-group.mr-2
               button.btn.btn-warning#submitted-revert(type='button')
                 i.fa.fa-step-backward.fa-lg
-                | &nbsp;Revert to saved
+                | &nbsp;Revert to Saved
             .btn-group.mr-2
               button.btn.btn-info#submitted-select-all(type='button', data-toggle='tooltip', title='select all the items in the table no matter visiable or not')
                 i.fa.fa-list.fa-lg
-                | &nbsp;Selection all
+                | &nbsp;Select All
             .btn-group.mr-2
               button.btn.btn-info#submitted-select-none(type='button')
                 i.fa.fa-square.fa-lg
-                | &nbsp;Clear selection
+                | &nbsp;Clear Selection
             .btn-group.mr-2(data-toggle='buttons-radio')
               button.btn.btn-info.active#submitted-wrap(type='button') Wrap
               button.btn.btn-info#submitted-unwrap(type='button') Unwrap
@@ -114,11 +119,11 @@ block content
             .btn-group.mr-2
               button.btn.btn-info#approved-select-all(type='button', data-toggle='tooltip', title='select all the items in the table no matter visiable or not')
                 i.fa.fa-list.fa-lg
-                | &nbsp;Selection all
+                | &nbsp;Select All
             .btn-group.mr-2
               button.btn.btn-info#approved-select-none(type='button')
                 i.fa.fa-square.fa-lg
-                | &nbsp;Clear selection
+                | &nbsp;Clear Selection
             .btn-group.mr-2(data-toggle='buttons-radio')
               button.btn.btn-info.active#approved-wrap(type='button') Wrap
               button.btn.btn-info#approved-unwrap(type='button') Unwrap
@@ -133,11 +138,11 @@ block content
             .btn-group.mr-2
               button.btn.btn-info#rejected-select-all(type='button', data-toggle='tooltip', title='select all the items in the table no matter visiable or not')
                 i.fa.fa-list.fa-lg
-                | &nbsp;Selection all
+                | &nbsp;Select All
             .btn-group.mr-2
               button.btn.btn-info#rejected-select-none(type='button')
                 i.fa.fa-square.fa-lg
-                | &nbsp;Clear selection
+                | &nbsp;Clear Selection
             .btn-group.mr-2(data-toggle='buttons-radio')
               button.btn.btn-info.active#rejected-wrap(type='button') Wrap
               button.btn.btn-info#rejected-unwrap(type='button') Unwrap
@@ -165,6 +170,6 @@ block js
   //- script(type='text/javascript', src=basePath + '/javascripts/ajaxhelper.js')
   //- script(type='text/javascript', src=basePath + '/javascripts/table.js')
   //- script(type='text/javascript', src=basePath + '/javascripts/main.js')
-  script(type='text/javascript' src=basePath + '/dist/main.js')
+  //- script(type='text/javascript' src=basePath + '/dist/main.js')
 
 

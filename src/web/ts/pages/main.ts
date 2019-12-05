@@ -8,6 +8,7 @@ import '@fortawesome/fontawesome-free/js/all';
 import 'bootstrap';
 
 import 'datatables.net-bs4';
+import 'datatables.net-buttons-bs4';
 
 import * as $ from 'jquery';
 
@@ -29,6 +30,12 @@ import {
   editLinkColumn,
   filterEvent,
   fnAddFilterFoot,
+  fnDeselect,
+  fnGetSelected,
+  fnSelectAll,
+  fnSetDeselect,
+  fnUnwrap,
+  fnWrap,
   fromColumns,
   highlightedEvent,
   lengthColumn,
@@ -184,13 +191,13 @@ function submitFromModal(rows, savedTable, submittedTable) {
         action: 'submit'
       })
     }).done(function () {
-      $(that).prepend('<i class="icon-check"></i>');
+      $(that).prepend('<strong class="fa fa-check"></strong>&nbsp;');
       $(that).addClass('text-success');
       fnSetDeselect(rows[index], 'row-selected', 'select-row');
     }).fail(function (jqXHR) {
-      $(that).prepend('<i class="icon-question"></i>');
+      $(that).prepend('<stromg class="fa fa-exclamation"></strong>&nbsp;');
       $(that).append(' : ' + jqXHR.responseText);
-      $(that).addClass('text-error');
+      $(that).addClass('text-danger');
     }).always(function () {
       number = number - 1;
       if (number === 0) {
@@ -208,10 +215,10 @@ function batchSubmit(savedTable, submittedTable) {
     $('#modal .modal-body').empty();
     selected.forEach(function (row) {
       rows.push(row);
-      var data = savedTable.fnGetData(row);
+      var data = savedTable.row(row).data();
       $('#modal .modal-body').append('<div class="request" id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + '</div>');
     });
-    $('#modal .modal-footer').html('<button id="submit" class="btn btn-primary">Confirm</button><button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button id="submit" type="button" class="btn btn-primary">Confirm</button><button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
     $('#submit').click(function () {
       submitFromModal(rows, savedTable, submittedTable);
@@ -219,7 +226,7 @@ function batchSubmit(savedTable, submittedTable) {
   } else {
     $('#modalLabel').html('Alert');
     $('#modal .modal-body').html('No request has been selected!');
-    $('#modal .modal-footer').html('<button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button type="button" data-dismiss="modal" class="btn btn-secondary">Return</button>');
     $('#modal').modal('show');
   }
 }
@@ -241,13 +248,13 @@ function cloneFromModal(rows, requests, savedTable) {
           quantity: quantity
         })
       }).done(function () {
-        $(that).prepend('<i class="icon-check"></i>');
+        $(that).prepend('<strong class="fa fa-check"></strong>&nbsp;');
         $(that).addClass('text-success');
         fnSetDeselect(rows[index], 'row-selected', 'select-row');
       }).fail(function (jqXHR) {
-        $(that).prepend('<i class="icon-question"></i>');
+        $(that).prepend('<strong class="fa fa-exclamation"></strong>&nbsp;');
         $(that).append(' : ' + jqXHR.responseText);
-        $(that).addClass('text-error');
+        $(that).addClass('text-danger');
       }).always(function () {
         number = number - 1;
         if (number === 0) {
@@ -255,9 +262,9 @@ function cloneFromModal(rows, requests, savedTable) {
         }
       });
     } else {
-      $(that).prepend('<i class="icon-question"></i>');
+      $(that).prepend('<strong class="fa fa-exclamation"></strong>&nbsp;');
       $(that).append(' : the quantity is not acceptable');
-      $(that).addClass('text-error');
+      $(that).addClass('text-danger');
     }
   });
 }
@@ -271,7 +278,7 @@ function batchClone(table, savedTable) {
     $('#modal .modal-body').empty();
     selected.forEach(function (row) {
       rows.push(row);
-      var data = table.fnGetData(row);
+      var data = table.row(row).data();
       $('#modal .modal-body').append('<div class="request" id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + ' <input type="text" placeholder="quantity" value="1" class="type[number] input-mini" min=1 max=20></div>');
       requests[data._id] = {
         basic: data.basic,
@@ -283,7 +290,7 @@ function batchClone(table, savedTable) {
         comments: data.comments
       };
     });
-    $('#modal .modal-footer').html('<button id="action" class="btn btn-primary">Confirm</button><button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button id="action" type="button" class="btn btn-primary">Confirm</button><button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
     $('#action').click(function () {
       cloneFromModal(rows, requests, savedTable);
@@ -291,7 +298,7 @@ function batchClone(table, savedTable) {
   } else {
     $('#modalLabel').html('Alert');
     $('#modal .modal-body').html('No request has been selected!');
-    $('#modal .modal-footer').html('<button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
   }
 }
@@ -309,13 +316,13 @@ function revertFromModal(rows, savedTable, submittedTable) {
         action: 'revert'
       })
     }).done(function () {
-      $(that).prepend('<i class="icon-check"></i>');
+      $(that).prepend('<strong class="fa fa-check"></strong>&nbsp;');
       $(that).addClass('text-success');
       fnSetDeselect(rows[index], 'row-selected', 'select-row');
     }).fail(function (jqXHR) {
-      $(that).prepend('<i class="icon-question"></i>');
+      $(that).prepend('<strong class="fa fa-exclamation"></strong>&nbsp;');
       $(that).append(' : ' + jqXHR.responseText);
-      $(that).addClass('text-error');
+      $(that).addClass('text-danger');
     }).always(function () {
       number = number - 1;
       if (number === 0) {
@@ -334,10 +341,10 @@ function batchRevert(savedTable, submittedTable) {
     $('#modal .modal-body').empty();
     selected.forEach(function (row) {
       rows.push(row);
-      var data = submittedTable.fnGetData(row);
+      var data = submittedTable.row(row).data();
       $('#modal .modal-body').append('<div class="request" id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + '</div>');
     });
-    $('#modal .modal-footer').html('<button id="revert" class="btn btn-primary">Confirm</button><button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button id="revert" type="button" class="btn btn-primary">Confirm</button><button type="button" data-dismiss="modal" type="button" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
     $('#revert').click(function () {
       revertFromModal(rows, savedTable, submittedTable);
@@ -345,7 +352,7 @@ function batchRevert(savedTable, submittedTable) {
   } else {
     $('#modalLabel').html('Alert');
     $('#modal .modal-body').html('No request has been selected!');
-    $('#modal .modal-footer').html('<button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
   }
 }
@@ -361,10 +368,10 @@ function deleteFromModal(table, rows) {
     }).done(function () {
       $(that).wrap('<del></del>');
       $(that).addClass('text-success');
-      table.fnDeleteRow(rows[index]);
+      table.row(rows[index]).remove().draw();
     }).fail(function (jqXHR) {
       $(that).append(' : ' + jqXHR.responseText);
-      $(that).addClass('text-error');
+      $(that).addClass('text-danger');
     });
   });
 }
@@ -376,11 +383,11 @@ function batchDelete(table) {
     $('#modalLabel').html('Delete the following ' + selected.length + ' requests? ');
     $('#modal .modal-body').empty();
     selected.forEach(function (row) {
-      var data = table.fnGetData(row);
+      var data = table.row(row).data();
       rows.push(row);
       $('#modal .modal-body').append('<div class="request" id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + '</div>');
     });
-    $('#modal .modal-footer').html('<button id="delete" class="btn btn-primary"">Confirm</button><button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button id="delete" type="button" class="btn btn-primary"">Confirm</button><button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
     $('#delete').click(function () {
       deleteFromModal(table, rows);
@@ -388,7 +395,7 @@ function batchDelete(table) {
   } else {
     $('#modalLabel').html('Alert');
     $('#modal .modal-body').html('No request has been selected!');
-    $('#modal .modal-footer').html('<button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
   }
 }
@@ -418,7 +425,7 @@ $(function () {
       [2, 'desc'],
       [3, 'desc']
     ],
-    dom: sDom2InoF,
+    //dom: sDom2InoF,
     //oTableTools: oTableTools,
     //sScrollY: '50vh',
     //bScrollCollapse: true
@@ -600,7 +607,7 @@ $(function () {
   });
 
   $('#clone').click(function cloneHandler() {
-    var activeTable = $($.fn.DataTable().tables(true)[0]).DataTable();
+    var activeTable = $('.tab-pane.active .dataTable').DataTable();
     batchClone(activeTable, savedTable);
   });
 

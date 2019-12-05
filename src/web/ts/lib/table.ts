@@ -172,26 +172,26 @@ function createNullArray(size) {
 
 
 
-function fnWrap(oTableLocal) {
+export function fnWrap(oTableLocal) {
   $(oTableLocal.fnSettings().aoData).each(function () {
     $(this.nTr).removeClass('nowrap');
   });
-  oTableLocal.fnAdjustColumnSizing();
+  oTableLocal.columns().adjust();
 }
 
-function fnUnwrap(oTableLocal) {
+export function fnUnwrap(oTableLocal) {
   $(oTableLocal.fnSettings().aoData).each(function () {
     $(this.nTr).addClass('nowrap');
   });
-  oTableLocal.fnAdjustColumnSizing();
+  oTableLocal.columns().adjust();
 }
 
 
 
-function fnGetSelected(oTableLocal, selectedClass) {
+export function fnGetSelected(oTableLocal, selectedClass) {
   var aReturn = [],
     i;
-  var aTrs = oTableLocal.fnGetNodes();
+  var aTrs = oTableLocal.rows().nodes();
 
   for (i = 0; i < aTrs.length; i++) {
     if ($(aTrs[i]).hasClass(selectedClass)) {
@@ -201,8 +201,8 @@ function fnGetSelected(oTableLocal, selectedClass) {
   return aReturn;
 }
 
-function fnDeselect(oTableLocal, selectedClass, checkboxClass) {
-  var aTrs = oTableLocal.fnGetNodes(),
+export function fnDeselect(oTableLocal, selectedClass, checkboxClass) {
+  var aTrs = oTableLocal.rows().nodes(),
     i;
 
   for (i = 0; i < aTrs.length; i++) {
@@ -213,7 +213,7 @@ function fnDeselect(oTableLocal, selectedClass, checkboxClass) {
   }
 }
 
-function fnSelectAll(oTableLocal, selectedClass, checkboxClass, current) {
+export function fnSelectAll(oTableLocal, selectedClass, checkboxClass, current) {
   var rows;
   var i;
   if (current) {
@@ -233,7 +233,7 @@ function fnSelectAll(oTableLocal, selectedClass, checkboxClass, current) {
   }
 }
 
-function fnSetDeselect(nTr, selectedClass, checkboxClass) {
+export function fnSetDeselect(nTr, selectedClass, checkboxClass) {
   if ($(nTr).hasClass(selectedClass)) {
     $(nTr).removeClass(selectedClass);
     $(nTr).find('input.' + checkboxClass + ':checked').prop('checked', false);
@@ -371,7 +371,7 @@ export const detailsLinkColumn = {
   sTitle: '',
   mData: '_id',
   mRender: function (data, type, full) {
-    return '<a href="' + basePath + '/requests/' + data + '/details" target="_blank"><i class="fa fa-file-text-o fa-lg"></i></a>';
+    return '<a href="' + basePath + '/requests/' + data + '/details" target="_blank"><i class="fa fa-file-alt fa-lg"></i></a>';
   },
   bSortable: false
 };
