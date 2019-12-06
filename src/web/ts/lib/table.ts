@@ -270,7 +270,7 @@ function fnAddFilterHead(sTable, aoColumns) {
   $(sTable).append($('<thead class="filter">').append(tr));
 }
 
-function fnAddFilterHeadScroll(sTable, aoColumns) {
+export function fnAddFilterHeadScroll(sTable, aoColumns) {
   var tr = $('<tr role="row">');
   aoColumns.forEach(function (c) {
     if (c.bFilter) {
@@ -379,14 +379,14 @@ export const detailsLinkColumn = {
 export const createdOnColumn = dateColumn('Created', 'createdOn');
 
 export const updatedOnColumn = dateColumn('Updated', 'updatedOn');
-var updatedOnLongColumn = dateColumn('Updated', 'updatedOn', true);
+export const updatedOnLongColumn = dateColumn('Updated', 'updatedOn', true);
 
 export const submittedOnColumn = dateColumn('Submitted', 'submittedOn');
 var submittedOnLongColumn = dateColumn('Submitted', 'submittedOn', true);
-var submittedByColumn = personColumn('Submitted by', 'submittedBy');
+export const submittedByColumn = personColumn('Submitted by', 'submittedBy');
 
 export const approvedOnColumn = dateColumn('Approved', 'approvedOn');
-var approvedOnLongColumn = dateColumn('Approved', 'approvedOn', true);
+export const approvedOnLongColumn = dateColumn('Approved', 'approvedOn', true);
 export const approvedByColumn = personColumn('Approved by', 'approvedBy');
 
 export const rejectedOnColumn = dateColumn('Rejected', 'rejectedOn');
@@ -394,8 +394,8 @@ var rejectedOnLongColumn = dateColumn('Rejected', 'rejectedOn', true);
 export const rejectedByColumn = personColumn('Rejected by', 'rejectedBy');
 
 var obsoletedOnColumn = dateColumn('Obsoleted', 'obsoletedOn');
-var obsoletedOnLongColumn = dateColumn('Obsoleted', 'obsoletedOn', true);
-var obsoletedByColumn = personColumn('Obsoleted by', 'obsoletedBy');
+export const obsoletedOnLongColumn = dateColumn('Obsoleted', 'obsoletedOn', true);
+export const obsoletedByColumn = personColumn('Obsoleted by', 'obsoletedBy');
 
 export const commentsColumn = {
   sTitle: 'Comments',
@@ -414,7 +414,7 @@ export const lengthColumn = {
   bFilter: true
 };
 
-var versionColumn = {
+export const versionColumn = {
   sTitle: 'version',
   sDefaultContent: 0,
   mData: '__v',
@@ -633,7 +633,7 @@ export const numberColumn = {
   bFilter: true
 };
 
-var requestNumberColumn = {
+export const requestNumberColumn = {
   sTitle: 'Request',
   mData: 'request_id',
   mRender: function (data, type, full) {
@@ -654,7 +654,7 @@ export const statusColumn = {
   bFilter: true
 };
 
-var requiredColumn = {
+export const requiredColumn = {
   sTitle: 'Required',
   mData: function (source, type, val) {
     if (source.required) {

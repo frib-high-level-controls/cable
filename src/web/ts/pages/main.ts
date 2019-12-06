@@ -436,8 +436,8 @@ $(function () {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    //sScrollY: '50vh',
-    //bScrollCollapse: true
+    scrollY: '50vh',
+    scrollCollapse: true,
   });
 
   $('#saved-wrap').click(function () {
@@ -480,8 +480,8 @@ $(function () {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    //sScrollY: '50vh',
-    //bScrollCollapse: true
+    scrollY: '50vh',
+    scrollCollapse: true,
   });
 
   $('#submitted-wrap').click(function () {
@@ -520,8 +520,8 @@ $(function () {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    //sScrollY: '50vh',
-    //bScrollCollapse: true
+    scrollY: '50vh',
+    scrollCollapse: true,
   });
 
   $('#rejected-wrap').click(function () {
@@ -559,8 +559,8 @@ $(function () {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    //sScrollY: '50vh',
-    //bScrollCollapse: true
+    scrollY: '50vh',
+    scrollCollapse: true,
   });
 
   $('#approved-select-all').click(function () {
@@ -595,8 +595,8 @@ $(function () {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    //sScrollY: '50vh',
-    //bScrollCollapse: true
+    scrollY: '50vh',
+    scrollCollapse: true,
   });
 
   $('#cables-wrap').click(function () {

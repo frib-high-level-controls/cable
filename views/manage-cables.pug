@@ -4,139 +4,145 @@ block head
   meta(charset='utf-8')
   title FRIB Cable App
   meta(name='viewport', content='width=device-width, initial-scale=1.0')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
-  link(rel='stylesheet', href=basePath + '/datatables/css/dataTables.bootstrap.css')
-  link(rel='stylesheet', href=basePath + '/ui-lightness/jquery-ui-1.10.2.custom.css')
-  link(rel='stylesheet', href=basePath + '/font-awesome-4.2.0/css/font-awesome.css')
+  //- link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
+  //- link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
+  //- link(rel='stylesheet', href=basePath + '/datatables/css/dataTables.bootstrap.css')
+  //- link(rel='stylesheet', href=basePath + '/ui-lightness/jquery-ui-1.10.2.custom.css')
+  //- link(rel='stylesheet', href=basePath + '/font-awesome-4.2.0/css/font-awesome.css')
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
   style(type='text/css')
     | .ui-autocomplete {
     |   max-height: 95px;
     |   overflow-y: auto;
     | }
+  script(type='text/javascript' src=basePath + '/dist/manage-cables.js')
 
 block content
   .container-fluid
-    .btn-toolbar
-      .btn-group
-        button.btn.btn-primary#reload(type='button')
-          i.fa.fa-refresh.fa-lg
-          | &nbsp;Reload
-      .btn-group.dropdown
-        a.btn.dropdown-toggle#meta(data-toggle='dropdown')
-          i.fa.fa-gears.fa-lg
-          | &nbsp;Meta
-          span.caret
-        ul.dropdown-menu
-          li#cabletypes
-            a(href=basePath + '/cabletypes/', target='_blank') FRIB approved cable types
-          li#wbs
-            a(href=basePath + '/frib/wbs', target='_blank') FRIB work breakdown structure
-          li#wbs
-            a(href=basePath + '/rea6/wbs', target='_blank') ReA 6 work breakdown structure
-          li
-            a(href=basePath + '/numbering', target='_blank') Cable Number Specification
-      .btn-group
-        button.btn.btn-warning#obsolete(type='button')
-          i.fa.fa-trash.fa-lg
-          | &nbsp;Obsolete
-      .btn-group
-        button.btn.btn-primary#new-request(type='button', data-toggle='tooltip', title='create new request based on cable specification')
-          i.fa.fa-copy.fa-lg
-          | &nbsp;Create requests
-      .btn-group
-        button.btn.btn-primary#bar(type='button')
-          i.fa.fa-bar-chart.fa-lg
-          | &nbsp;Bar chart
-      .btn-group
-        a.btn.btn-info(href=basePath + '/manager/requests', target='_blank')
-          i.fa.fa-briefcase.fa-lg
-          | &nbsp;Manage requests
-      .btn-group
-        a.btn.btn-info(href=basePath + '/main', target='_blank')
-          i.fa.fa-user.fa-lg
-          | &nbsp;User view
-      .btn-group
-        a.btn.btn-info(href=basePath + '/allcables', target='_blank')
-          i.fa.fa-institution.fa-lg
-          | &nbsp;All cables
-      if (roles.indexOf('admin') !== -1)
-        .btn-group
-          a.btn.btn-primary(href=basePath + '/users', target='_blank')
-            i.fa.fa-users.fa-lg
-            | &nbsp;Users
-      .btn-group
-        a.btn.btn-info(href=basePath + '/about', target='_blank')
-          i.fa.fa-info.fa-lg
-          | &nbsp;About
+    .row.m-2
+      .btn-toolbar
+        .btn-group.mr-2
+          button.btn.btn-primary#reload(type='button')
+            i.fa.fa-sync.fa-lg
+            | &nbsp;Reload
+        .btn-group.mr-2.dropdown
+          button.btn.btn-secondary.dropdown-toggle#meta(type='button', data-toggle='dropdown')
+            i.fa.fa-cogs.fa-lg
+            | &nbsp;Meta
+            span.caret
+          ul.dropdown-menu
+            li#cabletypes
+              a.dropdown-item(href=basePath + '/cabletypes/', target='_blank') FRIB approved cable types
+            li#wbs
+              a.dropdown-item(href=basePath + '/frib/wbs', target='_blank') FRIB work breakdown structure
+            li#wbs
+              a.dropdown-item(href=basePath + '/rea6/wbs', target='_blank') ReA 6 work breakdown structure
+            li
+              a.dropdown-item(href=basePath + '/numbering', target='_blank') Cable Number Specification
+        .btn-group.mr-2
+          button.btn.btn-warning#obsolete(type='button')
+            i.fa.fa-trash.fa-lg
+            | &nbsp;Obsolete
+        .btn-group.mr-2
+          button.btn.btn-primary#new-request(type='button', data-toggle='tooltip', title='create new request based on cable specification')
+            i.fa.fa-copy.fa-lg
+            | &nbsp;Create requests
+        .btn-group.mr-2
+          button.btn.btn-primary#bar(type='button')
+            i.fa.fa-chart-bar.fa-lg
+            | &nbsp;Bar Chart
+        .btn-group.mr-2
+          a.btn.btn-info(href=basePath + '/manager/requests', target='_blank')
+            i.fa.fa-briefcase.fa-lg
+            | &nbsp;Manage requests
+        .btn-group.mr-2
+          a.btn.btn-info(href=basePath + '/main', target='_blank')
+            i.fa.fa-user.fa-lg
+            | &nbsp;User view
+        .btn-group.mr-2
+          a.btn.btn-info(href=basePath + '/allcables', target='_blank')
+            i.fa.fa-university.fa-lg
+            | &nbsp;All cables
+        if (roles.indexOf('admin') !== -1)
+          .btn-group.mr-2
+            a.btn.btn-primary(href=basePath + '/users', target='_blank')
+              i.fa.fa-users.fa-lg
+              | &nbsp;Users
+        .btn-group.mr-2
+          a.btn.btn-info(href=basePath + '/about', target='_blank')
+            i.fa.fa-info.fa-lg
+            | &nbsp;About
+    hr
+
     #message
     .modal.hide.fade#modal(tabindex='-1', role='dialog', data-backdrop='static', aria-labelledby='modalLabel', aria-hidden='true')
-      .modal-header
-        h3#modalLabel
-      .modal-body
-      .modal-footer
-    .tabbable.tabs-left#tabs
-      ul.nav.nav-tabs
-        li.active
-          a(href='#procuring', data-toggle='tab') Cables to procure
-        li
-          a(href='#installing', data-toggle='tab') Cables to install
-        li
-          a(href='#installed', data-toggle='tab') Installed Cables
-        li
-          a(href='#obsoleted', data-toggle='tab') Obsoleted Cables
-      .tab-content
-        .tab-pane.active#procuring
+      .modal-dialog
+        .modal-content
+          .modal-header
+            h3#modalLabel
+          .modal-body
+          .modal-footer
+    .row.m-2
+      .nav.flex-column.nav-pills.col-1#v-pills-tabs(role='tablist')
+        a.nav-link.active(href='#procuring', data-toggle='pill', rolle='tab') Cables to Procure
+        a.nav-link(href='#installing', data-toggle='pill', rolle='tab') Cables to Install
+        a.nav-link(href='#installed', data-toggle='pill', rolle='tab') Installed Cables
+        a.nav-link(href='#obsoleted', data-toggle='pill', rolle='tab') Obsoleted Cables
+      .tab-content.col#v-pills-tabContent(style='overflow-y: scroll;')
+        .tab-pane.show.active#procuring
           .btn-toolbar
-            .btn-group
+            .btn-group.mr-2
               button.btn.btn-warning#procuring-edit(type='button')
                 i.fa.fa-edit.fa-lg
                 | &nbsp;
                 span Edit mode
-            .btn-group
-              button.btn.hidden#procuring-order(type='button', value='order')
-                i.fa.fa-check-square-o.fa-lg
-                | &nbsp;Ordered
-            .btn-group
-              button.btn.hidden#procuring-receive(type='button', value='receive')
-                i.fa.fa-check-square-o.fa-lg
-                | &nbsp;Received
-            .btn-group
-              button.btn.hidden#procuring-accept(type='button', value='accept')
-                i.fa.fa-check-square-o.fa-lg
-                | &nbsp;Accepted
-            .btn-group
-              button.btn.btn-primary.hidden#procuring-to-install(type='button', value='install')
-                i.fa.fa-check-square-o.fa-lg
-                | &nbsp;Ready to install
-            .btn-group
+            //- .btn-group.mr-2
+            //-   button.btn#procuring-order(type='button', value='order')
+            //-     i.fa.fa-check-square-o.fa-lg
+            //-     | &nbsp;Ordered
+            //- .btn-group.mr-2
+            //-   button.btn#procuring-receive(type='button', value='receive')
+            //-     i.fa.fa-check-square-o.fa-lg
+            //-     | &nbsp;Received
+            //- .btn-group.mr-2
+            //-   button.btn#procuring-accept(type='button', value='accept')
+            //-     i.fa.fa-check-square-o.fa-lg
+            //-     | &nbsp;Accepted
+            //- .btn-group.mr-2
+            //-   button.btn.btn-primary#procuring-to-install(type='button', value='install')
+            //-     i.fa.fa-check-square-o.fa-lg
+            //-     | &nbsp;Ready to install
+            .btn-group.mr-2
               button.btn.btn-info#procuring-select-all(type='button', data-toggle='tooltip', title='select all the items in the table no matter visiable or not')
                 i.fa.fa-list.fa-lg
-                | &nbsp;Select all
-            .btn-group
+                | &nbsp;Select All
+            .btn-group.mr-2
               button.btn.btn-info#procuring-select-none(type='button')
-                i.fa.fa-square-o.fa-lg
-                | &nbsp;Clear selection
-            .btn-group(data-toggle='buttons-radio')
-              button.btn.btn-info.active#procuring-wrap(type='button') Wrap
-              button.btn.btn-info#procuring-unwrap(type='button') Unwrap
+                i.fa.fa-square.fa-lg
+                | &nbsp;Clear Selection
+            .btn-group.btn-group-toggle.mr-2(data-toggle='buttons')
+              label.btn.btn-info.active Wrap
+                input#procuring-wrap(type='radio', autocomplete='off', checked)
+              label.btn.btn-info Unwrap
+                input#procuring-unwrap(type='radio', autocomplete='off')
           .table-overflow
             table.table.table-bordered.table-hover.table-condensed#procuring-table
         .tab-pane#installing
           .btn-toolbar
-            .btn-group
+            .btn-group.mr-2
               button.btn.btn-info#installing-select-all(type='button', data-toggle='tooltip', title='select all the items in the table no matter visiable or not')
                 i.fa.fa-list.fa-lg
-                | &nbsp;Select all
-            .btn-group
+                | &nbsp;Select All
+            .btn-group.mr-2
               button.btn.btn-info#installing-select-none(type='button')
-                i.fa.fa-square-o.fa-lg
-                | &nbsp;Clear selection
-            .btn-group(data-toggle='buttons-radio')
-              button.btn.btn-info.active#installing-wrap(type='button') Wrap
-              button.btn.btn-info#installing-unwrap(type='button') Unwrap
-          .btn-toolbar
+                i.fa.fa-square.fa-lg
+                | &nbsp;Clear Selection
+            .btn-group.btn-group-toggle.mr-2(data-toggle='buttons')
+              label.btn.btn-info.active Wrap
+                input#installing-wrap(type='radio', autocomplete='off', checked)
+              label.btn.btn-info Unwrap
+                input#installing-unwrap(type='radio', autocomplete='off')
+          .btn-toolbar.mt-2
             //- .btn-group
             //-   button.btn#installing-label(value='label')
             //-     i.fa.fa-check-square-o.fa-lg
@@ -165,66 +171,70 @@ block content
             //-   button.btn#installing-fieldTest(value='fieldTest')
             //-     i.fa.fa-check-square-o.fa-lg
             //-     | &nbsp;Field tested
-            .btn-group
+            .btn-group.mr-2
               button.btn.btn-primary#installing-from-ready-for-term(type='button', value='from-ready-for-term')
-                i.fa.fa-check-square-o.fa-lg
+                i.fa.fa-check-square.fa-lg
                 | &nbsp;From Ready for Termination
-            .btn-group
+            .btn-group.mr-2
               button.btn.btn-primary#installing-from-terminated(type='button', value='from-terminated')
-                i.fa.fa-check-square-o.fa-lg
+                i.fa.fa-check-square.fa-lg
                 | &nbsp;From Terminated
-            .btn-group
+            .btn-group.mr-2
               button.btn.btn-primary#installing-to-ready-for-term(type='button', value='to-ready-for-term')
-                i.fa.fa-check-square-o.fa-lg
+                i.fa.fa-check-square.fa-lg
                 | &nbsp;To Ready for Termination
-            .btn-group
+            .btn-group.mr-2
               button.btn.btn-primary#installing-to-terminated(type='button', value='to-terminated')
-                i.fa.fa-check-square-o.fa-lg
+                i.fa.fa-check-square.fa-lg
                 | &nbsp;To Terminated
-            .btn-group
+            .btn-group.mr-2
               button.btn.btn-primary#installing-installed(type='button', value='installed')
-                i.fa.fa-check-square-o.fa-lg
+                i.fa.fa-check-square.fa-lg
                 | &nbsp;Ready to Use
           .table-overflow
             table.table.table-bordered.table-hover.table-condensed#installing-table
         .tab-pane#installed
           .btn-toolbar
-            .btn-group
+            .btn-group.mr-2
               button.btn.btn-info#installed-select-all(type='button', data-toggle='tooltip', title='select all the items in the table no matter visiable or not')
                 i.fa.fa-list.fa-lg
-                | &nbsp;Select all
-            .btn-group
+                | &nbsp;Select All
+            .btn-group.mr-2
               button.btn.btn-info#installed-select-none(type='button')
-                i.fa.fa-square-o.fa-lg
-                | &nbsp;Clear selection
-            .btn-group(data-toggle='buttons-radio')
-              button.btn.btn-info.active#installed-wrap(type='button') Wrap
-              button.btn.btn-info#installed-unwrap(type='button') Unwrap
+                i.fa.fa-square.fa-lg
+                | &nbsp;Clear Selection
+            .btn-group.btn-group-toggle.mr-2(data-toggle='buttons')
+              label.btn.btn-info.active Wrap
+                input#installed-wrap(type='radio', autocomplete='off', checked)
+              label.btn.btn-info Unwrap
+                input#installed-unwrap(type='radio', autocomplete='off')
           .table-overflow
             table.table.table-bordered.table-hover.table-condensed#installed-table
         .tab-pane#obsoleted
           .btn-toolbar
-            .btn-group(data-toggle='buttons-radio')
-              button.btn.btn-info.active#obsoleted-wrap(type='button') Wrap
-              button.btn.btn-info#obsoleted-unwrap(type='button') Unwrap
+            .btn-group.btn-group-toggle.mr-2(data-toggle='buttons')
+              label.btn.btn-info.active Wrap
+                input#obsoleted-wrap(type='radio', autocomplete='off', checked)
+              label.btn.btn-info Unwrap
+                input#obsoleted-unwrap(type='radio', autocomplete='off')
           .table-overflow
             table.table.table-bordered.table-hover.table-condensed#obsoleted-table
 
 block js
-  script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
-  script(type='text/javascript', src=basePath + '/jquery/jquery-ui-1.10.2.custom.js')
-  script(type='text/javascript', src=basePath + '/datatables/js/jquery.dataTables.js')
-  script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
-  script(type='text/javascript', src=basePath + '/datatables/js/ZeroClipboard.js')
-  script(type='text/javascript', src=basePath + '/datatables/js/TableTools.js')
-  script(type='text/javascript', src=basePath + '/datatables/js/dataTables.bootstrap.js')
-  script(type='text/javascript', src=basePath + '/dependencies/moment.js')
-  script(type='text/javascript', src=basePath + '/dependencies/lodash.js')
-  script(type='text/javascript', src=basePath + '/javascripts/table.js')
-  script(type='text/javascript', src=basePath + '/javascripts/util.js')
-  script(type='text/javascript', src=basePath + '/javascripts/ajaxhelper.js')
-  script(type='text/javascript', src=basePath + '/dependencies/Chart.js')
-  script(type='text/javascript', src=basePath + '/javascripts/barchart.js')
-  script(type='text/javascript', src=basePath + '/javascripts/manage-cables.js')
+  //- script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
+  //- script(type='text/javascript', src=basePath + '/jquery/jquery-ui-1.10.2.custom.js')
+  //- script(type='text/javascript', src=basePath + '/datatables/js/jquery.dataTables.js')
+  //- script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
+  //- script(type='text/javascript', src=basePath + '/datatables/js/ZeroClipboard.js')
+  //- script(type='text/javascript', src=basePath + '/datatables/js/TableTools.js')
+  //- script(type='text/javascript', src=basePath + '/datatables/js/dataTables.bootstrap.js')
+  //- script(type='text/javascript', src=basePath + '/dependencies/moment.js')
+  //- script(type='text/javascript', src=basePath + '/dependencies/lodash.js')
+  //- script(type='text/javascript', src=basePath + '/javascripts/table.js')
+  //- script(type='text/javascript', src=basePath + '/javascripts/util.js')
+  //- script(type='text/javascript', src=basePath + '/javascripts/ajaxhelper.js')
+  //- script(type='text/javascript', src=basePath + '/dependencies/Chart.js')
+  //- script(type='text/javascript', src=basePath + '/javascripts/barchart.js')
+  //- script(type='text/javascript', src=basePath + '/javascripts/manage-cables.js')
 
 
