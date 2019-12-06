@@ -5,10 +5,18 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import '@fortawesome/fontawesome-free/js/all';
 
+import 'popper.js';
+
 import 'bootstrap';
 
+// JSZip is a requirement for the 'Excel' button,
+// but it needs to exist of the global (ie window).
+import * as JSZip from 'jszip';
+(window as any).JSZip = JSZip;
 import 'datatables.net-bs4';
 import 'datatables.net-buttons-bs4';
+import 'datatables.net-buttons/js/buttons.html5.min.js';
+import 'datatables.net-buttons/js/buttons.print.min.js';
 
 import * as $ from 'jquery';
 
@@ -43,6 +51,7 @@ import {
   ownerProvidedColumn,
   rejectedByColumn,
   rejectedOnColumn,
+  sButtons,
   sDom2InoF,
   selectColumn,
   selectEvent,
@@ -425,8 +434,8 @@ $(function () {
       [2, 'desc'],
       [3, 'desc']
     ],
-    //dom: sDom2InoF,
-    //oTableTools: oTableTools,
+    dom: sDom2InoF,
+    buttons: sButtons,
     //sScrollY: '50vh',
     //bScrollCollapse: true
   });
@@ -470,7 +479,7 @@ $(function () {
       [3, 'desc']
     ],
     dom: sDom2InoF,
-    //oTableTools: oTableTools,
+    buttons: sButtons,
     //sScrollY: '50vh',
     //bScrollCollapse: true
   });
@@ -510,7 +519,7 @@ $(function () {
       [3, 'desc']
     ],
     dom: sDom2InoF,
-    //oTableTools: oTableTools,
+    buttons: sButtons,
     //sScrollY: '50vh',
     //bScrollCollapse: true
   });
@@ -549,7 +558,7 @@ $(function () {
       [3, 'desc']
     ],
     dom: sDom2InoF,
-    //oTableTools: oTableTools,
+    buttons: sButtons,
     //sScrollY: '50vh',
     //bScrollCollapse: true
   });
@@ -585,7 +594,7 @@ $(function () {
       [1, 'desc']
     ],
     dom: sDom2InoF,
-    //oTableTools: oTableTools,
+    buttons: sButtons,
     //sScrollY: '50vh',
     //bScrollCollapse: true
   });

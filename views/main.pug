@@ -65,10 +65,10 @@ block content
           .modal-footer
     .row.m-2
       .nav.flex-column.nav-pills.col-1#v-pills-tabs(role='tablist')
-        a.nav-link.active(href='#saved', data-toggle='tab', role='tab') Saved requests
-        a.nav-link(href='#submitted', data-toggle='pill', role='tab') Submitted requests
-        a.nav-link(href='#rejected', data-toggle='pill', role='tab') Rejected requests
-        a.nav-link(href='#approved', data-toggle='pill', role='tab') Approved requests
+        a.nav-link.active(href='#saved', data-toggle='pill', role='tab') Saved Requests
+        a.nav-link(href='#submitted', data-toggle='pill', role='tab') Submitted Requests
+        a.nav-link(href='#rejected', data-toggle='pill', role='tab') Rejected Requests
+        a.nav-link(href='#approved', data-toggle='pill', role='tab') Approved Requests
         a.nav-link(href='#cables', data-toggle='pill', role='tab') Cables
       .tab-content.col#v-pills-tabContent(style='overflow-y: scroll;')
         .tab-pane.show.active#saved(role='tabpanel')
@@ -89,9 +89,11 @@ block content
               button.btn.btn-info#saved-select-none(type='button')
                 i.fa.fa-square.fa-lg
                 | &nbsp;Clear Selection
-            .btn-group.mr-2(data-toggle='buttons-radio')
-              button.btn.btn-info.active#saved-wrap(type='button') Wrap
-              button.btn.btn-info#saved-unwrap(type='button') Unwrap
+            .btn-group.btn-group-toggle.mr-2(data-toggle='buttons')
+              label.btn.btn-info.active Wrap
+                input#saved-wrap(type='radio', autocomplete='off', checked)
+              label.btn.btn-info Unwrap
+                input#saved-unwrap(type='radio', autocomplete='off')
           .table-scroll
             table.table.table-bordered.table-hover#saved-table
         .tab-pane#submitted
@@ -108,9 +110,11 @@ block content
               button.btn.btn-info#submitted-select-none(type='button')
                 i.fa.fa-square.fa-lg
                 | &nbsp;Clear Selection
-            .btn-group.mr-2(data-toggle='buttons-radio')
-              button.btn.btn-info.active#submitted-wrap(type='button') Wrap
-              button.btn.btn-info#submitted-unwrap(type='button') Unwrap
+            .btn-group.btn-group-toggle.mr-2(data-toggle='buttons')
+              label.btn.btn-info.active Wrap
+                input#submitted-wrap(type='radio', autocomplete='off', checked)
+              label.btn.btn-info Unwrap
+                input#submitted-unwrap(type='radio', autocomplete='off')
           .table-scroll
             table.table.table-bordered.table-hover#submitted-table
 
@@ -124,9 +128,11 @@ block content
               button.btn.btn-info#approved-select-none(type='button')
                 i.fa.fa-square.fa-lg
                 | &nbsp;Clear Selection
-            .btn-group.mr-2(data-toggle='buttons-radio')
-              button.btn.btn-info.active#approved-wrap(type='button') Wrap
-              button.btn.btn-info#approved-unwrap(type='button') Unwrap
+            .btn-group.btn-group-toggle.mr-2(data-toggle='buttons')
+              label.btn.btn-info.active Wrap
+                input#approved-wrap(type='radio', autocomplete='off', checked)
+              label.btn.btn-info Unwrap
+                input#approved-unwrap(type='radio', autocomplete='off')
           .table-scroll
             table.table.table-bordered.table-hover#approved-table
         .tab-pane#rejected
@@ -143,17 +149,21 @@ block content
               button.btn.btn-info#rejected-select-none(type='button')
                 i.fa.fa-square.fa-lg
                 | &nbsp;Clear Selection
-            .btn-group.mr-2(data-toggle='buttons-radio')
-              button.btn.btn-info.active#rejected-wrap(type='button') Wrap
-              button.btn.btn-info#rejected-unwrap(type='button') Unwrap
+            .btn-group.btn-group-toggle.mr-2(data-toggle='buttons')
+              label.btn.btn-info.active Wrap
+                input#rejected-wrap(type='radio', autocomplete='off', checked)
+              label.btn.btn-info Unwrap
+                input#rejected-unwrap(type='radio', autocomplete='off')
           .table-scroll
             table.table.table-bordered.table-hover#rejected-table
 
         .tab-pane#cables
           .btn-toolbar
-            .btn-group(data-toggle='buttons-radio')
-              button.btn.btn-info.active#cables-wrap(type='button') Wrap
-              button.btn.btn-info#cables-unwrap(type='button') Unwrap
+            .btn-group.btn-group-toggle.mr-2(data-toggle='buttons')
+              label.btn.btn-info.active Wrap
+                input#cables-wrap(type='radio', autocomplete='off', checked)
+              label.btn.btn-info Unwrap
+                input#cables-unwrap(type='radio', autocomplete='off')
           .table-scroll
             table.table.table-bordered.table-hover#cables-table
 

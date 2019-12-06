@@ -173,17 +173,17 @@ function createNullArray(size) {
 
 
 export function fnWrap(oTableLocal) {
-  $(oTableLocal.fnSettings().aoData).each(function () {
-    $(this.nTr).removeClass('nowrap');
+  $(oTableLocal.cells().nodes()).each((idx, cell) => {
+    $(cell).removeClass('nowrap');
   });
-  oTableLocal.columns().adjust();
+  oTableLocal.columns.adjust().draw();
 }
 
 export function fnUnwrap(oTableLocal) {
-  $(oTableLocal.fnSettings().aoData).each(function () {
-    $(this.nTr).addClass('nowrap');
+  $(oTableLocal.cells().nodes()).each((idx, cell) => {
+    $(cell).addClass('nowrap');
   });
-  oTableLocal.columns().adjust();
+  oTableLocal.columns.adjust().draw();
 }
 
 
@@ -431,7 +431,7 @@ export const ownerProvidedColumn = {
 }
 
 export const basicColumns = [{
-  sTitle: 'project',
+  sTitle: 'Project',
   sDefaultContent: '',
   mData: 'basic.project',
   sClass: 'editable',
@@ -781,23 +781,21 @@ var wbsColumn = {
 var lastVisitedOnColumn = dateColumn('Last visited', 'lastVisitedOn');
 
 
-/*table tools*/
+/*table buttons*/
 
-var oTableTools = {
-  "sSwfPath": basePath + "/datatables/swf/copy_csv_xls_pdf.swf",
-  "aButtons": [
-    "copy",
-    "print", {
-      "sExtends": "collection",
-      "sButtonText": 'Save <span class="caret" />',
-      "aButtons": ["csv", "xls", "pdf"]
-    }
-  ]
-};
+export const sButtons = [
+  'copy', 'print', 'csv', 'excel',
+  // Dropdown menu does not appear for unknown reason!
+  // {
+  //   extend: 'collection',
+  //   text: 'Save',
+  //   buttons: [ 'csv', 'excel' ],
+  // },
+];
 
 var sDom = "<'row-fluid'<'span6'<'control-group'T>>><'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>";
 var sDom2i = "<'row-fluid'<'span6'<'control-group'T>>><'row-fluid'<'span3'l><'span3'i><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>";
-export const sDom2InoF = "<'row-fluid'<'span6'<'control-group'T>>><'row-fluid'<'span4'l><'span4'<'text-center'r>><'span4'<'text-right'i>>>t<'row-fluid'<'span6'i><'span6'p>>";
+export const sDom2InoF = '<"d-flex"<"form-inline mr-auto p-2"<l>><"p-2"B>>rt<"d-flex"<"mr-auto p-2"i><"p-2"p>>';
 var sDom2i1p = "<'row-fluid'<'span6'<'control-group'T>>><'row-fluid'<'span3'l><'span3'i><'span3'r><'span3'f>>t<'row-fluid'<'span6'i><'span6'p>>";
 var sDomNoTools = "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>";
 var sDomNoLength = "<'row-fluid'<'span6'<'control-group'T>><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>";
