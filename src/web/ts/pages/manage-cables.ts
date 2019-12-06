@@ -720,10 +720,10 @@ $(function () {
   });
 
   $('#reload').click(function () {
-    procuringTable.fnReloadAjax();
-    installingTable.fnReloadAjax();
-    installedTable.fnReloadAjax();
-    obsoletedTable.fnReloadAjax();
+    procuringTable.ajax.reload();
+    installingTable.ajax.reload();
+    installedTable.ajax.reload();
+    obsoletedTable.ajax.reload();
   });
 
   $('#bar').click(function () {
