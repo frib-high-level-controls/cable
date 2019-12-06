@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@jcu/passport-cas": "^0.1.2",
+    "binder": "^1.0.2",
     "body-parser": "^1.19.0",
     "cas.js": "^0.1.0",
     "commander": "^4.0.1",
@@ -22,6 +23,7 @@
     "express-session": "^1.17.0",
     "express-validator": "^6.3.0",
     "http-status-codes": "^1.4.0",
+    "jquery-validation": "^1.19.1",
     "ldapjs": "^1.0.2",
     "mongoose": "^5.7.12",
     "morgan": "^1.7.0",
@@ -47,6 +49,7 @@
     "@types/express-session": "^1.15.16",
     "@types/http-status-codes": "^1.0.29",
     "@types/jquery": "^3.3.31",
+    "@types/jquery.validation": "^1.16.6",
     "@types/jqueryui": "^1.12.9",
     "@types/jszip": "^3.1.6",
     "@types/ldapjs": "^1.0.4",
