@@ -218,7 +218,6 @@ function sendRequest(data, initModel, binder) {
     var usernames = new Bloodhound({
       datumTokenizer: Bloodhound.tokenizers.obj.whitespace('displayName'),
       queryTokenizer: Bloodhound.tokenizers.whitespace,
-      limit: 20,
       prefetch: {
         url: basePath + '/adusernames'
       }
@@ -227,19 +226,20 @@ function sendRequest(data, initModel, binder) {
     usernames.initialize();
   
     $('#engineer').typeahead({
-      minLength: 1,
-      highlight: true,
-      hint: true
-    },{
-      name: 'usernames',
-      displayKey: 'displayName',
-      source: usernames.ttAdapter()
-    });
-  
-    var cabletypes = new Bloodhound({
+        minLength: 1,
+        highlight: true,
+        hint: true
+      },
+      {
+        name: 'usernames',
+        display: 'displayName',
+        source: usernames.ttAdapter(),
+        limit: 20,
+      });
+
+    const cabletypes = new Bloodhound({
       datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
       queryTokenizer: Bloodhound.tokenizers.whitespace,
-      limit: 20,
       prefetch: {
         url: basePath + '/cabletypes/json'
       }
@@ -253,8 +253,9 @@ function sendRequest(data, initModel, binder) {
       hint: true
     }, {
       name: 'cabletypes',
-      displayKey: 'name',
-      source: cabletypes.ttAdapter()
+      display: 'name',
+      source: cabletypes.ttAdapter(),
+      limit: 20,
     });
   
     /*$('#penetration').autocomplete({

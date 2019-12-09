@@ -7,10 +7,8 @@ block head
   else
     title FRIB Cable :: new request
   meta(name='viewport', content='width=device-width, initial-scale=1.0')
-  //- link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
-  //- link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
-
+  script(type='text/javascript' src=basePath + '/dist/manage-cables.js')
 block content
   script.
     var sysSub = !{JSON.stringify(sysSub)};

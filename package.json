@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@jcu/passport-cas": "^0.1.2",
+    "@types/typeahead": "^0.11.32",
     "binder": "^1.0.2",
     "body-parser": "^1.19.0",
     "cas.js": "^0.1.0",
@@ -33,6 +34,7 @@
     "rc": "^1.2.1",
     "request": "^2.81.0",
     "serve-favicon": "^2.5.0",
+    "typeahead": "^0.2.2",
     "uri-js": "^4.2.2",
     "validator": "^12.1.0"
   },
@@ -65,7 +67,7 @@
     "@types/supertest": "^2.0.8",
     "@types/tmp": "^0.1.0",
     "@types/validator": "^12.0.1",
-    "bootstrap": "^4.4.0",
+    "bootstrap": "^4.4.1",
     "chai": "^4.0.2",
     "css-loader": "^3.2.0",
     "datatables.net-bs4": "^1.10.20",
