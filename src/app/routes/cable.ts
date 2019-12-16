@@ -1,3 +1,4 @@
+import * as compression from 'compression';
 import * as express from 'express';
 import * as mongoose from 'mongoose';
 
@@ -756,7 +757,7 @@ export function init(app: express.Application) {
 
 
   // get all the cables
-  app.get('/allcables/json', auth.ensureAuthWithToken, (req, res) => {
+  app.get('/allcables/json', auth.ensureAuthWithToken, compression(), (req, res) => {
     const low = 100;
     const up = 499;
     Cable.where('status').gte(low).lte(up).lean().exec((err, docs: ICable[]) => {
@@ -826,7 +827,7 @@ export function init(app: express.Application) {
 
   // status: 1 for procuring, 2 for installing, 3 for installed
 
-  app.get('/cables/statuses/:s/json', auth.ensureAuthenticated, auth.verifyRoles(['manager', 'admin']), (req, res) => {
+  app.get('/cables/statuses/:s/json', auth.ensureAuthenticated, compression(), auth.verifyRoles(['manager', 'admin']), (req, res) => {
     if (!req.session) {
       res.status(500).send('session missing');
       return;
