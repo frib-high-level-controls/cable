@@ -2,12 +2,16 @@
  * Manage cables page for managing cable requests
  */
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'jquery-ui/themes/base/all.css';
 
 import '@fortawesome/fontawesome-free/js/all';
 
 import 'popper.js';
 
 import 'bootstrap';
+
+import 'jquery-ui/ui/widgets/autocomplete';
+import 'jquery-ui/ui/widgets/datepicker';
 
 // JSZip is a requirement for the 'Excel' button,
 // but it needs to exist of the global (ie window).
@@ -23,6 +27,11 @@ import * as $ from 'jquery';
 import * as moment from 'moment';
 
 import * as dtutil from '../shared/datatablesutil';
+
+import {
+  json2List,
+  nameAuto,
+} from '../lib/util';
 
 import {
   ajax401,
@@ -46,6 +55,7 @@ import {
   fnSetDeselect,
   fnUnwrap,
   fnWrap,
+  formatCableStatus,
   fromColumns,
   highlightedEvent,
   lengthColumn,
@@ -92,13 +102,13 @@ function updateTdFromModal(cableNumber, property, parseType, oldValue, newValue,
   }
   if (parseType && parseType === 'boolean') {
     if (['true', 'false'].indexOf(newValue.trim()) === -1) {
-      $('#modal .modal-body').prepend('<div class="text-error">Please input true or false</div>');
+      $('#modal .modal-body').prepend('<div class="text-danger">Please input true or false</div>');
       $('#update').prop('disabled', false);
       return;
     }
     newValue = newValue.trim() === 'true';
     if (newValue === oldValue) {
-      $('#modal .modal-body').prepend('<div class="text-error">The new value is the same as the old one!</div>');
+      $('#modal .modal-body').prepend('<div class="text-danger">The new value is the same as the old one!</div>');
       $('#update').prop('disabled', false);
       return;
     }
@@ -106,20 +116,20 @@ function updateTdFromModal(cableNumber, property, parseType, oldValue, newValue,
     if (newValue !== '') {
       newValue = parseFloat(newValue);
       if (Number.isNaN(newValue)) {
-        $('#modal .modal-body').prepend('<div class="text-error">Please input a number</div>');
+        $('#modal .modal-body').prepend('<div class="text-danger">Please input a number</div>');
         $('#update').prop('disabled', false);
         return
       }
     }
     if (sOldValue === newValue) {
-      $('#modal .modal-body').prepend('<div class="text-error">The new value is the same as the old one!</div>');
+      $('#modal .modal-body').prepend('<div class="text-danger">The new value is the same as the old one!</div>');
       $('#update').prop('disabled', false);
       return;
     }
   } else {
     newValue = newValue.trim();
     if (sOldValue.trim() === newValue) {
-      $('#modal .modal-body').prepend('<div class="text-error">The new value is the same as the old one!</div>');
+      $('#modal .modal-body').prepend('<div class="text-danger">The new value is the same as the old one!</div>');
       $('#update').prop('disabled', false);
       return;
     }
@@ -146,11 +156,11 @@ function updateTdFromModal(cableNumber, property, parseType, oldValue, newValue,
     contentType: 'application/json',
     data: JSON.stringify(data),
     success: function (json) {
-      oTable.fnUpdate(json, oTable.fnGetPosition(td)[0]);
+      oTable.row(td).data(json).draw('full-hold');
       $('#modal .modal-body').html('<div class="text-success">The update succeded!</div>');
     },
     error: function (jqXHR) {
-      $('#modal .modal-body').prepend('<div class="text-error">' + jqXHR.responseText + '</div>');
+      $('#modal .modal-body').prepend('<div class="text-danger">' + jqXHR.responseText + '</div>');
     }
   });
 }
@@ -165,15 +175,14 @@ function cableDetails(cableData) {
   return details;
 }
 
-function updateTd(td, oTable) {
-  var cableData = oTable.fnGetData(td.parentNode);
+function updateTd(td, oTable, columns: dtutil.ColumnSettings[]) {
+  var cableData = oTable.row(td.parentNode).data();
   var cableNumber = cableData.number;
-  var aoColumns = oTable.fnSettings().aoColumns;
-  var columnDef = aoColumns[oTable.fnGetPosition(td)[2]];
+  var columnDef = columns[oTable.cell(td).index().column] as any;
   var property = columnDef.mData;
   var parseType = columnDef.sParseType;
-  var title = aoColumns[oTable.fnGetPosition(td)[2]].sTitle;
-  var oldValue = oTable.fnGetData(td);
+  var title = columnDef.sTitle;
+  var oldValue = oTable.cell(td).data();
   var renderedValue = oldValue;
   if (parseType && parseType === 'array') {
     renderedValue = oldValue.join();
@@ -184,7 +193,7 @@ function updateTd(td, oTable) {
   $('#modal .modal-body').append('<div>From <b>' + renderedValue + '</b></div>');
   $('#modal .modal-body').append('<div>To <input id="new-value" type="text"></div>');
   $('#modal .modal-body').append(cableDetails(cableData));
-  $('#modal .modal-footer').html('<button id="update" class="btn btn-primary">Confirm</button><button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+  $('#modal .modal-footer').html('<button id="update" type="button" class="btn btn-primary">Confirm</button><button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
   $('#modal').modal('show');
   $('#update').click(function () {
     var newValue = $('#new-value').val();
@@ -210,18 +219,18 @@ function actionFromModal(rows, action, data, activeTable, destinationTable) {
       fnSetDeselect(rows[index], 'row-selected', 'select-row');
       switch (action) {
       case 'obsolete':
-        activeTable.fnDeleteRow(rows[index]);
-        destinationTable.fnAddData(cable);
+        activeTable.row(rows[index]).remove().draw('full-hold');
+        destinationTable.row.add(cable).draw('full-hold');
         break;
       case 'To terminated':
       case 'From terminated':
       case 'To ready for termination':
       case 'From ready for termination':
-        activeTable.fnUpdate(cable, rows[index]);
+        activeTable.row(rows[index]).data(cable).draw('full-hold');
         break;
       case 'Ready to use':
-        activeTable.fnDeleteRow(rows[index]);
-        destinationTable.fnAddData(cable);
+        activeTable.row(rows[index]).remove().draw('full-hold');
+        destinationTable.row.add(cable).draw('full-hold');
         break;
       default:
         // do nothing
@@ -278,11 +287,11 @@ function batchAction(oTable, action, data, obsoletedTable) {
 
     selected.forEach(function (row) {
       rows.push(row);
-      var data = oTable.fnGetData(row);
+      var data = oTable.row(row).data();
       cables.push(data);
       $('#modal .modal-body').append('<div class="cable" id="' + data.number + '">' + data.number + '||' + formatCableStatus(data.status) + '||' + moment(data.approvedOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.submittedBy + '||' + data.basic.project + '</div>');
     });
-    $('#modal .modal-footer').html('<button id="action" class="btn btn-primary">Confirm</button><button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button id="action" type="button" class="btn btn-primary">Confirm</button><button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
 
     $('#modal').modal('show');
     $('#action').click(function () {
@@ -296,7 +305,7 @@ function batchAction(oTable, action, data, obsoletedTable) {
   } else {
     $('#modalLabel').html('Alert');
     $('#modal .modal-body').html('No request has been selected!');
-    $('#modal .modal-footer').html('<button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
   }
 }
@@ -312,15 +321,16 @@ function batchActionWithNameAndDate(oTable, action, data, destinationTable) {
     $('#modal .modal-body').append('<form class="form-horizontal" id="modalform"><div class="control-group"><label class="control-label">Staff name</label><div class="controls ui-front"><input id="modal-name" type="text" class="input-small" placeholder="Last, First"></div></div><div class="control-group"><label class="control-label">Date</label><div class="controls"><input id="modal-date" type="text" class="input-small" placeholder="date"></div></div></form>');
     selected.forEach(function (row) {
       rows.push(row);
-      var data = oTable.fnGetData(row);
+      const data = oTable.row(row).data();
       cables.push(row);
       $('#modal .modal-body').append('<div class="cable" id="' + data.number + '">' + data.number + '||' + formatCableStatus(data.status) + '||' + moment(data.approvedOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.submittedBy + '||' + data.basic.project + '</div>');
     });
-    $('#modal .modal-footer').html('<button id="action" class="btn btn-primary">Confirm</button><button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button id="action" type="button" class="btn btn-primary">Confirm</button><button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal-name').autocomplete(nameAuto('#modal-name', {}));
     $('#modal-date').datepicker({ dateFormat: 'yy-mm-dd' });
     $('#modal').modal('show');
     $('#action').click(function (e) {
+      $('#action').prop('disabled', true);
       if( !data ) {
         data = { action: action };
       }
@@ -331,7 +341,7 @@ function batchActionWithNameAndDate(oTable, action, data, destinationTable) {
   } else {
     $('#modalLabel').html('Alert');
     $('#modal .modal-body').html('No request has been selected!');
-    $('#modal .modal-footer').html('<button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button data-dismiss="modal" type="button" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
   }
 };
@@ -522,7 +532,7 @@ $(function () {
   $('#procuring-table').on('dblclick', 'td.editable', function (e) {
     e.preventDefault();
     if (managerGlobal.procuring_edit) {
-      updateTd(this, procuringTable);
+      updateTd(this, procuringTable, procuringAoColumns);
     }
   });
   /*  $('#procuring-order, #procuring-receive, #procuring-accept').click(function (e) {

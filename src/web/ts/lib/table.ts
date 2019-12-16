@@ -95,7 +95,7 @@ function formatDateShort(date) {
   return date ? moment(date).format('YYYY-MM-DD') : '';
 }
 
-function formatCableStatus(s) {
+export function formatCableStatus(s) {
   var status = {
     '100': 'approved',
     '101': 'ordered',
