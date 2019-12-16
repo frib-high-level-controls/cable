@@ -268,7 +268,7 @@ function fnAddFilterHead(sTable, aoColumns) {
   $(sTable).append($('<thead class="filter">').append(tr));
 }
 
-export function fnAddFilterHeadScroll(sTable, aoColumns) {
+function fnAddFilterHeadScroll(sTable, aoColumns) {
   var tr = $('<tr role="row">');
   aoColumns.forEach(function (c) {
     if (c.bFilter) {

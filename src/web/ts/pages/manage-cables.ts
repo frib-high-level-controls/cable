@@ -22,6 +22,8 @@ import * as $ from 'jquery';
 
 import * as moment from 'moment';
 
+import * as dtutil from '../shared/datatablesutil';
+
 import {
   ajax401,
   disableAjaxCache,
@@ -38,8 +40,6 @@ import {
   detailsLinkColumn,
   editLinkColumn,
   filterEvent,
-  fnAddFilterFoot,
-  fnAddFilterHeadScroll,
   fnDeselect,
   fnGetSelected,
   fnSelectAll,
@@ -481,7 +481,7 @@ $(function () {
       }
     },
   });
-  fnAddFilterHeadScroll('#procuring-table', procuringAoColumns);
+  dtutil.addFilterHead('#procuring-table', procuringAoColumns);
 
   $('#procuring-table').on('init.dt', () => {
     console.log('Procuring table initialized: ' + String((Date.now() - readyTime) / 1000) + 's' );
@@ -565,7 +565,7 @@ $(function () {
       }
     },
   });
-  fnAddFilterHeadScroll('#installing-table', installingAoColumns);
+  dtutil.addFilterHead('#installing-table', installingAoColumns);
 
   $('#installing-table').on('init.dt', () => {
     console.log('Installing table initialized: ' + String((Date.now() - readyTime) / 1000) + 's' );
@@ -672,7 +672,7 @@ $(function () {
       }
     },
   });
-  fnAddFilterHeadScroll('#installed-table', installedAoColumns);
+  dtutil.addFilterHead('#installed-table', installedAoColumns);
 
   $('#installed-table').on('init.dt', () => {
     console.log('Installed table initialized: ' + String((Date.now() - readyTime) / 1000) + 's' );
@@ -727,7 +727,7 @@ $(function () {
       }
     },
   });
-  fnAddFilterHeadScroll('#obsoleted-table', obsoletedAoColumns);
+  dtutil.addFilterHead('#obsoleted-table', obsoletedAoColumns);
 
   $('#obsoleted-table').on('init.dt', () => {
     console.log('Obsoleted table initialized: ' + String((Date.now() - readyTime) / 1000) + 's' );
