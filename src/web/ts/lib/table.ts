@@ -173,17 +173,15 @@ function createNullArray(size) {
 
 
 export function fnWrap(oTableLocal) {
-  $(oTableLocal.cells().nodes()).each((idx, cell) => {
-    $(cell).removeClass('nowrap');
+  $(oTableLocal.rows().nodes()).each((idx, row) => {
+    $(row).removeClass('nowrap');
   });
-  oTableLocal.columns.adjust().draw();
 }
 
 export function fnUnwrap(oTableLocal) {
-  $(oTableLocal.cells().nodes()).each((idx, cell) => {
+  $(oTableLocal.rows().nodes()).each((idx, cell) => {
     $(cell).addClass('nowrap');
   });
-  oTableLocal.columns.adjust().draw();
 }
 
 

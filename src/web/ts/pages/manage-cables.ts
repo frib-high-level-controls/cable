@@ -443,6 +443,8 @@ $(function () {
   ajax401('');
   disableAjaxCache();
 
+  const readyTime = Date.now();
+
   var procuringTable;
   var installingTable;
   var installedTable;
@@ -450,12 +452,14 @@ $(function () {
   /*procuring tab starts*/
 
   var procuringAoColumns = ([selectColumn, numberColumn, requestNumberColumn, statusColumn, versionColumn, updatedOnLongColumn, approvedOnLongColumn, approvedByColumn, submittedByColumn] as Array<any>).concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  let procuringTableWrapped = true;
+
   procuringTable = $('#procuring-table').DataTable({
     ajax: {
       url: basePath + '/cables/statuses/1/json',
       dataSrc: '',
     },
-    autoWidth: false,
+    autoWidth: true,
     processing: true,
     language: {
       loadingRecords: 'Please wait - loading data from the server ...',
@@ -468,16 +472,28 @@ $(function () {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    scrollY: '50vh',
-    scrollCollapse: true,
+    // scrollY: '100%',
+    // scrollCollapse: true,
+    deferRender: true,
+    createdRow(row) {
+      if (!procuringTableWrapped) {
+        $(row).addClass('nowrap');
+      }
+    },
   });
   fnAddFilterHeadScroll('#procuring-table', procuringAoColumns);
 
+  $('#procuring-table').on('init.dt', () => {
+    console.log('Procuring table initialized: ' + String((Date.now() - readyTime) / 1000) + 's' );
+  });
+
   $('#procuring-wrap').click(function () {
+    procuringTableWrapped = true;
     fnWrap(procuringTable);
   });
 
   $('#procuring-unwrap').click(function () {
+    procuringTableWrapped = false;
     fnUnwrap(procuringTable);
   });
 
@@ -521,6 +537,8 @@ $(function () {
 
   /*installing tab starts*/
   var installingAoColumns = ([selectColumn, numberColumn, statusColumn, versionColumn, updatedOnLongColumn, submittedByColumn, requiredColumn] as Array<any>).concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  let installingTableWrapped = true;
+
   installingTable = $('#installing-table').DataTable({
     ajax: {
       url: basePath + '/cables/statuses/2/json',
@@ -538,16 +556,28 @@ $(function () {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    scrollY: '50vh',
-    scrollCollapse: true,
+    // scrollY: '50vh',
+    // scrollCollapse: true,
+    deferRender: true,
+    createdRow(row) {
+      if (!installingTableWrapped) {
+        $(row).addClass('nowrap');
+      }
+    },
   });
   fnAddFilterHeadScroll('#installing-table', installingAoColumns);
 
+  $('#installing-table').on('init.dt', () => {
+    console.log('Installing table initialized: ' + String((Date.now() - readyTime) / 1000) + 's' );
+  });
+
   $('#installing-wrap').click(function () {
+    installingTableWrapped = true;
     fnWrap(installingTable);
   });
 
   $('#installing-unwrap').click(function () {
+    installingTableWrapped = false;
     fnUnwrap(installingTable);
   });
 
@@ -614,6 +644,8 @@ $(function () {
 
   /*installed tab starts*/
   var installedAoColumns = ([selectColumn, numberColumn, statusColumn, versionColumn, updatedOnLongColumn, submittedByColumn] as Array<any>).concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  let installedTableWrapped = true;
+
   installedTable = $('#installed-table').DataTable({
     ajax: {
       url: basePath + '/cables/statuses/3/json',
@@ -631,17 +663,28 @@ $(function () {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    scrollY: '50vh',
-    scrollCollapse: true
+    // scrollY: '50vh',
+    // scrollCollapse: true
+    deferRender: true,
+    createdRow(row) {
+      if (!installedTableWrapped) {
+        $(row).addClass('nowrap');
+      }
+    },
   });
   fnAddFilterHeadScroll('#installed-table', installedAoColumns);
 
+  $('#installed-table').on('init.dt', () => {
+    console.log('Installed table initialized: ' + String((Date.now() - readyTime) / 1000) + 's' );
+  });
 
   $('#installed-wrap').click(function () {
+    installedTableWrapped = true;
     fnWrap(installedTable);
   });
 
   $('#installed-unwrap').click(function () {
+    installedTableWrapped = false;
     fnUnwrap(installedTable);
   });
 
@@ -656,6 +699,8 @@ $(function () {
 
   /*obsoleted tab starts*/
   var obsoletedAoColumns = ([selectColumn, numberColumn, requestNumberColumn, statusColumn, versionColumn, obsoletedOnLongColumn, obsoletedByColumn, submittedByColumn] as Array<any>).concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  let obsoletedTableWrapped = true;
+
   obsoletedTable = $('#obsoleted-table').DataTable({
     ajax: {
       url: basePath + '/cables/statuses/5/json',
@@ -673,16 +718,28 @@ $(function () {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    scrollY: '50vh',
-    scrollCollapse: true,
+    // scrollY: '50vh',
+    // scrollCollapse: true,
+    deferRender: true,
+    createdRow(row) {
+      if (!obsoletedTableWrapped) {
+        $(row).addClass('nowrap');
+      }
+    },
   });
   fnAddFilterHeadScroll('#obsoleted-table', obsoletedAoColumns);
 
+  $('#obsoleted-table').on('init.dt', () => {
+    console.log('Obsoleted table initialized: ' + String((Date.now() - readyTime) / 1000) + 's' );
+  });
+
   $('#obsoleted-wrap').click(function () {
+    obsoletedTableWrapped = true;
     fnWrap(obsoletedTable);
   });
 
   $('#obsoleted-unwrap').click(function () {
+    obsoletedTableWrapped = false;
     fnUnwrap(obsoletedTable);
   });
 
