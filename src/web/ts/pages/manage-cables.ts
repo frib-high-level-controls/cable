@@ -1,5 +1,5 @@
-/*
- * Manage cables page for managing cable requests
+/**
+ * Manage cables page for managing cables
  */
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'jquery-ui/themes/base/all.css';
