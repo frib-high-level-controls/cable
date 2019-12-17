@@ -7,6 +7,7 @@ module.exports = {
   mode: 'development',
   entry: {
     main: './src/web/ts/pages/main.ts',
+    'all-cables': './src/web/ts/pages/all-cables.ts',
     'manage-cables': './src/web/ts/pages/manage-cables.ts',
     'manage-requests': './src/web/ts/pages/manage-requests.ts',
     'request': './src/web/ts/pages/request.ts'
