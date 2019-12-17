@@ -22,6 +22,8 @@ import * as $ from 'jquery';
 
 import * as moment from 'moment';
 
+import * as dtutil from '../shared/datatablesutil';
+
 import {
   ajax401,
   disableAjaxCache,
@@ -424,8 +426,8 @@ $(function () {
   /*saved tab starts*/
   // add footer first
   var savedAoColumns = ([selectColumn, editLinkColumn, createdOnColumn, updatedOnColumn] as Array<any>).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  let savedTableWrapped = true;
 
-  fnAddFilterFoot('#saved-table', savedAoColumns);
   savedTable = $('#saved-table').DataTable({
     data: [],
     autoWidth: false,
@@ -436,15 +438,24 @@ $(function () {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    scrollY: '50vh',
-    scrollCollapse: true,
+    // scrollY: '50vh',
+    // scrollCollapse: true,
+    deferRender: true,
+    createdRow(row) {
+      if (!savedTableWrapped) {
+        $(row).addClass('nowrap');
+      }
+    },
   });
+  dtutil.addFilterHead('#saved-table', savedAoColumns);
 
   $('#saved-wrap').click(function () {
+    savedTableWrapped = true;
     fnWrap(savedTable);
   });
 
   $('#saved-unwrap').click(function () {
+    savedTableWrapped = false;
     fnUnwrap(savedTable);
   });
 
@@ -468,7 +479,7 @@ $(function () {
 
   /*submitted tab starts*/
   var submittedAoColumns = ([selectColumn, detailsLinkColumn, submittedOnColumn, updatedOnColumn] as Array<any>).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
-  fnAddFilterFoot('#submitted-table', submittedAoColumns);
+  let submittedTableWrapped = true;
 
   submittedTable = $('#submitted-table').DataTable({
     data: [],
@@ -480,15 +491,24 @@ $(function () {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    scrollY: '50vh',
-    scrollCollapse: true,
+    // scrollY: '50vh',
+    // scrollCollapse: true,
+    deferRender: true,
+    createdRow(row) {
+      if (!submittedTableWrapped) {
+        $(row).addClass('nowrap');
+      }
+    },
   });
+  dtutil.addFilterHead('#submitted-table', submittedAoColumns);
 
   $('#submitted-wrap').click(function () {
+    submittedTableWrapped = true;
     fnWrap(submittedTable);
   });
 
   $('#submitted-unwrap').click(function () {
+    submittedTableWrapped = false;
     fnUnwrap(submittedTable);
   });
 
@@ -509,7 +529,8 @@ $(function () {
   /*rejected tab starts*/
 
   var rejectedAoColumns = ([selectColumn, detailsLinkColumn, rejectedOnColumn, submittedOnColumn, rejectedByColumn] as Array<any>).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
-  fnAddFilterFoot('#rejected-table', rejectedAoColumns);
+  let rejectedTableWrapped = true;
+
   rejectedTable = $('#rejected-table').DataTable({
     data: [],
     autoWidth: false,
@@ -520,15 +541,24 @@ $(function () {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    scrollY: '50vh',
-    scrollCollapse: true,
+    // scrollY: '50vh',
+    // scrollCollapse: true,
+    deferRender: true,
+    createdRow(row) {
+      if (!rejectedTableWrapped) {
+        $(row).addClass('nowrap');
+      }
+    },
   });
+  dtutil.addFilterHead('#rejected-table', rejectedAoColumns);
 
   $('#rejected-wrap').click(function () {
+    rejectedTableWrapped = true;
     fnWrap(rejectedTable);
   });
 
   $('#rejected-unwrap').click(function () {
+    rejectedTableWrapped = false;
     fnUnwrap(rejectedTable);
   });
 
@@ -548,7 +578,8 @@ $(function () {
 
   /*approved tab starts*/
   var approvedAoColumns = ([selectColumn, detailsLinkColumn, approvedOnColumn, approvedByColumn, submittedOnColumn] as Array<any>).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
-  fnAddFilterFoot('#approved-table', approvedAoColumns);
+  let approvedTableWrapped = true;
+
   approvedTable = $('#approved-table').DataTable({
     data: [],
     autoWidth: false,
@@ -559,9 +590,16 @@ $(function () {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    scrollY: '50vh',
-    scrollCollapse: true,
+    // scrollY: '50vh',
+    // scrollCollapse: true,
+    deferRender: true,
+    createdRow(row) {
+      if (!approvedTableWrapped) {
+        $(row).addClass('nowrap');
+      }
+    },
   });
+  dtutil.addFilterHead('#approved-table', approvedAoColumns);
 
   $('#approved-select-all').click(function () {
     fnSelectAll(approvedTable, 'row-selected', 'select-row', true);
@@ -572,10 +610,12 @@ $(function () {
   });
 
   $('#approved-wrap').click(function () {
+    approvedTableWrapped = true;
     fnWrap(approvedTable);
   });
 
   $('#approved-unwrap').click(function () {
+    approvedTableWrapped = false;
     fnUnwrap(approvedTable);
   });
 
@@ -583,8 +623,8 @@ $(function () {
 
   /*cables tab starts*/
   var cableAoCulumns = ([selectColumn, numberColumn, statusColumn, updatedOnColumn] as Array<any>).concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  let cablesTableWrapped = true;
 
-  fnAddFilterFoot('#cables-table', cableAoCulumns);
   cablesTable = $('#cables-table').DataTable({
     data: [],
     autoWidth: false,
@@ -595,15 +635,23 @@ $(function () {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    scrollY: '50vh',
-    scrollCollapse: true,
+    // scrollY: '50vh',
+    // scrollCollapse: true,
+    createdRow(row) {
+      if (!cablesTableWrapped) {
+        $(row).addClass('nowrap');
+      }
+    },
   });
+  dtutil.addFilterHead('#cables-table', cableAoCulumns);
 
   $('#cables-wrap').click(function () {
+    cablesTableWrapped = true;
     fnWrap(cablesTable);
   });
 
   $('#cables-unwrap').click(function () {
+    cablesTableWrapped = false;
     fnUnwrap(cablesTable);
   });
 
