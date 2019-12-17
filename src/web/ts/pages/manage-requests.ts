@@ -104,9 +104,9 @@ function approveFromModal(requests, approvingTable, approvedTable?: any, other?:
       $(that).prepend('<i class="icon-check"></i>');
       $(that).addClass('text-success');
       // remove the request row
-      approvingTable.fnDeleteRow(requests[index]);
+      approvingTable.row(requests[index]).remove().draw('full-hold');
       // add the requests to the approved table
-      approvedTable.fnAddData(result.request);
+      approvedTable.row.add(result.request).draw('full-hold');
     }).fail(function (jqXHR) {
       $(that).prepend('<i class="icon-question"></i>');
       $(that).append(' : ' + jqXHR.responseText);
@@ -123,11 +123,11 @@ function batchApprove(oTable, approvedTable, procuringTable?: any) {
     $('#modalLabel').html('Approve the following ' + selected.length + ' requests? ');
     $('#modal .modal-body').empty();
     selected.forEach(function (row) {
-      var data = oTable.fnGetData(row);
+      var data = oTable.row(row).data();
       $('#modal .modal-body').append('<div id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + '</div>');
       requests.push(row);
     });
-    $('#modal .modal-footer').html('<button id="approve" class="btn btn-primary">Confirm</button><button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button id="approve" type="button" class="btn btn-primary">Confirm</button><button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
     $('#approve').click(function () {
       approveFromModal(requests, oTable, approvedTable, procuringTable);
@@ -135,7 +135,7 @@ function batchApprove(oTable, approvedTable, procuringTable?: any) {
   } else {
     $('#modalLabel').html('Alert');
     $('#modal .modal-body').html('No request has been selected!');
-    $('#modal .modal-footer').html('<button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
   }
 }
@@ -157,9 +157,9 @@ function rejectFromModal(requests, approvingTable, rejectedTable) {
       $(that).prepend('<i class="icon-remove"></i>');
       $(that).addClass('text-success');
       // remove the request row
-      approvingTable.fnDeleteRow(requests[index]);
+      approvingTable.row(requests[index]).remove().draw('full-hold');
       // add the new cables to the procuring table
-      rejectedTable.fnAddData(request);
+      rejectedTable.row.add(request).draw('full-hold');
     }).fail(function (jqXHR) {
       $(that).prepend('<i class="icon-question"></i>');
       $(that).append(' : ' + jqXHR.responseText);
@@ -175,11 +175,11 @@ function batchReject(oTable, rejectedTable) {
     $('#modalLabel').html('Reject the following ' + selected.length + ' requests? ');
     $('#modal .modal-body').empty();
     selected.forEach(function (row) {
-      var data = oTable.fnGetData(row);
+      var data = oTable.row(row).data();
       $('#modal .modal-body').append('<div id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + '</div>');
       requests.push(row);
     });
-    $('#modal .modal-footer').html('<button id="reject" class="btn btn-primary">Confirm</button><button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button id="reject" type="button" class="btn btn-primary">Confirm</button><button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
     $('#reject').click(function () {
       rejectFromModal(requests, oTable, rejectedTable);
@@ -187,7 +187,7 @@ function batchReject(oTable, rejectedTable) {
   } else {
     $('#modalLabel').html('Alert');
     $('#modal .modal-body').html('No request has been selected!');
-    $('#modal .modal-footer').html('<button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
   }
 }
@@ -197,11 +197,15 @@ $(function () {
   ajax401('');
   disableAjaxCache();
 
+  const readyTime = Date.now();
+
   var approvingTable;
   var rejectedTable;
   var approvedTable;
+
   /*approving table starts*/
   var approvingAoCulumns = ([selectColumn, editLinkColumn, submittedOnLongColumn, submittedByColumn] as Array<any>).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  let approvingTableWrapped = true;
 
   approvingTable = $('#approving-table').DataTable({
     ajax: {
@@ -213,7 +217,6 @@ $(function () {
     language: {
       loadingRecords: 'Please wait - loading data from the server ...'
     },
-    deferRender: true,
     columns: approvingAoCulumns,
     order: [
       [2, 'desc'],
@@ -222,15 +225,27 @@ $(function () {
     dom: sDom2InoF,
     buttons: sButtons,
     // sScrollY: '50vh',
-    // bScrollCollapse: true
+    // bScrollCollapse: true,
+    deferRender: true,
+    createdRow(row) {
+      if (!approvingTableWrapped) {
+        $(row).addClass('nowrap');
+      }
+    },
   });
   dtutil.addFilterHead('#approving-table', approvingAoCulumns);
 
+  $('#approving-table').on('init.dt', () => {
+    console.log('Approving table initialized: ' + String((Date.now() - readyTime) / 1000) + 's' );
+  });
+
   $('#approving-wrap').click(function () {
+    approvingTableWrapped = true;
     fnWrap(approvingTable);
   });
 
   $('#approving-unwrap').click(function () {
+    approvingTableWrapped = false;
     fnUnwrap(approvingTable);
   });
 
@@ -254,6 +269,7 @@ $(function () {
 
   /*rejected tab starts*/
   var rejectedAoColumns = ([detailsLinkColumn, rejectedOnLongColumn, submittedOnLongColumn, submittedByColumn] as Array<any>).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  let rejectedTableWrapped = true;
 
   rejectedTable = $('#rejected-table').DataTable({
     ajax: {
@@ -265,7 +281,6 @@ $(function () {
     language: {
       loadingRecords: 'Please wait - loading data from the server ...'
     },
-    deferRender: true,
     columns: rejectedAoColumns,
     order: [
       [1, 'desc'],
@@ -275,24 +290,35 @@ $(function () {
     dom: sDom2InoF,
     buttons: sButtons,
     // sScrollY: '50vh',
-    // bScrollCollapse: true
+    // bScrollCollapse: true,
+    deferRender: true,
+    createdRow(row) {
+      if (!rejectedTableWrapped) {
+        $(row).addClass('nowrap');
+      }
+    },
   });
   dtutil.addFilterHead('#rejected-table', rejectedAoColumns);
 
+  $('#rejected-table').on('init.dt', () => {
+    console.log('Rejected table initialized: ' + String((Date.now() - readyTime) / 1000) + 's' );
+  });
+
   $('#rejected-wrap').click(function () {
-    $('#rejected-table td').removeClass('nowrap');
-    rejectedTable.fnAdjustColumnSizing();
+    rejectedTableWrapped = true;
+    fnWrap(rejectedTable);
   });
 
   $('#rejected-unwrap').click(function () {
-    $('#rejected-table td').addClass('nowrap');
-    rejectedTable.fnAdjustColumnSizing();
+    rejectedTableWrapped = false;
+    fnUnwrap(rejectedTable);
   });
 
   /*rejected tab ends*/
 
   /*approved tab starts*/
   var approvedAoColumns = ([detailsLinkColumn, approvedOnLongColumn, submittedOnLongColumn, submittedByColumn] as Array<any>).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  let approvedTableWrapped = true;
 
   approvedTable = $('#approved-table').DataTable({
     ajax: {
@@ -304,7 +330,6 @@ $(function () {
     language: {
       loadingRecords: 'Please wait - loading data from the server ...'
     },
-    deferRender: true,
     columns: approvedAoColumns,
     order: [
       [1, 'desc'],
@@ -314,18 +339,28 @@ $(function () {
     dom: sDom2InoF,
     buttons: sButtons,
     // sScrollY: '50vh',
-    // bScrollCollapse: true
+    // bScrollCollapse: true,
+    deferRender: true,
+    createdRow(row) {
+      if (!approvedTableWrapped) {
+        $(row).addClass('nowrap');
+      }
+    },
   });
   dtutil.addFilterHead('#approved-table', approvedAoColumns);
 
+  $('#approved-table').on('init.dt', () => {
+    console.log('Approved table initialized: ' + String((Date.now() - readyTime) / 1000) + 's' );
+  });
+
   $('#approved-wrap').click(function () {
-    $('#approved-table td').removeClass('nowrap');
-    approvedTable.fnAdjustColumnSizing();
+    approvedTableWrapped = true;
+    fnWrap(approvedTable);
   });
 
   $('#approved-unwrap').click(function () {
-    $('#approved-table td').addClass('nowrap');
-    approvedTable.fnAdjustColumnSizing();
+    approvedTableWrapped = false;
+    fnUnwrap(approvedTable);
   });
 
   /*approved tab ends*/
@@ -337,9 +372,9 @@ $(function () {
   highlightedEvent();
 
   $('#reload').click(function () {
-    approvingTable.fnReloadAjax();
-    rejectedTable.fnReloadAjax();
-    approvedTable.fnReloadAjax();
+    approvingTable.ajax.reload();
+    rejectedTable.ajax.reload();
+    approvedTable.ajax.reload();
   });
 
   $('#bar').click(function () {

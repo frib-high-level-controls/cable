@@ -63,10 +63,12 @@ block content
 
     #message
     .modal.hide.fade#modal(tabindex='-1', role='dialog', data-backdrop='static', aria-labelledby='modalLabel', aria-hidden='true')
-      .modal-header
-        h3#modalLabel
-      .modal-body
-      .modal-footer
+      .modal-dialog
+        .modal-content
+          .modal-header
+            h3#modalLabel
+          .modal-body
+          .modal-footer
     .row.m-2
       .nav.flex-column.nav-pills.col-1#v-pills-tabs(role='tablist')
         a.nav-link.active(href='#approving', data-toggle='pill' role='tab') Requests to Approve
