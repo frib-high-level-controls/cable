@@ -380,7 +380,7 @@ export const updatedOnColumn = dateColumn('Updated', 'updatedOn');
 export const updatedOnLongColumn = dateColumn('Updated', 'updatedOn', true);
 
 export const submittedOnColumn = dateColumn('Submitted', 'submittedOn');
-var submittedOnLongColumn = dateColumn('Submitted', 'submittedOn', true);
+export const submittedOnLongColumn = dateColumn('Submitted', 'submittedOn', true);
 export const submittedByColumn = personColumn('Submitted by', 'submittedBy');
 
 export const approvedOnColumn = dateColumn('Approved', 'approvedOn');
@@ -388,7 +388,7 @@ export const approvedOnLongColumn = dateColumn('Approved', 'approvedOn', true);
 export const approvedByColumn = personColumn('Approved by', 'approvedBy');
 
 export const rejectedOnColumn = dateColumn('Rejected', 'rejectedOn');
-var rejectedOnLongColumn = dateColumn('Rejected', 'rejectedOn', true);
+export const rejectedOnLongColumn = dateColumn('Rejected', 'rejectedOn', true);
 export const rejectedByColumn = personColumn('Rejected by', 'rejectedBy');
 
 var obsoletedOnColumn = dateColumn('Obsoleted', 'obsoletedOn');
