@@ -5,6 +5,8 @@
 # NPM package installations
 node_modules/
 
+dump/
+
 # NPM debug log
 npm-debug.log
 
