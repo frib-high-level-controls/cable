@@ -1,16 +1,20 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'jquery-ui/themes/base/all.css';
 import '@fortawesome/fontawesome-free/js/all';
 import 'bootstrap';
+import {ajax401, disableAjaxCache} from '../ajax-helper';
+import '../util';
 import * as Binder from 'binder';
+import 'typeahead';
 import * as $ from 'jquery';
 import * as moment from 'moment';
 import _ from 'lodash';
 
 const sysSub = (window as any).sysSub;
 function sendRequest(data, initModel, binder) {
-    var path = window.location.pathname;
-    var url;
-    var type;
+    const path = window.location.pathname;
+    let url;
+    let type;
     if (/\/requests\/new$/.test(path) || data.action === 'clone') {
       url = basePath + '/requests/';
       type = 'POST';
@@ -19,7 +23,7 @@ function sendRequest(data, initModel, binder) {
       type = 'PUT';
     }
     $('form[name="request"]').fadeTo('slow', 0.2);
-    var formRequest = $.ajax({
+    const formRequest = $.ajax({
       url: url,
       type: type,
       async: true,
@@ -31,8 +35,8 @@ function sendRequest(data, initModel, binder) {
       if (/\/requests\/new$/.test(path)) {
         document.location.href = json.location;
       } else {
-        var timestamp = formRequest.getResponseHeader('Date');
-        var dateObj = moment(timestamp);
+        const timestamp = formRequest.getResponseHeader('Date');
+        const dateObj = moment(timestamp);
         if (data.action === 'save' || data.action === 'adjust') {
           $('#message').append('<div class="alert alert-success"><button class="close" data-dismiss="alert">x</button>The changes were saved at ' + dateObj.format('HH:mm:ss') + '.</div>');
           // move the focus to the message
@@ -66,7 +70,7 @@ function sendRequest(data, initModel, binder) {
   // system/subsystem/signal
   
   function updateCat(json) {
-    var proj = $('#project option:selected').val();
+    const proj = $('#project option:selected').val();
     $('#cat').prop('disabled', false);
     $('#cat option').remove();
     $('#cat').append($('<option>', {
@@ -83,7 +87,7 @@ function sendRequest(data, initModel, binder) {
   }
   
   function updateSub(json) {
-    var cat = $('#cat option:selected').val();
+    const cat = $('#cat option:selected').val();
     $('#sub').prop('disabled', false);
     $('#sub option').remove();
     $('#sub').append($('<option>', {
@@ -100,7 +104,7 @@ function sendRequest(data, initModel, binder) {
   }
   
   function updateSignal(json) {
-    var cat = $('#cat option:selected').val();
+    const cat = $('#cat option:selected').val();
     $('#signal').prop('disabled', false);
     $('#signal option').remove();
     $('#signal').append($('<option>', {
@@ -173,26 +177,24 @@ function sendRequest(data, initModel, binder) {
     }
   }
   
-  
   $(function () {
     ajax401('');
     disableAjaxCache();
-  
-    $('input').keypress(function (e) {
+    $('form-control').keypress(function (e) {
       if (e.which === 13) {
         return false;
       }
     });
   
-    var requestForm = document.forms[0];
-    var binder = new Binder.FormBinder(requestForm);
-    var initModel;
+    const requestForm = document.forms[0];
+    const binder = new Binder.FormBinder(requestForm);
+    let initModel;
   
     $.validator.addMethod('wbs', function (value, element) {
       return this.optional(element) || /^[A-Z]\d{1,5}$/.test(value);
     }, 'Please check the WBS number, remove spaces and dots');
   
-    var validator = $(requestForm).validate({
+    const validator = $(requestForm).validate({
       errorElement: 'span',
       errorClass: 'error',
       validClass: 'success',
@@ -200,10 +202,10 @@ function sendRequest(data, initModel, binder) {
         error.appendTo($(element).closest('.controls'));
       },
       highlight: function (element) {
-        $(element).closest('.control-group').removeClass('success').addClass('error');
+        $(element).closest('.form-group').removeClass('success').addClass('error');
       },
       success: function (element) {
-        $(element).closest('.control-group').removeClass('error').addClass('success');
+        $(element).closest('.form-group').removeClass('error').addClass('success');
       }
     });
   
@@ -215,7 +217,7 @@ function sendRequest(data, initModel, binder) {
   
     css();
   
-    var usernames = new Bloodhound({
+    const usernames = new Bloodhound({
       datumTokenizer: Bloodhound.tokenizers.obj.whitespace('displayName'),
       queryTokenizer: Bloodhound.tokenizers.whitespace,
       prefetch: {
@@ -261,8 +263,8 @@ function sendRequest(data, initModel, binder) {
     /*$('#penetration').autocomplete({
       minLength: 1,
       source: function (req, res) {
-        var term = req.term.toLowerCase();
-        var output = [];
+        const term = req.term.toLowerCase();
+        const output = [];
         if (penetration.length === 0) {
           $.getJSON('/penetration', function (data, status, xhr) {
             penetration = data;
@@ -286,10 +288,10 @@ function sendRequest(data, initModel, binder) {
         dataType: 'json'
       }).done(function (json) {
         // load the data
-        var proj;
-        var cat;
-        var sub;
-        var signal;
+        let proj;
+        let cat;
+        let sub;
+        let signal;
         if (json.basic) {
           proj = json.basic.project || null;
           cat = json.basic.originCategory || null;
@@ -297,7 +299,7 @@ function sendRequest(data, initModel, binder) {
           signal = json.basic.signalClassification || null;
         }
   
-        var savedBinder = new Binder.FormBinder(requestForm, json);
+        const savedBinder = new Binder.FormBinder(requestForm, json);
         savedBinder.deserialize();
   
         setCSS(proj, cat, sub, signal);
@@ -324,7 +326,7 @@ function sendRequest(data, initModel, binder) {
         }
   
         if (json.status === 2 || json.status === 3) {
-          $('input, select, textarea').prop('disabled', true);
+          $('form-control, select, textarea').prop('disabled', true);
         }
   
       }).fail(function () {
@@ -346,10 +348,10 @@ function sendRequest(data, initModel, binder) {
   
     $('.form-actions button').not('#reset').click(function (e) {
       e.preventDefault();
-      var action = this.id;
-      var currentModel = {};
+      const action = this.id;
+      let currentModel = {};
       currentModel = binder.serialize();
-      var data = {
+      const data = {
         request: currentModel,
         action: action
       };
@@ -368,7 +370,7 @@ function sendRequest(data, initModel, binder) {
           sendRequest(data, initModel, binder);
         } else {
           $('#modalLabel').html('The request is not validated');
-          $('#modal .modal-body').html('The form has ' + validator.numberOfInvalids() + ' invalid input(s) to fix.');
+          $('#modal .modal-body').html('The form has ' + validator.numberOfInvalids() + ' invalid form-control(s) to fix.');
           $('#modal').modal('show');
           return;
         }
@@ -379,6 +381,5 @@ function sendRequest(data, initModel, binder) {
       }
   
     });
-  
   });
   

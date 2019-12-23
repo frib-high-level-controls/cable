@@ -2,106 +2,124 @@
 legend Basic information
 .form-group
   label Project
-  select.form-control#project(type='text', name='basic.project', required)
-    option(value='', disabled=true, select.form-controled) choose
-    for project in projects
-      option(value=project.value)= project.title
+  .controls
+    select.form-control#project(type='text', name='basic.project', required)
+      option(value='', disabled=true, selected) choose
+      for project in projects
+        option(value=project.value)= project.title
 .form-group
   label(for="wbs") WBS
-  input.form-control#wbs(type='text', name='basic.wbs', required)
+  .controls
+    input.form-control#wbs(type='text', name='basic.wbs', required)
 .form-group
   label(for="engineer")  Engineer
-  input.form-control#engineer(type='text', placeholder='Last, First', name='basic.engineer', required)
+  .controls
+    input.form-control#engineer(type='text', placeholder='Last, First', name='basic.engineer', required)
 .form-group
   label(for="cat")  Origin category
-
-  select.form-control#cat(disabled=true, name='basic.originCategory', required)
-    option(value='', disabled=true, select.form-controled) choose
-  span.add-on &nbsp;
-span &nbsp;See&nbsp;
-  a(href=basePath + '/shared/frib_cable_map.pdf', target='_blank') Map
+  .controls
+    select.form-control#cat(disabled=true, name='basic.originCategory', required)
+      option(value='', disabled=true, selected) choose
+    span.add-on &nbsp;
+  span &nbsp;See&nbsp;
+    a(href=basePath + '/shared/frib_cable_map.pdf', target='_blank') Map
 .form-group
   label(for="sub")  Origin subcategory
-
-  select.form-control#sub(disabled=true, name='basic.originSubcategory', required)
-    option(value='', disabled=true, select.form-controled) choose
-  span.add-on &nbsp;
+  .controls
+    select.form-control#sub(disabled=true, name='basic.originSubcategory', required)
+      option(value='', disabled=true, selected) choose
+    span.add-on &nbsp;
 .form-group
   label(for="signal")  Signal classification
-
-  select.form-control#signal(disabled=true, name='basic.signalClassification', required)
-    option(value='', disabled=true, select.form-controled) choose
-  span.add-on &nbsp;
+  .controls
+    select.form-control#signal(disabled=true, name='basic.signalClassification', required)
+      option(value='', disabled=true, selected) choose
+    span.add-on &nbsp;
 .form-group
   label(for="tray-section")  Tray section
-  select.form-control#tray-section(name='basic.traySection')
-    for traySect in traySects
-      option(value=traySect.value)= traySect.title
+  .controls
+    select.form-control#tray-section(name='basic.traySection')
+      for traySect in traySects
+        option(value=traySect.value)= traySect.title
 .form-group
   label(for="type")  Type
-  input.form-control#type(type='text', name='basic.cableType')
+  .controls
+    input.form-control#type(type='text', name='basic.cableType')
 .form-group
   label(for="function")  Function
-  input.form-control#function(type='text', name='basic.service')
+  .controls
+    input.form-control#function(type='text', name='basic.service')
 .form-group
   label(for="tags")  Tags
-  input.form-control#tags(type='text', name='basic.tags', class=String('type[stringArray]'))
-  span.help-inline Seperate tags by ","
+  .controls
+    input.form-control#tags(type='text', name='basic.tags', class=String('type[stringArray]'))
+    span.help-inline Seperate tags by ","
 .form-group
   label(for="quantity")  Quantity
-  input.form-control#quantity(type='text', name='basic.quantity', class=String('type[number]'), value=1, required, min=1)
+  .controls
+    input.form-control#quantity(type='text', name='basic.quantity', class=String('type[number]'), value=1, required, min=1)
 .form-group
   label(for="ownerProvided")  Owner provided
-  select.form-control#ownerProvided(type='boolean', name='ownerProvided')
-    option(value='false') No
-    option(value='true') Yes
-//- fieldset
-legend Source(from)
+  .controls
+    select.form-control#ownerProvided(type='boolean', name='ownerProvided')
+      option(value='false') No
+      option(value='true') Yes
+  //- fieldset
+  legend Source(from)
 .form-group
   label(for="from-rack")  Location
-  .d-flex.flex-row
-    input.p-10.form-control#from-rack(type='text', name='from.rack')
-    a.p-2.btn.btn-info(href='https://controls.frib.msu.edu/conf/index.xhtml', target='_blank') Browse
+  .controls
+    .d-flex.flex-row
+      input.p-10.form-control#from-rack(type='text', name='from.rack')
+      a.p-2.btn.btn-info(href='https://controls.frib.msu.edu/conf/index.xhtml', target='_blank') Browse
 .form-group
   label(for="from-termination")  Termination device
-  .d-flex.flex-row
-    input.p-10.form-control#from-termination(type='text', name='from.terminationDevice')
-    a.p-2.btn.btn-info(href='https://controls.frib.msu.edu/conf/index.xhtml', target='_blank') Browse
+  .controls
+    .d-flex.flex-row
+      input.p-10.form-control#from-termination(type='text', name='from.terminationDevice')
+      a.p-2.btn.btn-info(href='https://controls.frib.msu.edu/conf/index.xhtml', target='_blank') Browse
 .form-group
   label(for="from-type")  Termination type
-  input.form-control#from-type(type='text', name='from.terminationType')
+  .controls
+    input.form-control#from-type(type='text', name='from.terminationType')
 .form-group
   label(for="from-drawing")  Wiring (pinout) drawing
-  input.form-control#from-drawing(type='text', name='from.wiringDrawing')
+  .controls
+    input.form-control#from-drawing(type='text', name='from.wiringDrawing')
 //- fieldset
 legend Destination(to)
 .form-group
   label(for="to-rack")  Location
-  .d-flex.flex-row
+  .controls.d-flex.flex-row
     input.p-10.form-control#to-rack(type='text', name='to.rack')
     a.p-2.btn.btn-info(href='https://controls.frib.msu.edu/conf/index.xhtml', target='_blank') Browse
 .form-group
   label(for="to-termination")  Termination device
-  .d-flex.flex-row
+  .controls.d-flex.flex-row
     input.p-10.form-control#to-termination(type='text', name='to.terminationDevice')
     a.p-2.btn.btn-info(href='https://controls.frib.msu.edu/conf/index.xhtml', target='_blank') Browse
 .form-group
   label(for="to-type")  Termination type
-  input.form-control#to-type(type='text', name='to.terminationType')
+  .controls
+    input.form-control#to-type(type='text', name='to.terminationType')
 .form-group
   label(for="to-drawing")  Wiring (pinout) drawing
-  input.form-control#to-drawing(type='text', name='to.wiringDrawing')
+  .controls
+    input.form-control#to-drawing(type='text', name='to.wiringDrawing')
 legend Routing
 .form-group
   label Conduit
-  input.form-control(type='text', name='conduit')
+  .controls
+    input.form-control(type='text', name='conduit')
 .form-group
   label Length
-  input.form-control(type='number', name='length')
-  span.add-on ft
+  .controls
+    input.form-control(type='number', name='length')
+    span.add-on ft
 
 legend Other
 .form-group
   label Comments
-  textarea.form-control#comments(rows=3, name='comments')
+  .controls
+    textarea.form-control#comments(rows=3, name='comments')
 
