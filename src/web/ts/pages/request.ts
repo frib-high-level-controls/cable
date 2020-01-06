@@ -2,11 +2,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'jquery-ui/themes/base/all.css';
 import '@fortawesome/fontawesome-free/js/all';
 import 'bootstrap';
-import {ajax401, disableAjaxCache} from '../ajax-helper';
-import '../util';
-import Binder from '../lib/binder';
+import {ajax401, disableAjaxCache} from '../lib/ajaxhelper';
+import '../lib/util';
+import * as Binder from '../lib/binder';
 // import * as $ from 'jquery';
-import 'jquery-validation';
 import * as moment from 'moment';
 import _ from 'lodash';
 

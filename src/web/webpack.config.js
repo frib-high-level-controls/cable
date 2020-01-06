@@ -8,8 +8,10 @@ module.exports = {
   entry: {
     main: './src/web/ts/pages/main.ts',
     'all-cables': './src/web/ts/pages/all-cables.ts',
+    'cabletype': './src/web/ts/pages/cabletype.ts',
     'manage-cables': './src/web/ts/pages/manage-cables.ts',
     'manage-requests': './src/web/ts/pages/manage-requests.ts',
+    'manager': './src/web/ts/pages/manager.ts',
     'request': './src/web/ts/pages/request.ts'
     // slot: './src/web/ts/slot-action.ts',
     // device: './src/web/ts/device-action.ts',

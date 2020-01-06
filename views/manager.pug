@@ -4,41 +4,41 @@ block head
   meta(charset='utf-8')
   title FRIB Cable App
   meta(name='viewport', content='width=device-width, initial-scale=1.0')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
-  link(rel='stylesheet', href=basePath + '/datatables/css/dataTables.bootstrap.css')
-  link(rel='stylesheet', href=basePath + '/ui-lightness/jquery-ui-1.10.2.custom.css')
-  link(rel='stylesheet', href=basePath + '/font-awesome-4.2.0/css/font-awesome.css')
+  //- link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
+  //- link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
+  //- link(rel='stylesheet', href=basePath + '/datatables/css/dataTables.bootstrap.css')
+  //- link(rel='stylesheet', href=basePath + '/ui-lightness/jquery-ui-1.10.2.custom.css')
+  //- link(rel='stylesheet', href=basePath + '/font-awesome-4.2.0/css/font-awesome.css')
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+  script(type='text/javascript', src=basePath + '/dist/manager.js')
 
 block content
-  .container
-    .main
-      h1 Please select from the following options
-      .row-fluid
-        .span4
-          h3
-            a(href=basePath + '/main/', target='_blank')
-              span.fa-stack.fa-3x
-                strong.fa-stack-2x U
-          h2 User view
-        .span4
-          h3
-            a(href=basePath + '/manager/requests/', target='_blank')
-              span.fa-stack.fa-3x
-                strong.fa-stack-2x R
-          h2 Request management
-        .span4
-          h3
-            a(href=basePath + '/manager/cables/', target='_blank')
-              span.fa-stack.fa-3x
-                strong.fa-stack-2x C
-          h2 Cable management
-      hr.soften
+  .container.text-center
+    .row
+      .col-12
+        h1 Please select from the following options
+    .row
+      .col-4
+        h3
+          a(href=basePath + '/main/', target='_blank')
+            span.fa-3x
+              strong.fa-2x U
+        h2 User view
+      .col-4
+        h3
+          a(href=basePath + '/manager/requests/', target='_blank')
+            span.fa-3x
+              strong.fa-2x R
+        h2 Request management
+      .col-4
+        h3
+          a(href=basePath + '/manager/cables/', target='_blank')
+            span.fa-3x
+              strong.fa-2x C
+        h2 Cable management
+    hr
 
 
 block js
-  script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
-  script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
-
-
+  //- script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
+  //- script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')

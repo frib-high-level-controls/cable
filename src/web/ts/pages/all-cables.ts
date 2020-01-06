@@ -39,6 +39,10 @@ import {
 } from '../lib/ajaxhelper';
 
 import {
+  barChart,
+} from '../lib/barchart';
+
+import {
   approvedByColumn,
   approvedOnColumn,
   approvedOnLongColumn,
@@ -127,7 +131,7 @@ $(function () {
   dtutil.addFilterHead('#all-cable', allAoColumns);
   // fnAddFilterFoot('#all-cable', allAoColumns);
 
-  $('#all-table').on('init.dt', () => {
+  $('#all-cable').on('init.dt', () => {
     console.log('All table initialized: ' + String((Date.now() - readyTime) / 1000) + 's' );
   });
 
