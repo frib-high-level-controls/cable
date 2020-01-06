@@ -14,7 +14,6 @@
   "dependencies": {
     "@jcu/passport-cas": "^0.1.2",
     "@types/compression": "^1.0.1",
-    "binder": "^1.0.2",
     "body-parser": "^1.19.0",
     "cas.js": "^0.1.0",
     "commander": "^4.0.1",
@@ -37,7 +36,7 @@
     "rc": "^1.2.1",
     "request": "^2.81.0",
     "serve-favicon": "^2.5.0",
-    "typeahead": "^0.2.2",
+    "typeahead": "^0.10.5",
     "uri-js": "^4.2.2",
     "validator": "^12.1.0"
   },
