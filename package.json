@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@jcu/passport-cas": "^0.1.2",
-    "binder": "^1.0.2",
     "body-parser": "^1.19.0",
     "cas.js": "^0.1.0",
     "commander": "^4.0.1",

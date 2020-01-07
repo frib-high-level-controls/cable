@@ -4,9 +4,8 @@ import '@fortawesome/fontawesome-free/js/all';
 import 'bootstrap';
 import {ajax401, disableAjaxCache} from '../lib/ajaxhelper';
 import '../lib/util';
-import * as Binder from 'binder';
-import 'typeahead';
-import * as $ from 'jquery';
+import * as Binder from '../lib/binder';
+// import * as $ from 'jquery';
 import * as moment from 'moment';
 import _ from 'lodash';
 
