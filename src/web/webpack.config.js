@@ -8,6 +8,7 @@ module.exports = {
   entry: {
     main: './src/web/ts/pages/main.ts',
     'all-cables': './src/web/ts/pages/all-cables.ts',
+    'base': './src/web/ts/pages/base.ts',
     'cabletype': './src/web/ts/pages/cabletype.ts',
     'cabletypemgmt': './src/web/ts/pages/cabletypemgmt.ts',
     'manage-cables': './src/web/ts/pages/manage-cables.ts',
