@@ -9,6 +9,7 @@ module.exports = {
     main: './src/web/ts/pages/main.ts',
     'all-cables': './src/web/ts/pages/all-cables.ts',
     'cabletype': './src/web/ts/pages/cabletype.ts',
+    'cabletypemgmt': './src/web/ts/pages/cabletypemgmt.ts',
     'manage-cables': './src/web/ts/pages/manage-cables.ts',
     'manage-requests': './src/web/ts/pages/manage-requests.ts',
     'manager': './src/web/ts/pages/manager.ts',
@@ -73,8 +74,7 @@ module.exports = {
   },
   plugins: [
     new webpack.ProvidePlugin({
-      ChecklistUtil: './checklistutil.ts',
-      WebUtil: './shared/webutil.ts',
+      'jQuery': 'jquery', // required to support jquery-jeditable
     }),
     // initialize the vue-loader
     //new VueLoaderPlugin(),

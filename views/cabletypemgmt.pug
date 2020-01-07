@@ -4,34 +4,34 @@ block head
   meta(charset='utf-8')
   title FRIB Cable types
   meta(name='viewport', content='width=device-width, initial-scale=1.0')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
-  link(rel='stylesheet', href=basePath + '/datatables/css/dataTables.bootstrap.css')
-  link(rel='stylesheet', href=basePath + '/font-awesome-4.2.0/css/font-awesome.css')
+  //- link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
+  //- link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
+  //- link(rel='stylesheet', href=basePath + '/datatables/css/dataTables.bootstrap.css')
+  //- link(rel='stylesheet', href=basePath + '/font-awesome-4.2.0/css/font-awesome.css')
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+  script(type='text/javascript', src=basePath + '/dist/cabletypemgmt.js')
 
 block content
   .container-fluid(style='margin-top: 10px')
     #message
     .btn-toolbar
-      .btn-group
+      .btn-group.mr-2
         a.btn.btn-primary#add(href=basePath + '/cabletypes/new', target='_blank')
-          i.fa.fa-file-o.fa-lg
-          | &nbsp;Add a new type
-      .btn-group
-        .btn-group
-          a.btn.btn-info(href=basePath + '/cabletypes')
-            i.fa.fa-sign-out.fa-lg
-            | &nbsp;Back to read only
+          i.far.fa-file.fa-lg
+          | &nbsp;Add a New Cable Type
+      .btn-group.mr-2
+        a.btn.btn-info(href=basePath + '/cabletypes')
+          i.fa.fa-sign-out-alt.fa-lg
+          | &nbsp;Back to Read Only
     table.table.table-bordered.table-hover#cable-type
 
 block js
-  script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
-  script(type='text/javascript', src=basePath + '/datatables/js/jquery.dataTables.js')
-  script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
-  script(type='text/javascript', src=basePath + '/datatables/js/ZeroClipboard.js')
-  script(type='text/javascript', src=basePath + '/datatables/js/TableTools.js')
-  script(type='text/javascript', src=basePath + '/datatables/js/dataTables.bootstrap.js')
-  script(type='text/javascript', src=basePath + '/jquery/jquery.jeditable.js')
-  script(type='text/javascript', src=basePath + '/javascripts/table.js')
-  script(type='text/javascript', src=basePath + '/javascripts/cable-type-manage.js')
+  //- script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
+  //- script(type='text/javascript', src=basePath + '/datatables/js/jquery.dataTables.js')
+  //- script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
+  //- script(type='text/javascript', src=basePath + '/datatables/js/ZeroClipboard.js')
+  //- script(type='text/javascript', src=basePath + '/datatables/js/TableTools.js')
+  //- script(type='text/javascript', src=basePath + '/datatables/js/dataTables.bootstrap.js')
+  //- script(type='text/javascript', src=basePath + '/jquery/jquery.jeditable.js')
+  //- script(type='text/javascript', src=basePath + '/javascripts/table.js')
+  //- script(type='text/javascript', src=basePath + '/javascripts/cable-type-manage.js')
