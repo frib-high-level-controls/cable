@@ -39,6 +39,10 @@ import {
 } from '../lib/ajaxhelper';
 
 import {
+  barChart,
+} from '../lib/barchart';
+
+import {
   approvedByColumn,
   approvedOnColumn,
   approvedOnLongColumn,
