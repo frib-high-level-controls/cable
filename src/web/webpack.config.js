@@ -14,7 +14,8 @@ module.exports = {
     'manage-cables': './src/web/ts/pages/manage-cables.ts',
     'manage-requests': './src/web/ts/pages/manage-requests.ts',
     'manager': './src/web/ts/pages/manager.ts',
-    'request': './src/web/ts/pages/request.ts'
+    'request': './src/web/ts/pages/request.ts',
+    'wbs': './src/web/ts/pages/wbs.ts'
     // slot: './src/web/ts/slot-action.ts',
     // device: './src/web/ts/device-action.ts',
     // group: './src/web/ts/slot-group-action.ts',

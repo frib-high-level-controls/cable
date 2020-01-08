@@ -4,10 +4,11 @@ block head
   meta(charset='utf-8')
   title #{project} Work Breakdown Structure
   meta(name='viewport', content='width=device-width, initial-scale=1.0')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
-  link(rel='stylesheet', href=basePath + '/datatables/css/dataTables.bootstrap.css')
+  //- link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
+  //- link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
+  //- link(rel='stylesheet', href=basePath + '/datatables/css/dataTables.bootstrap.css')
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+  script(type='text/javascript', src=basePath + '/dist/wbs.js')
 
 block content
   script.
@@ -15,11 +16,11 @@ block content
   .container
     //- h3 #{project} Work Breakdown Structure
     #message
-    #viz
+    #viz.mt-5
     //- p
     //- p.pull-right This visualization is generated from the document of <a href='https://portal.frib.msu.edu/dcc/Pages/DCCLink.aspx?WBS=Z00000&Sub=BL&SN=000004'>FRIB FRIB-Z00000-BL-000004-R021 Issued 14 March 2013</a>.
 
 
 block js
-  script(type='text/javascript', src=basePath + '/dependencies/d3.v3.js')
-  script(type='text/javascript', src=basePath + '/javascripts/wbs.js')
+  //- script(type='text/javascript', src=basePath + '/dependencies/d3.v3.js')
+  //- script(type='text/javascript', src=basePath + '/javascripts/wbs.js')

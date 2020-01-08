@@ -360,29 +360,6 @@ hr.soften {
   background-color: #46a546;
   background-image: none;
   }*/
-/*d3 stuff*/
-
-.chart {
-  display: block;
-  margin: auto;
-  margin-top: 60px;
-  font-size: 11px;
-}
-
-rect {
-  stroke: #eee;
-  fill: #aaa;
-  fill-opacity: .8;
-}
-
-rect.parent {
-  cursor: pointer;
-  fill: steelblue;
-}
-
-text {
-  pointer-events: none;
-}
 
 .nowrap {
   white-space: nowrap;
