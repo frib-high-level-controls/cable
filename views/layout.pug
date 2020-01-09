@@ -19,6 +19,8 @@ html
         ul.navbar-nav
           li
             a.nav-link(href=basePath + '/logout') Logout
+      if webenv !== 'production'
+        div.navbar-text.float-right.ml-3(style='background-color:red;color:black;') &nbsp;TEST&nbsp;
 
     #page
       block content
