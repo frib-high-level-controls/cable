@@ -105,16 +105,16 @@ function approveFromModal(requests, approvingTable, approvedTable?: any, other?:
         action: 'approve'
       })
     }).done(function (result) {
-      $(that).prepend('<i class="icon-check"></i>');
+      $(that).prepend('<i class="far fa-check-square text-success"></i>&nbsp;');
       $(that).addClass('text-success');
       // remove the request row
       approvingTable.row(requests[index]).remove().draw('full-hold');
       // add the requests to the approved table
       approvedTable.row.add(result.request).draw('full-hold');
     }).fail(function (jqXHR) {
-      $(that).prepend('<i class="icon-question"></i>');
+      $(that).prepend('<i class="fas fa-question text-danger"></i>&nbsp;');
       $(that).append(' : ' + jqXHR.responseText);
-      $(that).addClass('text-error');
+      $(that).addClass('text-danger');
     });
   });
 }
@@ -158,16 +158,16 @@ function rejectFromModal(requests, approvingTable, rejectedTable) {
       }),
       dataType: 'json'
     }).done(function (request) {
-      $(that).prepend('<i class="icon-remove"></i>');
+      $(that).prepend('<i class="fas fa-times text-success"></i>&nbsp;');
       $(that).addClass('text-success');
       // remove the request row
       approvingTable.row(requests[index]).remove().draw('full-hold');
       // add the new cables to the procuring table
       rejectedTable.row.add(request).draw('full-hold');
     }).fail(function (jqXHR) {
-      $(that).prepend('<i class="icon-question"></i>');
+      $(that).prepend('<i class="fas fa-question text-danger"></i>&nbsp;');
       $(that).append(' : ' + jqXHR.responseText);
-      $(that).addClass('text-error');
+      $(that).addClass('text-danger');
     });
   });
 }

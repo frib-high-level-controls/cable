@@ -218,7 +218,7 @@ function actionFromModal(rows, action, data, activeTable, destinationTable) {
       data: JSON.stringify(data),
       dataType: 'json'
     }).done(function (cable) {
-      $(that).prepend('<i class="icon-check"></i>');
+      $(that).prepend('<i class="far fa-check-square text-success"></i>&nbsp;');
       $(that).addClass('text-success');
       fnSetDeselect(rows[index], 'row-selected', 'select-row');
       switch (action) {
@@ -240,9 +240,9 @@ function actionFromModal(rows, action, data, activeTable, destinationTable) {
         // do nothing
       }
     }).fail(function (jqXHR) {
-      $(that).prepend('<i class="icon-question"></i>');
+      $(that).prepend('<i class="fas fa-question text-danger"></i>&nbsp;');
       $(that).append(' : ' + jqXHR.responseText);
-      $(that).addClass('text-error');
+      $(that).addClass('text-danger');
     }).always(() => { });
   });
 }
@@ -269,14 +269,14 @@ function newRequestFromModal(cables, rows) {
       }),
       dataType: 'json'
     }).done(function (json) {
-      $(that).prepend('<i class="icon-check"></i>');
+      $(that).prepend('<i class="far fa-check-square text-success"></i>&nbsp;');
       $(that).append(' : <a target="_blank" href="' + json.location + '">' + json.location + '</a>');
       $(that).addClass('text-success');
       fnSetDeselect(rows[index], 'row-selected', 'select-row');
     }).fail(function (jqXHR) {
-      $(that).prepend('<i class="icon-question"></i>');
+      $(that).prepend('<i class="fas fa-question text-danger"></i>&nbsp;');
       $(that).append(' : ' + jqXHR.responseText);
-      $(that).addClass('text-error');
+      $(that).addClass('text-danger');
     }).always(() => { });
   });
 }
@@ -397,7 +397,7 @@ function actionFromModal(cables, required, action, procuringTable, installingTab
       }),
       dataType: 'json'
     }).done(function (cable) {
-      $(that).prepend('<i class="icon-check"></i>');
+      $(that).prepend('<i class="far fa-check-square text-success"></i>&nbsp;');
       $(that).addClass('text-success');
       fnSetDeselect(cables[index], 'row-selected', 'select-row');
       switch (action) {
@@ -444,9 +444,9 @@ function actionFromModal(cables, required, action, procuringTable, installingTab
       }
     })
       .fail(function (jqXHR, status, error) {
-        $(that).prepend('<i class="icon-question"></i>');
+        $(that).prepend('<i class="fas fa-question text-danger"></i>&nbsp;');
         $(that).append(' : ' + jqXHR.responseText);
-        $(that).addClass('text-error');
+        $(that).addClass('text-danger');
       })
       .always();
   });
