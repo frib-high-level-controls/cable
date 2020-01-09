@@ -2,10 +2,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'jquery-ui/themes/base/all.css';
 import '@fortawesome/fontawesome-free/js/all';
 import 'bootstrap';
+import 'jquery-validation';
+import Bloodhound from 'typeahead.js';
 import {ajax401, disableAjaxCache} from '../lib/ajaxhelper';
 import '../lib/util';
 import * as Binder from '../lib/binder';
-// import * as $ from 'jquery';
+import * as $ from 'jquery';
 import * as moment from 'moment';
 import _ from 'lodash';
 
