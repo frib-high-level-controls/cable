@@ -743,40 +743,40 @@ export const typeColumns: any = [{
 
 /*user columns*/
 
-var useridColumn = personColumn('User id', 'adid');
+export const useridColumn = personColumn('User id', 'adid');
 
-var fullNameNoLinkColumn = {
+export const fullNameNoLinkColumn = {
   sTitle: 'Full name',
   mData: 'name',
   sDefaultContent: '',
   bFilter: true
 };
 
-var rolesColumn = {
+export const rolesColumn = {
   sTitle: 'Roles',
   mData: 'roles',
   // sDefaultContent: '',
   mRender: function (data, type, full) {
     if (data) {
-      return data.join();
+      return data.join(', ');
     }
     return '';
   },
   bFilter: true
 };
 
-var wbsColumn = {
+export const wbsColumn = {
   sTitle: 'WBS',
   mData: function (source) {
     if (source.wbs) {
-      return source.wbs.join();
+      return source.wbs.join(', ');
     }
     return '';
   },
   bFilter: true
 };
 
-var lastVisitedOnColumn = dateColumn('Last visited', 'lastVisitedOn');
+export const lastVisitedOnColumn = dateColumn('Last visited', 'lastVisitedOn');
 
 
 /*table buttons*/
@@ -792,7 +792,7 @@ export const sButtons = [
 ];
 
 //var sDom = "<'row-fluid'<'span6'<'control-group'T>>><'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>";
-export const sDom = '<"d-flex"<"form-inline mr-auto p-2"<l>><"p-2"B>>rt<"d-flex"<"mr-auto p-2"i><"p-2"p>>';
+export const sDom = '<"d-flex"<"form-inline mr-auto p-2"<l>><<"p-2"B><"form-inline mr-auto p-2"<f>>>>rt<"d-flex"<"mr-auto p-2"i><"p-2"p>>';
 var sDom2i = "<'row-fluid'<'span6'<'control-group'T>>><'row-fluid'<'span3'l><'span3'i><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>";
 export const sDom2InoF = '<"d-flex"<"form-inline mr-auto p-2"<l>><"p-2"B>>rt<"d-flex"<"mr-auto p-2"i><"p-2"p>>';
 var sDom2i1p = "<'row-fluid'<'span6'<'control-group'T>>><'row-fluid'<'span3'l><'span3'i><'span3'r><'span3'f>>t<'row-fluid'<'span6'i><'span6'p>>";
