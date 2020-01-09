@@ -15,6 +15,7 @@ module.exports = {
     'manage-requests': './src/web/ts/pages/manage-requests.ts',
     'manager': './src/web/ts/pages/manager.ts',
     'request': './src/web/ts/pages/request.ts',
+    'user': './src/web/ts/pages/user.ts',
     'users': './src/web/ts/pages/users.ts',
     'wbs': './src/web/ts/pages/wbs.ts'
     // slot: './src/web/ts/slot-action.ts',
