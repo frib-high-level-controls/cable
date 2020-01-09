@@ -132,7 +132,7 @@ $(function () {
     data: [],
     autoWidth: false,
     columns: typeColumns,
-    dom: sDom,
+    dom: sDom2InoF,
     buttons: sButtons,
   });
   dtutil.addFilterHead('#cable-type', typeColumns);

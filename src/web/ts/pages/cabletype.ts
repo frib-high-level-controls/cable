@@ -81,7 +81,7 @@ $(function () {
     data: [],
     autoWidth: false,
     columns: typeColumns,
-    dom: sDom,
+    dom: sDom2InoF,
     order: [
       [2, 'asc'],
       [0, 'asc']
