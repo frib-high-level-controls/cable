@@ -294,7 +294,7 @@ class Binder {
         accessor.set(element.name, value);
       }
     }
-    public deserialize(obj: any) {
+    public deserialize(obj?: any) {
       var accessor = this._getAccessor(obj);
       for (var i = 0; i < this.form.elements.length; i++) {
         this.deserializeField(this.form.elements[i], accessor);
