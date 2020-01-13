@@ -2,10 +2,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'jquery-ui/themes/base/all.css';
 import '@fortawesome/fontawesome-free/js/all';
 import 'bootstrap';
+import 'jquery-validation';
+import Bloodhound from 'typeahead.js';
 import {ajax401, disableAjaxCache} from '../lib/ajaxhelper';
 import '../lib/util';
-import * as Binder from '../lib/binder';
-// import * as $ from 'jquery';
+import Binder from '../lib/binder';
+import * as $ from 'jquery';
 import * as moment from 'moment';
 import _ from 'lodash';
 
@@ -92,13 +94,15 @@ function sendRequest(data, initModel, binder) {
     $('#sub').append($('<option>', {
       value: ''
     }).text('choose').prop('disabled', true));
-    $.each(json[cat as string].subcategory, function (k, v) {
-      if (v) {
-        $('#sub').append($('<option>', {
-          value: k
-        }).text(v));
-      }
-    });
+    if (cat) {
+      $.each(json[cat as string].subcategory, function (k, v) {
+        if (v) {
+          $('#sub').append($('<option>', {
+            value: k
+          }).text(v));
+        }
+      });
+    }
     $('#sub').next('.add-on').text($('#sub option:selected').val() as string);
   }
   
@@ -109,13 +113,15 @@ function sendRequest(data, initModel, binder) {
     $('#signal').append($('<option>', {
       value: ''
     }).text('choose').prop('disabled', true));
-    $.each(json[cat as string].signal, function (k, v) {
-      if (v) {
-        $('#signal').append($('<option>', {
-          value: k
-        }).text(json[cat as string].signal[k].name));
-      }
-    });
+    if(cat) {
+      $.each(json[cat as string].signal, function (k, v) {
+        if (v) {
+          $('#signal').append($('<option>', {
+            value: k
+          }).text(json[cat as string].signal[k].name));
+        }
+      });
+    }
     $('#signal').next('.add-on').text($('#signal option:selected').val() as string);
   }
   
