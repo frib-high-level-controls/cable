@@ -17,6 +17,7 @@ module.exports = {
     'manager': './src/web/ts/pages/manager.ts',
     'newcabletype': './src/web/ts/pages/newcabletype.ts',
     'request': './src/web/ts/pages/request.ts',
+    'request-details': './src/web/ts/pages/request-details.ts',
     'user': './src/web/ts/pages/user.ts',
     'users': './src/web/ts/pages/users.ts',
     'wbs': './src/web/ts/pages/wbs.ts'
