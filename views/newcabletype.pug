@@ -4,35 +4,40 @@ block head
   meta(charset='utf-8')
   title FRIB Cable :: new cable type
   meta(name='viewport', content='width=device-width, initial-scale=1.0')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
+  //- link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
+  //- link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+  script(type='text/javascript', src=basePath + '/dist/newcabletype.js')
 
 block content
   .container
     #message
     .modal.hide.fade#modal(tabindex='-1', role='dialog', data-backdrop='static', aria-labelledby='modalLabel', aria-hidden='true')
-      .modal-header
-        h3#modalLabel
-      .modal-body
-      .modal-footer
-        button.btn.btn-primary(type='button', data-dismiss='modal', aria-hidden='true') Return to edit
-    form.form-horizontal(name='cabletype')
-      h3 New FRIB cable type
+      .modal-dialog
+        .modal-content
+          .modal-header
+            h3#modalLabel
+          .modal-body
+          .modal-footer
+            button.btn.btn-primary(type='button', data-dismiss='modal', aria-hidden='true') Close
+    form(name='cabletype')
+      .form-group.row
+        h3 New FRIB cable type
       //- fieldset
-      legend Naming
-      .control-group
-        .control-label Conductor number
-        .controls
-          input#conductor-number(type='number', name='conductorNumber', min=1, required)
-      .control-group
-        .control-label Conductor size
-        .controls
-          input#conductor-size(type='text', name='conductorSize', required)
-      .control-group
-        .control-label Type
-        .controls
-          select.input#frib-type(name='fribType')
+      .form-group.row
+        legend.border-bottom Naming
+      .form-group.row
+        label.col-form-label.col-sm-2.text-right(for='conductor-number') Conductor number
+        .col-sm-4
+          input.form-control#conductor-number(type='number', name='conductorNumber', min=1, required)
+      .form-group.row
+        label.col-form-label.col-sm-2.text-right(for='conductor-size') Conductor size
+        .col-sm-4
+          input.form-control#conductor-size(type='text', name='conductorSize', required)
+      .form-group.row
+        label.col-form-label.col-sm-2.text-right(for='frib-type') Type
+        .col-sm-4
+          select.form-control#frib-type(name='fribType')
             option 7-Pole
             option Multi
             option PwrAC
@@ -49,32 +54,33 @@ block content
             option MMfiber
             option PMMfiberRAD
             option Triax
-      .control-group
-        .control-label Type number
-        .controls
-          input#type-number(type='text', placeholder='NNN', name='typeNumber', minlength=3, maxlength=3, required)
-      .control-group
-        .control-label New type name
-        .controls
-          input#name(name='newName', type='text', disabled)
-          span.help-inline Generated from the above inputs
-      legend Details
-      .control-group
-        .control-label Function/Service
-        .controls
-          input#service(type='text', name='service')
-      .control-group
-        .control-label Pairing
-        .controls
-          select.input#pairing(name='pairing')
+      .form-group.row
+        label.col-form-label.col-sm-2.text-right(for='type-number') Type number
+        .col-sm-4
+          input.form-control#type-number(type='text', placeholder='NNN', name='typeNumber', minlength=3, maxlength=3, required)
+      .form-group.row
+        label.col-form-label.col-sm-2.text-right(for='name') New type name
+        .col-sm-4
+          input.form-control#name(name='newName', type='text', disabled)
+          span.form-control-static Generated from the above inputs
+      form-group.row
+        legend.border-bottom Details
+      .form-group.row
+        label.col-form-label.col-sm-2.text-right(for='service') Function/Service
+        .col-sm-4
+          input.form-control#service(type='text', name='service')
+      .form-group.row
+        label.col-form-label.col-sm-2.text-right(for='pairing') Pairing
+        .col-sm-4
+          select.form-control#pairing(name='pairing')
             option N/A
             option unpaired
             option twisted pair
             option triad
-      .control-group
-        .control-label Shielding
-        .controls
-          select.input#shielding(name='shielding')
+      .form-group.row
+        label.col-form-label.col-sm-2.text-right(for='shielding') Shielding
+        .col-sm-4
+          select.form-control#shielding(name='shielding')
             option N/A
             option unshielded
             option overall shielded
@@ -83,48 +89,48 @@ block content
             option single shielded (braid)
             option double shielded (braid)
             option overall shielded (foil) + TC braid
-      .control-group
-        .control-label O.D. (max)
-        .controls
-          input#outer-diameter(type='text', name='outerDiameter')
-      .control-group
-        .control-label Valtage rating (V)
-        .controls
-          input#voltage-rating(type='text', name='voltageRating')
-      .control-group
-        .control-label Raceway
-        .controls
-          select.input#raceway(name='raceway')
+      .form-group.row
+        label.col-from-label.col-sm-2.text-right(for='outer-diameter') O.D. (max)
+        .col-sm-4
+          input.form-control#outer-diameter(type='text', name='outerDiameter')
+      .form-group.row
+        label.col-from-label.col-sm-2.text-right(for='voltage-rating') Voltage Rating (V)
+        .col-sm-4
+          input.form-control#voltage-rating(type='text', name='voltageRating')
+      .form-group.row
+        label.col-form-label.col-sm-2.text-right(for='raceway') Raceway
+        .col-sm-4
+          select.form-control#raceway(name='raceway')
             option N/A
             option Cable Tray, Conduit
-      .control-group
-        .control-label Tunnel/HotCell usage
-        .controls
-          label.checkbox
-            input(type='checkbox', name='tunnelHotcell')
-      .control-group
-        .control-label Manufacturer
-        .controls
-          input#manufacturer(type='text', name='manufacturer')
-      .control-group
-        .control-label Part number
-        .controls
-          input#partNumber(type='text', name='partNumber')
-      .control-group
-        .control-label Other requirements
-        .controls
-          textarea(name='otherRequirements')
-      .form-actions
-        .btn-group
+      .form-group.row
+        label.col-form-label.col-sm-2.text-right(for='tunnel-hotcell') Tunnel/HotCell Usage
+        .col-sm-4
+          label
+            input.form-control#tunnel-hotcell(type='checkbox', name='tunnelHotcell')
+      .form-group.row
+        label.col-form-label.col-sm-2.text-right(for='manufacturer') Manufacturer
+        .col-sm-4
+          input.form-control#manufacturer(type='text', name='manufacturer')
+      .form-group.row
+        label.col-form-label.col-sm-2.text-right(for='partNumber') Part Number
+        .col-sm-4
+          input.form-control#partNumber(type='text', name='partNumber')
+      .form-group.row
+        label.col-form-label.col-sm-2.text-right Other requirements
+        .col-sm-4
+          textarea.form-control(name='otherRequirements')
+      .form-group.bg-light.p-3
+        .btn-group.mr-2
           button.btn.btn-primary#submit(type='submit', name='action') Submit
-        .btn-group
+        .btn-group.mr-2
           button.btn.btn-warning#reset(type='reset', name='reset') Reset
 
 
 
 block js
-  script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
-  script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
-  script(type='text/javascript', src=basePath + '/jquery/jquery.validate.js')
-  script(type='text/javascript', src=basePath + '/dependencies/binder.js')
-  script(type='text/javascript', src=basePath + '/javascripts/new-cable-type.js')
+  //- script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
+  //- script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
+  //- script(type='text/javascript', src=basePath + '/jquery/jquery.validate.js')
+  //- script(type='text/javascript', src=basePath + '/dependencies/binder.js')
+  //- script(type='text/javascript', src=basePath + '/javascripts/new-cable-type.js')
