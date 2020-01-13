@@ -25,7 +25,7 @@ export class Util {
             && obj.constructor.prototype.hasOwnProperty('call');
   }
   public static isArray(obj: any): obj is any[] {
-    return obj !== undefined && (obj instanceof Array || obj.construtor === 'Array');
+    return obj !== undefined && obj !== null && (obj instanceof Array || obj.construtor === 'Array');
   }
   public static isString(obj: any): obj is string {
     return typeof(obj) === 'string' || obj instanceof String;
@@ -298,7 +298,7 @@ export class FormBinder {
       accessor.set(element.name, value);
     }
   }
-  public deserialize(obj: any) {
+  public deserialize(obj?: any) {
     const accessor = this._getAccessor(obj);
     for (let i = 0; i < this.form.elements.length; i++) {
       this.deserializeField(this.form.elements[i], accessor);
