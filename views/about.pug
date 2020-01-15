@@ -1,70 +1,76 @@
-doctype html
-html
-  head
-    meta(http-equiv='X-UA-Compatible', content='IE=Edge')
-    title FRIB Cable :: about
-    meta(name='viewport', content='width=device-width, initial-scale=1.0')
-    link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
-    link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
-    link(rel='stylesheet', href=basePath + '/datatables/css/dataTables.bootstrap.css')
-    link(rel='stylesheet', href=basePath + '/font-awesome-4.2.0/css/font-awesome.css')
-    link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
-  body(data-spy='scroll', data-target='.bs-docs-sidebar')
-    .navbar.navbar-inverse.navbar-fixed-top
-      .navbar-inner
-        .container-fluid
-          button.btn.btn-navbar(type='button', data-toggle='collapse', data-target='.nav-collapse')
-            span.icon-bar
-            span.icon-bar
-            span.icon-bar
-          a.brand(href='http://www.frib.msu.edu/', target='_blank') FRIB
-          .nav-collapse.collapse
-            ul.nav
-              li.active
-                a(href=basePath + '/') Cable
-              li
-                a(href='https://controls.frib.msu.edu/', target='_blank') Controls
-              li
-                a(href=basePath + '/logout') Logout
-    header.jumbotron.subhead
+extends layout.pug
+
+block head
+  meta(http-equiv='X-UA-Compatible', content='IE=Edge')
+  title FRIB Cable :: about
+  meta(name='viewport', content='width=device-width, initial-scale=1.0')
+  //- link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
+  //- link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
+  //- link(rel='stylesheet', href=basePath + '/datatables/css/dataTables.bootstrap.css')
+  //- link(rel='stylesheet', href=basePath + '/font-awesome-4.2.0/css/font-awesome.css')
+  link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+  script(type='text/javascript', src=basePath + '/dist/base.js')
+
+block content
+  div
+    //- div(data-spy='scroll', data-target='.bs-docs-sidebar')
+    //- .navbar.navbar-inverse.navbar-fixed-top
+    //-   .navbar-inner
+    //-     .container-fluid
+    //-       button.btn.btn-navbar(type='button', data-toggle='collapse', data-target='.nav-collapse')
+    //-         span.icon-bar
+    //-         span.icon-bar
+    //-         span.icon-bar
+    //-       a.brand(href='http://www.frib.msu.edu/', target='_blank') FRIB
+    //-       .nav-collapse.collapse
+    //-         ul.nav
+    //-           li.active
+    //-             a(href=basePath + '/') Cable
+    //-           li
+    //-             a(href='https://controls.frib.msu.edu/', target='_blank') Controls
+    //-           li
+    //-             a(href=basePath + '/logout') Logout
+    //- header.jumbotron.subhead
+    //-   .container
+    //-     h1 FRIB Cable
+    //-     h2 A Web application to manage cables and cable users
+    .jumbotron
       .container
         h1 FRIB Cable
         h2 A Web application to manage cables and cable users
 
+
     .container
       .row
-        .span3.bs-docs-sidebar
-          ul.nav.nav-list.bs-docs-sidenav.affix(data-offset-top='282', data-spy='affix', style='top: 40px;')
-            li
-              a(href='#user') User management
-            li
-              a(href='#bar') Bar chart
-            li
-              a(href='#change') Change cable specification
-            li
-              a(href='#bug') Bugs and suggestions
-        .span9
-          section#user
+        .nav.flex-column.nav-pills.col-3(role='tablist')
+          //- ul.nav.nav-list.bs-docs-sidenav.affix(data-offset-top='282', data-spy='affix', style='top: 40px;')
+          a.nav-link.active(href='#user', data-toggle='pill' role='tab') User management
+          a.nav-link(href='#bar', data-toggle='pill' role='tab') Bar chart
+          a.nav-link(href='#change', data-toggle='pill' role='tab') Change cable specification
+          a.nav-link(href='#bug', data-toggle='pill' role='tab') Support
+        .tab-content.col-9
+          .tab-pane.show.active#user
             .page-header
               h2 User management
             p An application admin user can change a user's role and add WBS numbers to a manager's account.
-            embed(src=basePath + '/images/user.swf', width=1024, height=788, quality='low', play=false, loop=false, wmode='transparent', type='application/x-shockwave-flash', pluginspage='http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash')
-          section#bar
+            video(width='960', height='540', controls)
+              source(src=basePath + '/images/user.m4v', type='video/mp4')
+            //- embed(src=basePath + '/images/user.m4v', width=1024, height=788, quality='low', play=false, loop=false, wmode='transparent', type='application/x-shockwave-flash', pluginspage='http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash')
+          .tab-pane#bar
             .page-header
               h2 Bar chart
             p A user can plot a bar chart for the data loaded in any table. A user can plot the data from different tables by switching the active tab. By default, all the data entries in a table are counted and plotted. A user can also filter and select the data entries to be plotted. The chart can be saved as images by right clicking on it. All items with an empty property will be counted in a group, and the group has no label on the chart.
-            embed(src=basePath + '/images/bar.swf', width=1024, height=788, quality='low', play=false, loop=false, wmode='transparent', type='application/x-shockwave-flash', pluginspage='http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash')
-          section#change
+            video(width='960', height='540', controls)
+              source(src=basePath + '/images/bar.m4v', type='video/mp4')
+            //- embed(src=basePath + '/images/bar.m4v', width=1024, height=788, quality='low', play=false, loop=false, wmode='transparent', type='application/x-shockwave-flash', pluginspage='http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash')
+          .tab-pane#change
             .page-header
               h2 Change cable specification
             p A manager can change the specification of a cable in the table view. The interface switchs to an edit mode when clicking the Edit mode button. The editable cells in the table change to a light blue color. Double click on a cell to edit, and a dialog to appear. If the new value is the same as the old value, the change request will be ignored.
-            embed(src=basePath + '/images/change.swf', width=1024, height=788, quality='low', play=false, loop=false, wmode='transparent', type='application/x-shockwave-flash', pluginspage='http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash')
-          section#bug
-          section#bug
+            video(width='960', height='540', controls)
+              source(src=basePath + '/images/change.m4v', type='video/mp4')
+            //- embed(src=basePath + '/images/change.m4v', width=1024, height=788, quality='low', play=false, loop=false, wmode='transparent', type='application/x-shockwave-flash', pluginspage='http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash')
+          .tab-pane#bug
             .page-header
               h2 Support
-            h4 Contact: <a href='mailto:controlshelp@frib.msu.edu'>controlshelp@frib.msu.edu</a>
-
-    script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
-    script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
-
+              h4 Contact: <a href='mailto:controlshelp@frib.msu.edu'>controlshelp@frib.msu.edu</a>
