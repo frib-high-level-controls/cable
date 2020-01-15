@@ -68,9 +68,10 @@ function updateCat(json) {
     value: ''
   }).text('choose').prop('disabled', true));
   $.each(json, function (k, v) {
-    if (v && v.projects && ~v.projects.indexOf(proj)) {
+    console.log('k:' + k, 'v:' + v)
+    if (v && v.projects && ~v.projects.indexOf(proj)) { //eslint-disable-line no-bitwise
       $('#cat').append($('<option>', {
-        value: k
+        value: k,
       }).text(v.name));
     }
   });
