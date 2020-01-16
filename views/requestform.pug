@@ -17,24 +17,24 @@ legend Basic information
     input.form-control#engineer(type='text', placeholder='Last, First', name='basic.engineer', required)
 .form-group
   label(for="cat")  Origin category
-  .controls
+  .controls.d-flex
     select.form-control#cat(disabled=true, name='basic.originCategory', required)
       option(value='', disabled=true, selected) choose
-    span.add-on &nbsp;
-  span &nbsp;See&nbsp;
-    a(href=basePath + '/shared/frib_cable_map.pdf', target='_blank') Map
+    span.add-on.p-2
+    span.p-2 See 
+      a(href=basePath + '/shared/frib_cable_map.pdf', target='_blank') Map
 .form-group
   label(for="sub")  Origin subcategory
-  .controls
+  .controls.d-flex
     select.form-control#sub(disabled=true, name='basic.originSubcategory', required)
       option(value='', disabled=true, selected) choose
-    span.add-on &nbsp;
+    span.add-on.p-2
 .form-group
   label(for="signal")  Signal classification
-  .controls
+  .controls.d-flex
     select.form-control#signal(disabled=true, name='basic.signalClassification', required)
       option(value='', disabled=true, selected) choose
-    span.add-on &nbsp;
+    span.add-on.p-2
 .form-group
   label(for="tray-section")  Tray section
   .controls
@@ -113,9 +113,9 @@ legend Routing
     input.form-control(type='text', name='conduit')
 .form-group
   label Length
-  .controls
+  .controls.d-flex
     input.form-control(type='number', name='length')
-    span.add-on ft
+    span.add-on.p-2 ft
 
 legend Other
 .form-group
