@@ -397,13 +397,26 @@ export function init(app: express.Application) {
       res.status(500).send('session missing');
       return;
     }
-    return res.render('request', {
-      traySects: traySects,
-      projects: projects,
-      sysSub: sysSub,
-      id: req.params.id,
-      roles: req.session.roles,
-    });
+    return res.format({
+      'text/html': () => {
+        if(req.session) {
+          res.render('request', {
+            traySects: traySects,
+            projects: projects,
+            sysSub: sysSub,
+            id: req.params.id,
+            roles: req.session.roles,
+          });
+        }
+      },
+      'application/json': () => {
+        if(req.session) {
+          res.json({
+            data: sysSub,
+          });
+        }
+      },
+    }) 
   });
 
   app.delete('/requests/:id/', auth.ensureAuthenticated, (req, res) => {

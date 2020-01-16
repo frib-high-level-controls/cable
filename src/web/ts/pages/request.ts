@@ -10,8 +10,8 @@ import * as $ from 'jquery';
 import _ from 'lodash';
 import * as moment from 'moment';
 import Bloodhound from 'typeahead.js';
-
-const sysSub = (window as any).sysSub;
+import { request } from 'http';
+let sysSub;
 function sendRequest(data, initModel, binder) {
   const path = window.location.pathname;
   let url;
@@ -187,7 +187,21 @@ function setCSS(proj, cat, sub, signal) {
   }
 }
 
-$(() => {
+$(async () => {
+
+  let pkg;
+  try {
+    pkg = await $.get({
+      url: '/requests/' + $('#requestId').text(),
+      dataType: 'json',
+    });
+  } catch (xhr) {
+    pkg = xhr.responseJSON;
+    let message = 'Unknown error retrieving device';
+  }
+  
+  sysSub = pkg.data;
+
   ajax401('');
   disableAjaxCache();
   $('form-control').keypress((e) => {
@@ -199,7 +213,6 @@ $(() => {
   const requestForm = document.forms[0];
   const binder = new Binder.FormBinder(requestForm);
   let initModel;
-
   $.validator.addMethod('wbs', (value, element) => {
     return this.optional(element) || /^[A-Z]\d{1,5}$/.test(value);
   }, 'Please check the WBS number, remove spaces and dots');

@@ -10,8 +10,6 @@ block head
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
   script(type='text/javascript' src=basePath + '/dist/request.js')
 block content
-  script.
-    var sysSub = !{JSON.stringify(sysSub)};
   .container
     #message
     .modal.hide.fade#modal(tabindex='-1', role='dialog', data-backdrop='static', aria-labelledby='modalLabel', aria-hidden='true')
