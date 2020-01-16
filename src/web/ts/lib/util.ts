@@ -4,11 +4,11 @@
 import * as $ from 'jquery';
 
 
-export function json2List(json) {
-  var output = '<dl>';
-  for (var k in json) {
+export function json2List(json: any) {
+  let output = '<dl>';
+  for (const k in json) {
     if (json.hasOwnProperty(k)) {
-      if (typeof(json[k]) == 'object') {
+      if (typeof(json[k]) === 'object') {
         output = output + '<dl>' + '<dt>' + k + '</dt>' + '<dd>' + json2List(json[k]) + '</dd>' + '</dl>';
       } else {
         output = output + '<p><strong>' + k + '</strong> : ' + json[k] + '</p>';
@@ -19,38 +19,38 @@ export function json2List(json) {
   return output;
 }
 
-export function nameAuto(input, nameCache){
+export function nameAuto(input: any, nameCache: any) {
   return {
     minLength: 1,
-    source: function(req, res) {
-      var filter = function (term, names) {
-          var i, output = [];
-          for (i=0; i<names.length; i+=1) {
-            if (names[i].toLowerCase().indexOf(term) === 0) {
-              output.push(names[i]);
+    source: (req, res) => {
+      const filter = (t: string, names: string[]) => {
+          const output = [];
+          for (const name of names) {
+            if (name.toLowerCase().indexOf(t) === 0) {
+              output.push(name);
             }
           }
           return output;
       };
-      var term = req.term.toLowerCase();
-      var key = term.charAt(0);
+      const term = req.term.toLowerCase();
+      const key = term.charAt(0);
       if (key in nameCache) {
         res(filter(term, nameCache[key]));
         return;
       }
-      $.getJSON(basePath + '/adusernames', {term: key}, function(data, status, xhr) {
-        var names = [];
-        for (var i = 0; i < data.length; i += 1) {
-          if (data[i].displayName.indexOf(',') !== -1) {
-            names.push(data[i].displayName);
+      $.getJSON(basePath + '/adusernames', {term: key}, (data, status, xhr) => {
+        const names = [];
+        for (const d of data) {
+          if (d.displayName.indexOf(',') !== -1) {
+            names.push(d.displayName);
           }
         }
         nameCache[key] = names;
         res(filter(term, nameCache[key]));
       });
     },
-    select: function(event, ui) {
+    select(event, ui) {
       $(input).val(ui.item.value);
-    }
+    },
   };
 }

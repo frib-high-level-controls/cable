@@ -11,17 +11,15 @@ import {
   fnGetSelected,
 } from '../lib/table';
 
-/*global fnGetSelected: false*/
 
-var plot = null;
+let plot = null;
 function query(o, s) {
   s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
   s = s.replace(/^\./, ''); // strip a leading dot
-  var a = s.split('.');
-  var i;
-  for (i = 0; i < a.length; i += 1) {
-    if (o.hasOwnProperty(a[i])) {
-      o = o[a[i]];
+  const a = s.split('.');
+  for (const i of a) {
+    if (o.hasOwnProperty(i)) {
+      o = o[i];
     } else {
       return null;
     }
@@ -30,30 +28,28 @@ function query(o, s) {
 }
 
 function drawChart(ctx, selected, oTable, groupBy) {
-  var barChartData = {
+  const barChartData = {
     labels: [],
     datasets: [{
       fillColor: 'rgba(151,187,205,0.5)',
       strokeColor: 'rgba(151,187,205,0.8)',
       highlightFill: 'rgba(151,187,205,0.75)',
       highlightStroke: 'rgba(151,187,205,1)',
-      data: []
-    }]
+      data: [],
+    }],
   };
-  var data = [];
-  var rows;
-  var i;
+  let data = [];
   if (selected.length) {
-    selected.forEach(function (row) {
+    selected.forEach((row) => {
       data.push(oTable.row(row).data());
     });
   } else {
     data = oTable.rows().data();
   }
-  var groups = _.countBy(data, function (item) {
+  const groups = _.countBy(data, (item) => {
     return query(item, groupBy);
   });
-  _.forEach(groups, function (count, key) {
+  _.forEach(groups, (count, key) => {
     barChartData.labels.push(key);
     barChartData.datasets[0].data.push(count);
   });
@@ -69,14 +65,14 @@ function drawChart(ctx, selected, oTable, groupBy) {
         display: false,
       },
     },
-    //barShowStroke: false,
-    //animation: false
+    // barShowStroke: false,
+    // animation: false
   });
   return barChartData;
 }
 
 function tableBar(oTable) {
-  var selected = fnGetSelected(oTable, 'row-selected');
+  const selected = fnGetSelected(oTable, 'row-selected');
   if (selected.length) {
     $('#modalLabel').html('Plot a bar chart for the selected ' + selected.length + ' items in current table');
   } else {
@@ -88,27 +84,27 @@ function tableBar(oTable) {
 
   $('#modal').modal('show');
 
-  $('#plot').click(function (e) {
+  $('#plot').click((e) => {
     e.preventDefault();
     // Reset element visibility. Chart must be visible when created.
     $('#barChartData,#barChartHideData').prop('hidden', true);
     $('#barChart,#barChartShowData').prop('hidden', false);
-    var ctx = ($('#barChart')[0] as any).getContext('2d');
-    var groupBy = $('#bar-key').val();
-    var data = drawChart(ctx, selected, oTable, groupBy);
-    var csv = [ '"' + $('#bar-key option:selected').text() + '", "count"'];
-    for (var idx = 0; idx < data.labels.length; idx += 1) {
+    const ctx = ($('#barChart')[0] as any).getContext('2d');
+    const groupBy = $('#bar-key').val();
+    const data = drawChart(ctx, selected, oTable, groupBy);
+    const csv = [ '"' + $('#bar-key option:selected').text() + '", "count"'];
+    for (let idx = 0; idx < data.labels.length; idx += 1) {
       csv.push('"' + data.labels[idx] + '", ' + data.datasets[0].data[idx]);
     }
     $('#barChartData').val(csv.join('\n'));
   });
 
-  $('#barChartShowData').click(function (e) {
+  $('#barChartShowData').click((e) => {
     $('#barChart,#barChartShowData').prop('hidden', true);
     $('#barChartData,#barChartHideData').prop('hidden', false);
   });
 
-  $('#barChartHideData').click(function (e) {
+  $('#barChartHideData').click((e) => {
     $('#barChartData,#barChartHideData').prop('hidden', true);
     $('#barChart,#barChartShowData').prop('hidden', false);
   });

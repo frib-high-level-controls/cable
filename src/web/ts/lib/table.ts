@@ -1,16 +1,13 @@
-/*global moment:false*/
-// table functions
-
-
-import 'datatables.net-bs4';
-
+/**
+ * Common table function and data
+ */
 import * as $ from 'jquery';
 
 import * as moment from 'moment';
 
 
 export function selectEvent() {
-  $('tbody').on('click', 'input.select-row', function (e) {
+  $('tbody').on('click', 'input.select-row', (e) => {
     if ($(this).prop('checked')) {
       $(e.target).closest('tr').removeClass('row-highlighted');
       $(e.target).closest('tr').addClass('row-selected');
@@ -21,8 +18,8 @@ export function selectEvent() {
 }
 
 export function tabShownEvent() {
-  $('a[data-toggle="tab"]').on('shown', function () {
-    var table = $.fn.DataTable().tables(true);
+  $('a[data-toggle="tab"]').on('shown', () => {
+    const table = $.fn.DataTable().tables(true);
     if (table.length > 0) {
       $(table).DataTable().columns.adjust();
     }
@@ -30,7 +27,7 @@ export function tabShownEvent() {
 }
 
 export function highlightedEvent() {
-  $('tbody').on('click', 'td', function (e) {
+  $('tbody').on('click', 'td', (e) => {
     if (!$(e.target).closest('tr').hasClass('row-selected') && !$(e.target).hasClass('select-row') && !$(e.target).is('a') && !$(e.target).is('i')) {
       if ($(e.target).closest('tr').hasClass('row-highlighted')) {
         $(e.target).closest('tr').removeClass('row-highlighted');
@@ -43,22 +40,22 @@ export function highlightedEvent() {
 
 
 export function filterEvent(opt?: any) {
-  opt = opt || {}
+  opt = opt || {};
   opt.selectedClass = opt.selectedClass || 'row-selected';
-  opt.checkboxClass = opt.checkboxClass || 'select-row'
-  $('.filter').on('change', 'input', function (e) {
-    var bodyTable;
-    var tableScroll = $(this).closest('.dataTables_scroll');
+  opt.checkboxClass = opt.checkboxClass || 'select-row';
+  $('.filter').on('change', 'input', function(e) {
+    let bodyTable;
+    const tableScroll = $(this).closest('.dataTables_scroll');
     if (tableScroll.length) {
       bodyTable = $(this).closest('.dataTables_scroll').find('.dataTables_scrollBody table');
     } else {
       bodyTable = $(this).closest('table');
     }
-    var th = $(this).closest('th');
-    var filter = $(this).closest('.filter');
-    var index;
-    var table = $(this).closest('table');
-    var wrapper;
+    const th = $(this).closest('th');
+    const filter = $(this).closest('.filter');
+    let index;
+    const table = $(this).closest('table');
+    let wrapper;
     if (tableScroll.length) {
       wrapper = tableScroll;
     } else {
@@ -73,7 +70,7 @@ export function filterEvent(opt?: any) {
     }
     fnDeselect(bodyTable.dataTable(), opt.selectedClass, opt.checkboxClass);
     bodyTable.dataTable().fnFilter(this.value, index);
-    var scrollDiv;
+    let scrollDiv;
     if ($(this).closest('.table-overflow').length) {
       scrollDiv = $(this).closest('.table-overflow')[0];
       if ($(this).offset().left > $(scrollDiv).offset().left + $(scrollDiv).width()) {
@@ -96,22 +93,22 @@ function formatDateShort(date) {
 }
 
 export function formatCableStatus(s) {
-  var status = {
-    '100': 'approved',
-    '101': 'ordered',
-    '102': 'received',
-    '103': 'accepted',
-    '200': 'to install',
-    '201': 'labeled',
-    '202': 'bench terminated',
-    '203': 'bench tested',
-    '249': 'to pull',
-    '250': 'pulled',
-    '251': 'field terminated',
-    '252': 'field tested',
-    '300': 'working',
-    '400': 'failed',
-    '501': 'not needed'
+  const status = {
+    100: 'approved',
+    101: 'ordered',
+    102: 'received',
+    103: 'accepted',
+    200: 'to install',
+    201: 'labeled',
+    202: 'bench terminated',
+    203: 'bench tested',
+    249: 'to pull',
+    250: 'pulled',
+    251: 'field terminated',
+    252: 'field tested',
+    300: 'working',
+    400: 'failed',
+    501: 'not needed',
   };
   if (status[s.toString()]) {
     return status[s.toString()];
@@ -123,7 +120,7 @@ export function formatCableStatus(s) {
 function dateColumn(title, key, long?: any) {
   return {
     sTitle: title,
-    mData: function (source, type, val) {
+    mData: (source, type, val) => {
       if (type === 'sort') {
         // return formatDateLong(source[key]);
         return source[key];
@@ -133,7 +130,7 @@ function dateColumn(title, key, long?: any) {
       }
       return formatDate(source[key]);
     },
-    sDefaultContent: ''
+    sDefaultContent: '',
   };
 }
 
@@ -142,10 +139,10 @@ function personColumn(title, key) {
     sTitle: title,
     mData: key,
     sDefaultContent: '',
-    mRender: function (data, type, full) {
+    mRender: (data, type, full) => {
       return '<a href = "' + basePath + '/users/' + data + '" target="_blank">' + data + '</a>';
     },
-    bFilter: true
+    bFilter: true,
   };
 }
 
@@ -154,17 +151,16 @@ function personNameColumn(title, key) {
     sTitle: title,
     mData: key,
     sDefaultContent: '',
-    mRender: function (data, type, full) {
+    mRender: (data, type, full) => {
       return '<a href = "' + basePath + '/usernames/' + data + '" target="_blank">' + data + '</a>';
     },
-    bFilter: true
+    bFilter: true,
   };
 }
 
 function createNullArray(size) {
-  var out = [],
-    i;
-  for (i = 0; i < size; i += 1) {
+  const out = [];
+  for (let i = 0; i < size; i += 1) {
     out.push(null);
   }
   return out;
@@ -187,11 +183,12 @@ export function fnUnwrap(oTableLocal) {
 
 
 export function fnGetSelected(oTableLocal, selectedClass) {
-  var aReturn = [],
-    i;
-  var aTrs = oTableLocal.rows().nodes();
-
-  for (i = 0; i < aTrs.length; i++) {
+  const aReturn = [];
+  const aTrs = oTableLocal.rows().nodes();
+  // DataTables.Api is only Array-like,
+  // so TS does not allow use of for-of.
+  // tslint:disable:prefer-for-of
+  for (let i = 0; i < aTrs.length; i++) {
     if ($(aTrs[i]).hasClass(selectedClass)) {
       aReturn.push(aTrs[i]);
     }
@@ -200,10 +197,11 @@ export function fnGetSelected(oTableLocal, selectedClass) {
 }
 
 export function fnDeselect(oTableLocal, selectedClass, checkboxClass) {
-  var aTrs = oTableLocal.rows().nodes(),
-    i;
-
-  for (i = 0; i < aTrs.length; i++) {
+  const aTrs = oTableLocal.rows().nodes();
+  // DataTables.Api is only Array-like,
+  // so TS does not allow use of for-of.
+  // tslint:disable:prefer-for-of
+  for (let i = 0; i < aTrs.length; i++) {
     if ($(aTrs[i]).hasClass(selectedClass)) {
       $(aTrs[i]).removeClass(selectedClass);
       $(aTrs[i]).find('input.' + checkboxClass + ':checked').prop('checked', false);
@@ -212,11 +210,10 @@ export function fnDeselect(oTableLocal, selectedClass, checkboxClass) {
 }
 
 export function fnSelectAll(oTableLocal, selectedClass, checkboxClass, current) {
-  var rows;
-  var i;
+  let rows;
   if (current) {
     rows = oTableLocal.$('tr', {
-      'page':'current',
+      page: 'current',
       // If 'current' is given then the
       // following two options are forced:
       // 'filter':'applied' and 'order':'current'
@@ -225,7 +222,7 @@ export function fnSelectAll(oTableLocal, selectedClass, checkboxClass, current) 
     rows = oTableLocal.$('tr');
   }
 
-  for (i = 0; i < rows.length; i += 1) {
+  for (let i = 0; i < rows.length; i += 1) {
     $(rows[i]).addClass(selectedClass);
     $(rows[i]).find('input.' + checkboxClass).prop('checked', true);
   }
@@ -239,14 +236,14 @@ export function fnSetDeselect(nTr, selectedClass, checkboxClass) {
 }
 
 function fnSetColumnsVis(oTableLocal, columns, show) {
-  columns.forEach(function (e, i, a) {
+  columns.forEach((e, i, a) => {
     oTableLocal.fnSetColumnVis(e, show);
   });
 }
 
 export function fnAddFilterFoot(sTable, aoColumns) {
-  var tr = $('<tr role="row">');
-  aoColumns.forEach(function (c) {
+  const tr = $('<tr role="row">');
+  aoColumns.forEach((c) => {
     if (c.bFilter) {
       tr.append('<th><input type="text" placeholder="' + c.sTitle + '" style="width:80%;" autocomplete="off"></th>');
     } else {
@@ -257,8 +254,8 @@ export function fnAddFilterFoot(sTable, aoColumns) {
 }
 
 function fnAddFilterHead(sTable, aoColumns) {
-  var tr = $('<tr role="row">');
-  aoColumns.forEach(function (c) {
+  const tr = $('<tr role="row">');
+  aoColumns.forEach((c) => {
     if (c.bFilter) {
       tr.append('<th><input type="text" placeholder="' + c.sTitle + '" style="width:80%;" autocomplete="off"></th>');
     } else {
@@ -269,8 +266,8 @@ function fnAddFilterHead(sTable, aoColumns) {
 }
 
 function fnAddFilterHeadScroll(sTable, aoColumns) {
-  var tr = $('<tr role="row">');
-  aoColumns.forEach(function (c) {
+  const tr = $('<tr role="row">');
+  aoColumns.forEach((c) => {
     if (c.bFilter) {
       tr.append('<th><input type="text" placeholder="' + c.sTitle + '" style="width:80%;" autocomplete="off"></th>');
     } else {
@@ -347,31 +344,31 @@ export const selectColumn = {
   sTitle: '',
   sDefaultContent: '<label class="checkbox"><input type="checkbox" class="select-row"></label>',
   sSortDataType: 'dom-checkbox',
-  asSorting: ['desc', 'asc']
+  asSorting: ['desc', 'asc'],
 };
 
-var idColumn = {
+const idColumn = {
   sTitle: '',
   mData: '_id',
-  bVisible: false
+  bVisible: false,
 };
 
 export const editLinkColumn = {
   sTitle: '',
   mData: '_id',
-  mRender: function (data, type, full) {
+  mRender: (data, type, full) => {
     return '<a href="' + basePath + '/requests/' + data + '" target="_blank"><i class="fa fa-edit fa-lg"></i></a>';
   },
-  bSortable: false
+  bSortable: false,
 };
 
 export const detailsLinkColumn = {
   sTitle: '',
   mData: '_id',
-  mRender: function (data, type, full) {
+  mRender: (data, type, full) => {
     return '<a href="' + basePath + '/requests/' + data + '/details" target="_blank"><i class="fa fa-file-alt fa-lg"></i></a>';
   },
-  bSortable: false
+  bSortable: false,
 };
 
 export const createdOnColumn = dateColumn('Created', 'createdOn');
@@ -391,7 +388,7 @@ export const rejectedOnColumn = dateColumn('Rejected', 'rejectedOn');
 export const rejectedOnLongColumn = dateColumn('Rejected', 'rejectedOn', true);
 export const rejectedByColumn = personColumn('Rejected by', 'rejectedBy');
 
-var obsoletedOnColumn = dateColumn('Obsoleted', 'obsoletedOn');
+const obsoletedOnColumn = dateColumn('Obsoleted', 'obsoletedOn');
 export const obsoletedOnLongColumn = dateColumn('Obsoleted', 'obsoletedOn', true);
 export const obsoletedByColumn = personColumn('Obsoleted by', 'obsoletedBy');
 
@@ -400,7 +397,7 @@ export const commentsColumn = {
   sDefaultContent: '',
   mData: 'comments',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 };
 
 export const lengthColumn = {
@@ -409,15 +406,15 @@ export const lengthColumn = {
   mData: 'length',
   sClass: 'editable',
   sParseType: 'number',
-  bFilter: true
+  bFilter: true,
 };
 
 export const versionColumn = {
   sTitle: 'version',
   sDefaultContent: 0,
   mData: '__v',
-  bFilter: true
-}
+  bFilter: true,
+};
 
 export const ownerProvidedColumn = {
   sTitle: 'Owner provided',
@@ -425,57 +422,59 @@ export const ownerProvidedColumn = {
   mData: 'ownerProvided',
   sClass: 'editable',
   sParseType: 'boolean',
-  bFilter: true
-}
+  bFilter: true,
+};
 
 export const basicColumns = [{
   sTitle: 'Project',
   sDefaultContent: '',
   mData: 'basic.project',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'WBS',
   sDefaultContent: '',
   mData: 'basic.wbs',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Category',
   sDefaultContent: '',
-  mData: function (source, type, val) {
-    return (source.basic.originCategory || '?') + (source.basic.originSubcategory || '?') + (source.basic.signalClassification || '?');
+  mData: (source, type, val) => {
+    return (source.basic.originCategory || '?')
+            + (source.basic.originSubcategory || '?')
+            + (source.basic.signalClassification || '?');
   },
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Tray section',
   sDefaultContent: '',
   mData: 'basic.traySection',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Cable type',
   sDefaultContent: '',
   mData: 'basic.cableType',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Engineer',
   sDefaultContent: '',
   mData: 'basic.engineer',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Function',
   sDefaultContent: '',
   mData: 'basic.service',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Tags',
   sDefaultContent: '',
   mData: 'basic.tags',
-  mRender: function (data, type, full) {
+  mRender: (data, type, full) => {
     if (data) {
       return data.join();
     }
@@ -486,12 +485,12 @@ export const basicColumns = [{
   // },
   sParseType: 'array',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Quantity',
   sDefaultContent: '',
   mData: 'basic.quantity',
-  bFilter: true
+  bFilter: true,
 }];
 
 export const fromColumns = [{
@@ -499,44 +498,44 @@ export const fromColumns = [{
   sDefaultContent: '',
   mData: 'from.rack',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'From termination device',
   sDefaultContent: '',
   mData: 'from.terminationDevice',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'From termination type',
   sDefaultContent: '',
   mData: 'from.terminationType',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'From termination port',
   sDefaultContent: '',
   mData: 'from.terminationPort',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'From wiring drawing',
   sDefaultContent: '',
   mData: 'from.wiringDrawing',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'From ready for termination',
   sDefaultContent: false,
   mData: 'from.readyForTerm',
   sClass: 'editable',
   sParseType: 'boolean',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'From terminated on',
   sDefaultContent: '',
-  mData: function (source, type, val) {
-    if( source.from && source.from.terminatedOn ) {
-      if( type === 'sort' ) {
+  mData: (source, type, val) => {
+    if ( source.from && source.from.terminatedOn ) {
+      if ( type === 'sort' ) {
         return source.from.terminatedOn;
       } else {
         return formatDateShort(source.from.terminatedOn);
@@ -545,13 +544,13 @@ export const fromColumns = [{
     return '';
   },
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
     sTitle: 'From terminated by',
     sDefaultContent: '',
     mData: 'from.terminatedBy',
     sClass: 'editable',
-    bFilter: true
+    bFilter: true,
 }];
 
 export const toColumns = [{
@@ -559,44 +558,44 @@ export const toColumns = [{
   sDefaultContent: '',
   mData: 'to.rack',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'To termination device',
   sDefaultContent: '',
   mData: 'to.terminationDevice',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'To termination type',
   sDefaultContent: '',
   mData: 'to.terminationType',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'To termination port',
   sDefaultContent: '',
   mData: 'to.terminationPort',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'To wiring drawing',
   sDefaultContent: '',
   mData: 'to.wiringDrawing',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'To ready for termination',
   sDefaultContent: false,
   mData: 'to.readyForTerm',
   sClass: 'editable',
   sParseType: 'boolean',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'To terminated on',
   sDefaultContent: '',
-  mData: function (source, type, val) {
-    if( source.to && source.to.terminatedOn ) {
-      if( type === 'sort' ) {
+  mData: (source, type, val) => {
+    if ( source.to && source.to.terminatedOn ) {
+      if ( type === 'sort' ) {
         return source.to.terminatedOn;
       } else {
         return formatDateShort(source.to.terminatedOn);
@@ -605,13 +604,13 @@ export const toColumns = [{
     return '';
   },
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 }, {
     sTitle: 'To terminated by',
     sDefaultContent: '',
     mData: 'to.terminatedBy',
     sClass: 'editable',
-    bFilter: true
+    bFilter: true,
 }];
 
 export const conduitColumn = {
@@ -619,25 +618,25 @@ export const conduitColumn = {
   sDefaultContent: '',
   mData: 'conduit',
   sClass: 'editable',
-  bFilter: true
+  bFilter: true,
 };
 
 export const numberColumn = {
   sTitle: 'Number',
   mData: 'number',
-  mRender: function (data, type, full) {
+  mRender: (data, type, full) => {
     return '<a href="' + basePath + '/cables/' + data + '/" target="_blank">' + data + '</a>';
   },
-  bFilter: true
+  bFilter: true,
 };
 
 export const requestNumberColumn = {
   sTitle: 'Request',
   mData: 'request_id',
-  mRender: function (data, type, full) {
+  mRender: (data, type, full) => {
     return '<a href="' + basePath + '/requests/' + data + '/" target="_blank">' + data + '</a>';
   },
-  bFilter: true
+  bFilter: true,
 };
 
 export const statusColumn = {
@@ -646,19 +645,18 @@ export const statusColumn = {
   // mRender: function(data, type, full) {
   //   return formatCableStatus(data);
   // },
-  mData: function (source, type, val) {
+  mData: (source, type, val) => {
     return formatCableStatus(source.status);
   },
-  bFilter: true
+  bFilter: true,
 };
 
 export const requiredColumn = {
   sTitle: 'Required',
-  mData: function (source, type, val) {
+  mData: (source, type, val) => {
     if (source.required) {
-      var result = [],
-        i;
-      for (i in source.required) {
+      const result = [];
+      for (const i in source.required) {
         if (source.required.hasOwnProperty(i) && source.required[i]) {
           result.push(i);
         }
@@ -667,78 +665,78 @@ export const requiredColumn = {
     }
     return '';
   },
-  bFilter: true
+  bFilter: true,
 };
 
 export const typeColumns: any = [{
   sTitle: 'Name',
   mData: 'name',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Service',
   mData: 'service',
   sDefaultContent: '',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Conductor number',
   mData: 'conductorNumber',
   sDefaultContent: '',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Conductor size',
   mData: 'conductorSize',
   sDefaultContent: '',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Type',
   mData: 'fribType',
   sDefaultContent: '',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Pairing',
   mData: 'pairing',
   sDefaultContent: '',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Shielding',
   mData: 'shielding',
   sDefaultContent: '',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Outer Diameter',
   mData: 'outerDiameter',
   sDefaultContent: '',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Voltage Rating',
   mData: 'voltageRating',
   sDefaultContent: '',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Raceway',
   mData: 'raceway',
   sDefaultContent: '',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Tunnel/Hotcell',
   mData: 'tunnelHotcell',
   sDefaultContent: '',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Manufacturer',
   mData: 'manufacturer',
   sDefaultContent: '',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Part number',
   mData: 'partNumber',
   sDefaultContent: '',
-  bFilter: true
+  bFilter: true,
 }, {
   sTitle: 'Other Requirements',
   mData: 'otherRequirements',
   sDefaultContent: '',
-  bFilter: true
+  bFilter: true,
 }];
 
 /*user columns*/
@@ -749,31 +747,31 @@ export const fullNameNoLinkColumn = {
   sTitle: 'Full name',
   mData: 'name',
   sDefaultContent: '',
-  bFilter: true
+  bFilter: true,
 };
 
 export const rolesColumn = {
   sTitle: 'Roles',
   mData: 'roles',
   // sDefaultContent: '',
-  mRender: function (data, type, full) {
+  mRender: (data, type, full) => {
     if (data) {
       return data.join(', ');
     }
     return '';
   },
-  bFilter: true
+  bFilter: true,
 };
 
 export const wbsColumn = {
   sTitle: 'WBS',
-  mData: function (source) {
+  mData: (source) => {
     if (source.wbs) {
       return source.wbs.join(', ');
     }
     return '';
   },
-  bFilter: true
+  bFilter: true,
 };
 
 export const lastVisitedOnColumn = dateColumn('Last visited', 'lastVisitedOn');
@@ -791,13 +789,12 @@ export const sButtons = [
   // },
 ];
 
-//var sDom = "<'row-fluid'<'span6'<'control-group'T>>><'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>";
 export const sDom = '<"d-flex"<"form-inline mr-auto p-2"<l>><<"p-2"B><"form-inline mr-auto p-2"<f>>>>rt<"d-flex"<"mr-auto p-2"i><"p-2"p>>';
-var sDom2i = "<'row-fluid'<'span6'<'control-group'T>>><'row-fluid'<'span3'l><'span3'i><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>";
+const sDom2i = "<'row-fluid'<'span6'<'control-group'T>>><'row-fluid'<'span3'l><'span3'i><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>";
 export const sDom2InoF = '<"d-flex"<"form-inline mr-auto p-2"<l>><"p-2"B>>rt<"d-flex"<"mr-auto p-2"i><"p-2"p>>';
-var sDom2i1p = "<'row-fluid'<'span6'<'control-group'T>>><'row-fluid'<'span3'l><'span3'i><'span3'r><'span3'f>>t<'row-fluid'<'span6'i><'span6'p>>";
-var sDomNoTools = "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>";
-var sDomNoLength = "<'row-fluid'<'span6'<'control-group'T>><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>";
+const sDom2i1p = "<'row-fluid'<'span6'<'control-group'T>>><'row-fluid'<'span3'l><'span3'i><'span3'r><'span3'f>>t<'row-fluid'<'span6'i><'span6'p>>";
+const sDomNoTools = "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>";
+const sDomNoLength = "<'row-fluid'<'span6'<'control-group'T>><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>";
 
 /**
  * By default DataTables only uses the sAjaxSource variable at initialisation
@@ -871,7 +868,7 @@ var sDomNoLength = "<'row-fluid'<'span6'<'control-group'T>><'span6'f>r>t<'row-fl
 //     that.oApi._fnClearTable(oSettings);
 
 //     /* Got the data - add it to the table */
-//     var aData = (oSettings.sAjaxDataProp !== "") ? that.oApi._fnGetObjectDataFn(oSettings.sAjaxDataProp)(json) : json;
+//     var aData = (oSettings.sAjaxDataProp !== "")?that.oApi._fnGetObjectDataFn(oSettings.sAjaxDataProp)(json):json;
 //     var i;
 //     for (i = 0; i < aData.length; i++) {
 //       that.oApi._fnAddData(oSettings, aData[i]);
