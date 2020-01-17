@@ -188,20 +188,7 @@ function setCSS(proj, cat, sub, signal) {
 }
 
 $(async () => {
-
-  let pkg;
-  try {
-    pkg = await $.get({
-      url: '/requests/' + $('#requestId').text(),
-      dataType: 'json',
-    });
-  } catch (xhr) {
-    pkg = xhr.responseJSON;
-    let message = 'Unknown error retrieving device';
-  }
-  
-  sysSub = pkg.data;
-
+  sysSub =  (window as any).sysSub;
   ajax401('');
   disableAjaxCache();
   $('form-control').keypress((e) => {
