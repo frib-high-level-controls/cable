@@ -1,13 +1,9 @@
 /*
  * Editable table view of cable types
  */
-import 'bootstrap/dist/css/bootstrap.min.css';
+import './base';
 
-import '@fortawesome/fontawesome-free/js/all';
-
-import 'popper.js';
-
-import 'bootstrap';
+import 'datatables.net-bs4/css/dataTables.bootstrap4.min.css';
 
 import 'jquery-jeditable';
 
@@ -22,56 +18,19 @@ import 'datatables.net-buttons/js/buttons.print.min.js';
 
 import * as $ from 'jquery';
 
-import * as moment from 'moment';
-
 import * as dtutil from '../shared/datatablesutil';
 
 import {
-  ajax401,
-  disableAjaxCache,
-} from '../lib/ajaxhelper';
-
-import {
-  approvedByColumn,
-  approvedOnColumn,
-  basicColumns,
-  commentsColumn,
-  conduitColumn,
-  createdOnColumn,
-  detailsLinkColumn,
-  editLinkColumn,
   filterEvent,
-  fnAddFilterFoot,
-  fnDeselect,
-  fnGetSelected,
-  fnSelectAll,
-  fnSetDeselect,
-  fnUnwrap,
-  fnWrap,
-  fromColumns,
-  highlightedEvent,
-  lengthColumn,
-  numberColumn,
-  ownerProvidedColumn,
-  rejectedByColumn,
-  rejectedOnColumn,
   sButtons,
-  sDom,
   sDom2InoF,
-  selectColumn,
-  selectEvent,
-  statusColumn,
-  submittedOnColumn,
-  tabShownEvent,
-  toColumns,
   typeColumns,
-  updatedOnColumn,
 } from '../lib/table';
 
 /*global fnAddFilterFoot: false, typeColumns: false, sDom: false, oTableTools: false, filterEvent: false*/
 /*global window: false*/
 
-$(document).ajaxError(function (event, jqxhr) {
+$(document).ajaxError((event, jqxhr) => {
   if (jqxhr.status === 401) {
     $('#message').append('<div class="alert alert-danger"><button class="close" data-dismiss="alert">x</button>Please click <a href="/" target="_blank">home</a>, log in, and then save the changes on this page.</div>');
     $(window).scrollTop($('#message div:last-child').offset().top - 40);
@@ -79,14 +38,17 @@ $(document).ajaxError(function (event, jqxhr) {
 });
 
 function tdEdit(oTable) {
-  $(oTable.cells().nodes()).editable(function (value) {
-    var that = this;
-    var newValue = value.trim();
-    var oldValue = oTable.cell(that).data().trim();
+  $(oTable.cells().nodes()).editable(function(value) {
+    const that = this;
+    const newValue = value.trim();
+    let oldValue = oTable.cell(that).data();
+    if (oldValue) {
+      oldValue = String(oldValue).trim();
+    }
     if (newValue === oldValue) {
       return newValue;
     }
-    var data: { target?: string; update?: string; original?: string; } = {};
+    const data: { target?: string; update?: string; original?: string; } = {};
     data.target = typeColumns[oTable.column(that).index()].mData;
     data.update = newValue;
     data.original = oldValue;
@@ -102,15 +64,15 @@ function tdEdit(oTable) {
       type: 'PUT',
       contentType: 'application/json',
       data: JSON.stringify(data),
-      success: function () {
+      success: () => {
         oTable.row(that).data()[data.target] = newValue;
         oTable.draw();
       },
-      error: function (jqXHR) {
+      error: (jqXHR) => {
         $(that).text(oldValue);
         $('#message').append('<div class="alert alert-danger"><button class="close" data-dismiss="alert">x</button>Cannot update the cable type : ' + jqXHR.statusText + '</div>');
         $(window).scrollTop($('#message div:last-child').offset().top - 40);
-      }
+      },
     });
     return value;
   }, {
@@ -126,9 +88,8 @@ function tdEdit(oTable) {
   });
 }
 
-$(function () {
-  //fnAddFilterFoot('#cable-type', typeColumns);
-  var cabletype = $('#cable-type').DataTable({
+$(() => {
+  const cabletype = $('#cable-type').DataTable({
     data: [],
     autoWidth: false,
     columns: typeColumns,
@@ -142,13 +103,13 @@ $(function () {
   $.ajax({
     url: basePath + '/cabletypes/json',
     type: 'GET',
-    dataType: 'json'
-  }).done(function (json) {
+    dataType: 'json',
+  }).done((json) => {
     cabletype.clear();
     cabletype.rows.add(json);
     cabletype.draw();
     tdEdit(cabletype);
-  }).fail(function () {
+  }).fail(() => {
     $('#message').append('<div class="alert alert-danger"><button class="close" data-dismiss="alert">x</button>Cannot reach the server for cable type information.</div>');
-  }).always(() => {});
+  });
 });

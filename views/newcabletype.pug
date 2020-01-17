@@ -2,10 +2,8 @@ extends layout.pug
 
 block head
   meta(charset='utf-8')
-  title FRIB Cable :: new cable type
+  title FRIB Cable :: New Cable Type
   meta(name='viewport', content='width=device-width, initial-scale=1.0')
-  //- link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
-  //- link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
   script(type='text/javascript', src=basePath + '/dist/newcabletype.js')
 
@@ -22,8 +20,7 @@ block content
             button.btn.btn-primary(type='button', data-dismiss='modal', aria-hidden='true') Close
     form(name='cabletype')
       .form-group.row
-        h3 New FRIB cable type
-      //- fieldset
+        h3 New Cable Type
       .form-group.row
         legend.border-bottom Naming
       .form-group.row
@@ -125,12 +122,3 @@ block content
           button.btn.btn-primary#submit(type='submit', name='action') Submit
         .btn-group.mr-2
           button.btn.btn-warning#reset(type='reset', name='reset') Reset
-
-
-
-block js
-  //- script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
-  //- script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
-  //- script(type='text/javascript', src=basePath + '/jquery/jquery.validate.js')
-  //- script(type='text/javascript', src=basePath + '/dependencies/binder.js')
-  //- script(type='text/javascript', src=basePath + '/javascripts/new-cable-type.js')
