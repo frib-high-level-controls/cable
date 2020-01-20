@@ -359,13 +359,14 @@ $(async () => {
 
   $('.form-actions button').not('#reset').click((e) => {
     e.preventDefault();
-    const action = this.id;
+    const action = e.target.id;
     let currentModel = {};
     currentModel = binder.serialize();
     const data = {
       request: currentModel,
       action: action,
     };
+
     if (action === 'save' || action === 'adjust') {
       if (_.isEqual(initModel, currentModel)) {
 
