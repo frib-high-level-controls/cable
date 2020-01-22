@@ -7,7 +7,7 @@ import * as moment from 'moment';
 
 
 export function selectEvent() {
-  $('tbody').on('click', 'input.select-row', (e) => {
+  $('tbody').on('click', 'input.select-row', function(e) {
     if ($(this).prop('checked')) {
       $(e.target).closest('tr').removeClass('row-highlighted');
       $(e.target).closest('tr').addClass('row-selected');
