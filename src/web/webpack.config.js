@@ -9,6 +9,7 @@ module.exports = {
     main: './src/web/ts/pages/main.ts',
     'all-cables': './src/web/ts/pages/all-cables.ts',
     'base': './src/web/ts/pages/base.ts',
+    'cable': './src/web/ts/pages/cable.ts',
     'cabletypedetails': './src/web/ts/pages/cabletypedetails.ts',
     'cabletypes': './src/web/ts/pages/cabletypes.ts',
     'cabletypemgmt': './src/web/ts/pages/cabletypemgmt.ts',

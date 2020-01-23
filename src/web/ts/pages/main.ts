@@ -1,13 +1,9 @@
 /*
  * Main user page for managing cable requests
  */
-import 'bootstrap/dist/css/bootstrap.min.css';
+import './base';
 
-import '@fortawesome/fontawesome-free/js/all';
-
-import 'popper.js';
-
-import 'bootstrap';
+import 'datatables.net-bs4/css/dataTables.bootstrap4.min.css';
 
 // JSZip is a requirement for the 'Excel' button,
 // but it needs to exist of the global (ie window).
@@ -39,7 +35,6 @@ import {
   detailsLinkColumn,
   editLinkColumn,
   filterEvent,
-  fnAddFilterFoot,
   fnDeselect,
   fnGetSelected,
   fnSelectAll,
@@ -64,37 +59,14 @@ import {
   updatedOnColumn,
 } from '../lib/table';
 
-// link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
-// link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
-// link(rel='stylesheet', href=basePath + '/datatables/css/dataTables.bootstrap.css')
-// link(rel='stylesheet', href=basePath + '/font-awesome-4.2.0/css/font-awesome.css')
-// link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
-
-// script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
-// script(type='text/javascript', src=basePath + '/datatables/js/jquery.dataTables.js')
-// script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
-// script(type='text/javascript', src=basePath + '/datatables/js/ZeroClipboard.js')
-// script(type='text/javascript', src=basePath + '/datatables/js/TableTools.js')
-// script(type='text/javascript', src=basePath + '/datatables/js/dataTables.bootstrap.js')
-// script(type='text/javascript', src=basePath + '/jquery/jquery.validate.js')
-// script(type='text/javascript', src=basePath + '/dependencies/moment.js')
-// script(type='text/javascript', src=basePath + '/dependencies/lodash.js')
-// script(type='text/javascript', src=basePath + '/javascripts/ajaxhelper.js')
-// script(type='text/javascript', src=basePath + '/javascripts/table.js')
-// script(type='text/javascript', src=basePath + '/javascripts/main.js')
-
-
-/*global clearInterval: false, clearTimeout: false, document: false, event: false, frames: false, history: false, Image: false, location: false, name: false, navigator: false, Option: false, parent: false, screen: false, setInterval: false, setTimeout: false, window: false, XMLHttpRequest: false, FormData: false */
-/*global moment: false, ajax401: false, disableAjaxCache: false*/
-/*global selectColumn: false, editLinkColumn: false, detailsLinkColumn: false, createdOnColumn: false, rejectedOnColumn: false, rejectedByColumn: false, updatedOnColumn: false, submittedOnColumn: false, numberColumn: false, approvedOnColumn:false, approvedByColumn: false, fnAddFilterFoot: false, oTableTools: false, fnSelectAll: false, fnDeselect: false, basicColumns: false, fromColumns: false, toColumns: false, conduitColumn: false, lengthColumn: false, commentsColumn: false, statusColumn: false, ownerProvidedColumn: false, fnGetSelected: false, selectEvent: false, filterEvent: false, fnWrap: false, fnUnwrap: false, sDom2InoF: false, tabShownEvent: false, highlightedEvent: false, fnSetDeselect: false*/
 
 function initCable(table) {
   $.ajax({
     url: basePath + '/cables/json',
     type: 'GET',
     contentType: 'application/json',
-    dataType: 'json'
-  }).done(function (json) {
+    dataType: 'json',
+  }).done((json) => {
     table.clear();
     table.rows.add(json);
     if ($('#cables-unwrap').hasClass('active')) {
@@ -102,8 +74,8 @@ function initCable(table) {
     }
     table.draw();
 
-  }).fail(function () {
-    $('#message').append('<div class="alert alert-error"><button class="close" data-dismiss="alert">x</button>Cannot reach the server for cable requests.</div>');
+  }).fail(() => {
+    $('#message').append('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">x</button>Cannot reach the server for cable requests.</div>');
     $(window).scrollTop($('#message div:last-child').offset().top - 40);
   });
 }
@@ -116,14 +88,14 @@ function initRequests(savedTable, submittedTable?: any, rejectedTable?: any, app
     url: basePath + '/requests/json',
     type: 'GET',
     contentType: 'application/json',
-    dataType: 'json'
-  }).done(function (json) {
-    var saved = [];
-    var submitted = [];
-    var rejected = [];
-    var approved = [];
+    dataType: 'json',
+  }).done((json) => {
+    const saved = [];
+    const submitted = [];
+    const rejected = [];
+    const approved = [];
 
-    json.forEach(function (r) {
+    json.forEach((r) => {
       if (savedTable) {
         if (r.status === 0) {
           saved.push(r);
@@ -183,35 +155,35 @@ function initRequests(savedTable, submittedTable?: any, rejectedTable?: any, app
       }
       approvedTable.draw();
     }
-  }).fail(function () {
-    $('#message').append('<div class="alert alert-error"><button class="close" data-dismiss="alert">x</button>Cannot reach the server for cable requests.</div>');
+  }).fail(() => {
+    $('#message').append('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">x</button>Cannot reach the server for cable requests.</div>');
     $(window).scrollTop($('#message div:last-child').offset().top - 40);
   });
 }
 
 function submitFromModal(rows, savedTable, submittedTable) {
   $('#submit').prop('disabled', true);
-  var number = $('#modal .modal-body .request').length;
-  $('#modal .modal-body .request').each(function (index) {
-    var that = this;
+  let n = $('#modal .modal-body .request').length;
+  $('#modal .modal-body .request').each(function(index) {
+    const that = this;
     $.ajax({
       url: basePath + '/requests/' + that.id + '/',
       type: 'PUT',
       contentType: 'application/json',
       data: JSON.stringify({
-        action: 'submit'
-      })
-    }).done(function () {
+        action: 'submit',
+      }),
+    }).done(() => {
       $(that).prepend('<strong class="fa fa-check"></strong>&nbsp;');
       $(that).addClass('text-success');
       fnSetDeselect(rows[index], 'row-selected', 'select-row');
-    }).fail(function (jqXHR) {
+    }).fail((jqXHR) => {
       $(that).prepend('<stromg class="fa fa-exclamation"></strong>&nbsp;');
       $(that).append(' : ' + jqXHR.responseText);
       $(that).addClass('text-danger');
-    }).always(function () {
-      number = number - 1;
-      if (number === 0) {
+    }).always(() => {
+      n = n - 1;
+      if (n === 0) {
         initRequests(savedTable, submittedTable);
       }
     });
@@ -219,19 +191,19 @@ function submitFromModal(rows, savedTable, submittedTable) {
 }
 
 function batchSubmit(savedTable, submittedTable) {
-  var selected = fnGetSelected(savedTable, 'row-selected');
-  var rows = [];
+  const selected = fnGetSelected(savedTable, 'row-selected');
+  const rows = [];
   if (selected.length) {
     $('#modalLabel').html('Submit the following ' + selected.length + ' requests for approval? ');
     $('#modal .modal-body').empty();
-    selected.forEach(function (row) {
+    selected.forEach((row) => {
       rows.push(row);
-      var data = savedTable.row(row).data();
+      const data = savedTable.row(row).data();
       $('#modal .modal-body').append('<div class="request" id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + '</div>');
     });
     $('#modal .modal-footer').html('<button id="submit" type="button" class="btn btn-primary">Confirm</button><button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
-    $('#submit').click(function () {
+    $('#submit').click(() => {
       submitFromModal(rows, savedTable, submittedTable);
     });
   } else {
@@ -244,10 +216,10 @@ function batchSubmit(savedTable, submittedTable) {
 
 function cloneFromModal(rows, requests, savedTable) {
   $('#action').prop('disabled', true);
-  var number = $('#modal .modal-body .request').length;
-  $('#modal .modal-body .request').each(function (index) {
-    var that = this;
-    var quantity = parseInt(String($('input', that).val()), 10);
+  let n = $('#modal .modal-body .request').length;
+  $('#modal .modal-body .request').each(function(index) {
+    const that = this;
+    const quantity = parseInt(String($('input', that).val()), 10);
     if (!isNaN(quantity) && quantity > 0) {
       $.ajax({
         url: basePath + '/requests/',
@@ -256,19 +228,19 @@ function cloneFromModal(rows, requests, savedTable) {
         data: JSON.stringify({
           action: 'clone',
           request: requests[that.id],
-          quantity: quantity
-        })
-      }).done(function () {
+          quantity: quantity,
+        }),
+      }).done(() => {
         $(that).prepend('<strong class="fa fa-check"></strong>&nbsp;');
         $(that).addClass('text-success');
         fnSetDeselect(rows[index], 'row-selected', 'select-row');
-      }).fail(function (jqXHR) {
+      }).fail((jqXHR) => {
         $(that).prepend('<strong class="fa fa-exclamation"></strong>&nbsp;');
         $(that).append(' : ' + jqXHR.responseText);
         $(that).addClass('text-danger');
-      }).always(function () {
-        number = number - 1;
-        if (number === 0) {
+      }).always(() => {
+        n = n - 1;
+        if (n === 0) {
           initRequests(savedTable);
         }
       });
@@ -281,15 +253,15 @@ function cloneFromModal(rows, requests, savedTable) {
 }
 
 function batchClone(table, savedTable) {
-  var selected = fnGetSelected(table, 'row-selected');
-  var requests = {};
-  var rows = [];
+  const selected = fnGetSelected(table, 'row-selected');
+  const requests = {};
+  const rows = [];
   if (selected.length) {
     $('#modalLabel').html('Clone the following ' + selected.length + ' items? ');
     $('#modal .modal-body').empty();
-    selected.forEach(function (row) {
+    selected.forEach((row) => {
       rows.push(row);
-      var data = table.row(row).data();
+      const data = table.row(row).data();
       $('#modal .modal-body').append('<div class="request" id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + ' <input type="text" placeholder="quantity" value="1" class="type[number] input-mini" min=1 max=20></div>');
       requests[data._id] = {
         basic: data.basic,
@@ -298,17 +270,18 @@ function batchClone(table, savedTable) {
         to: data.to,
         length: data.length,
         conduit: data.conduit,
-        comments: data.comments
+        comments: data.comments,
       };
     });
     $('#modal .modal-footer').html('<button id="action" type="button" class="btn btn-primary">Confirm</button><button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
-    $('#action').click(function () {
+    $('#action').click(() => {
       cloneFromModal(rows, requests, savedTable);
     });
   } else {
     $('#modalLabel').html('Alert');
     $('#modal .modal-body').html('No request has been selected!');
+    // tslint:disable:max-line-length
     $('#modal .modal-footer').html('<button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
   }
@@ -316,27 +289,27 @@ function batchClone(table, savedTable) {
 
 function revertFromModal(rows, savedTable, submittedTable) {
   $('#revert').prop('disabled', true);
-  var number = $('#modal .modal-body .request').length;
-  $('#modal .modal-body .request').each(function (index) {
-    var that = this;
+  let n = $('#modal .modal-body .request').length;
+  $('#modal .modal-body .request').each(function(index) {
+    const that = this;
     $.ajax({
       url: basePath + '/requests/' + that.id + '/',
       type: 'PUT',
       contentType: 'application/json',
       data: JSON.stringify({
-        action: 'revert'
-      })
-    }).done(function () {
+        action: 'revert',
+      }),
+    }).done(() => {
       $(that).prepend('<strong class="fa fa-check"></strong>&nbsp;');
       $(that).addClass('text-success');
       fnSetDeselect(rows[index], 'row-selected', 'select-row');
-    }).fail(function (jqXHR) {
+    }).fail((jqXHR) => {
       $(that).prepend('<strong class="fa fa-exclamation"></strong>&nbsp;');
       $(that).append(' : ' + jqXHR.responseText);
       $(that).addClass('text-danger');
-    }).always(function () {
-      number = number - 1;
-      if (number === 0) {
+    }).always(() => {
+      n = n - 1;
+      if (n === 0) {
         initRequests(savedTable, submittedTable);
       }
     });
@@ -345,19 +318,19 @@ function revertFromModal(rows, savedTable, submittedTable) {
 
 
 function batchRevert(savedTable, submittedTable) {
-  var selected = fnGetSelected(submittedTable, 'row-selected');
-  var rows = [];
+  const selected = fnGetSelected(submittedTable, 'row-selected');
+  const rows = [];
   if (selected.length) {
     $('#modalLabel').html('Revert the following ' + selected.length + ' requests? ');
     $('#modal .modal-body').empty();
-    selected.forEach(function (row) {
+    selected.forEach((row) => {
       rows.push(row);
-      var data = submittedTable.row(row).data();
+      const data = submittedTable.row(row).data();
       $('#modal .modal-body').append('<div class="request" id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + '</div>');
     });
     $('#modal .modal-footer').html('<button id="revert" type="button" class="btn btn-primary">Confirm</button><button type="button" data-dismiss="modal" type="button" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
-    $('#revert').click(function () {
+    $('#revert').click(() => {
       revertFromModal(rows, savedTable, submittedTable);
     });
   } else {
@@ -371,16 +344,16 @@ function batchRevert(savedTable, submittedTable) {
 function deleteFromModal(table, rows) {
   $('#delete').prop('disabled', true);
   // var number = $('#modal .modal-body .request').length;
-  $('#modal .modal-body .request').each(function (index) {
-    var that = this;
+  $('#modal .modal-body .request').each(function(index) {
+    const that = this;
     $.ajax({
       url: basePath + '/requests/' + this.id + '/',
-      type: 'Delete'
-    }).done(function () {
+      type: 'Delete',
+    }).done(() => {
       $(that).wrap('<del></del>');
       $(that).addClass('text-success');
       table.row(rows[index]).remove().draw();
-    }).fail(function (jqXHR) {
+    }).fail((jqXHR) => {
       $(that).append(' : ' + jqXHR.responseText);
       $(that).addClass('text-danger');
     });
@@ -388,19 +361,19 @@ function deleteFromModal(table, rows) {
 }
 
 function batchDelete(table) {
-  var selected = fnGetSelected(table, 'row-selected');
-  var rows = [];
+  const selected = fnGetSelected(table, 'row-selected');
+  const rows = [];
   if (selected.length) {
     $('#modalLabel').html('Delete the following ' + selected.length + ' requests? ');
     $('#modal .modal-body').empty();
-    selected.forEach(function (row) {
-      var data = table.row(row).data();
+    selected.forEach((row) => {
+      const data = table.row(row).data();
       rows.push(row);
       $('#modal .modal-body').append('<div class="request" id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + '</div>');
     });
     $('#modal .modal-footer').html('<button id="delete" type="button" class="btn btn-primary"">Confirm</button><button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
-    $('#delete').click(function () {
+    $('#delete').click(() => {
       deleteFromModal(table, rows);
     });
   } else {
@@ -412,12 +385,12 @@ function batchDelete(table) {
 }
 
 
-$(function () {
-  var savedTable;
-  var submittedTable;
-  var rejectedTable;
-  var approvedTable;
-  var cablesTable;
+$(() => {
+  let savedTable;
+  let submittedTable;
+  let rejectedTable;
+  let approvedTable;
+  let cablesTable;
 
 
   ajax401('');
@@ -425,7 +398,7 @@ $(function () {
 
   /*saved tab starts*/
   // add footer first
-  var savedAoColumns = ([selectColumn, editLinkColumn, createdOnColumn, updatedOnColumn] as Array<any>).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const savedAoColumns = ([selectColumn, editLinkColumn, createdOnColumn, updatedOnColumn] as any[]).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let savedTableWrapped = true;
 
   savedTable = $('#saved-table').DataTable({
@@ -434,7 +407,7 @@ $(function () {
     columns: savedAoColumns,
     order: [
       [2, 'desc'],
-      [3, 'desc']
+      [3, 'desc'],
     ],
     dom: sDom2InoF,
     buttons: sButtons,
@@ -449,36 +422,36 @@ $(function () {
   });
   dtutil.addFilterHead('#saved-table', savedAoColumns);
 
-  $('#saved-wrap').click(function () {
+  $('#saved-wrap').click(() => {
     savedTableWrapped = true;
     fnWrap(savedTable);
   });
 
-  $('#saved-unwrap').click(function () {
+  $('#saved-unwrap').click(() => {
     savedTableWrapped = false;
     fnUnwrap(savedTable);
   });
 
-  $('#saved-select-all').click(function () {
+  $('#saved-select-all').click(() => {
     fnSelectAll(savedTable, 'row-selected', 'select-row', true);
   });
 
-  $('#saved-select-none').click(function () {
+  $('#saved-select-none').click(() => {
     fnDeselect(savedTable, 'row-selected', 'select-row');
   });
 
-  $('#saved-delete').click(function () {
+  $('#saved-delete').click(() => {
     batchDelete(savedTable);
   });
 
-  $('#saved-submit').click(function () {
+  $('#saved-submit').click(() => {
     batchSubmit(savedTable, submittedTable);
   });
 
   /*saved tab ends*/
 
   /*submitted tab starts*/
-  var submittedAoColumns = ([selectColumn, detailsLinkColumn, submittedOnColumn, updatedOnColumn] as Array<any>).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const submittedAoColumns = ([selectColumn, detailsLinkColumn, submittedOnColumn, updatedOnColumn] as any[]).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let submittedTableWrapped = true;
 
   submittedTable = $('#submitted-table').DataTable({
@@ -487,7 +460,7 @@ $(function () {
     columns: submittedAoColumns,
     order: [
       [2, 'desc'],
-      [3, 'desc']
+      [3, 'desc'],
     ],
     dom: sDom2InoF,
     buttons: sButtons,
@@ -502,25 +475,25 @@ $(function () {
   });
   dtutil.addFilterHead('#submitted-table', submittedAoColumns);
 
-  $('#submitted-wrap').click(function () {
+  $('#submitted-wrap').click(() => {
     submittedTableWrapped = true;
     fnWrap(submittedTable);
   });
 
-  $('#submitted-unwrap').click(function () {
+  $('#submitted-unwrap').click(() => {
     submittedTableWrapped = false;
     fnUnwrap(submittedTable);
   });
 
-  $('#submitted-revert').click(function () {
+  $('#submitted-revert').click(() => {
     batchRevert(savedTable, submittedTable);
   });
 
-  $('#submitted-select-all').click(function () {
+  $('#submitted-select-all').click(() => {
     fnSelectAll(submittedTable, 'row-selected', 'select-row', true);
   });
 
-  $('#submitted-select-none').click(function () {
+  $('#submitted-select-none').click(() => {
     fnDeselect(submittedTable, 'row-selected', 'select-row');
   });
 
@@ -528,7 +501,7 @@ $(function () {
 
   /*rejected tab starts*/
 
-  var rejectedAoColumns = ([selectColumn, detailsLinkColumn, rejectedOnColumn, submittedOnColumn, rejectedByColumn] as Array<any>).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const rejectedAoColumns = ([selectColumn, detailsLinkColumn, rejectedOnColumn, submittedOnColumn, rejectedByColumn] as any[]).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let rejectedTableWrapped = true;
 
   rejectedTable = $('#rejected-table').DataTable({
@@ -537,7 +510,7 @@ $(function () {
     columns: rejectedAoColumns,
     order: [
       [2, 'desc'],
-      [3, 'desc']
+      [3, 'desc'],
     ],
     dom: sDom2InoF,
     buttons: sButtons,
@@ -552,32 +525,32 @@ $(function () {
   });
   dtutil.addFilterHead('#rejected-table', rejectedAoColumns);
 
-  $('#rejected-wrap').click(function () {
+  $('#rejected-wrap').click(() => {
     rejectedTableWrapped = true;
     fnWrap(rejectedTable);
   });
 
-  $('#rejected-unwrap').click(function () {
+  $('#rejected-unwrap').click(() => {
     rejectedTableWrapped = false;
     fnUnwrap(rejectedTable);
   });
 
-  $('#rejected-select-all').click(function () {
+  $('#rejected-select-all').click(() => {
     fnSelectAll(rejectedTable, 'row-selected', 'select-row', true);
   });
 
-  $('#rejected-select-none').click(function () {
+  $('#rejected-select-none').click(() => {
     fnDeselect(rejectedTable, 'row-selected', 'select-row');
   });
 
-  $('#rejected-delete').click(function () {
+  $('#rejected-delete').click(() => {
     batchDelete(rejectedTable);
   });
 
   /*rejected tab ends*/
 
   /*approved tab starts*/
-  var approvedAoColumns = ([selectColumn, detailsLinkColumn, approvedOnColumn, approvedByColumn, submittedOnColumn] as Array<any>).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const approvedAoColumns = ([selectColumn, detailsLinkColumn, approvedOnColumn, approvedByColumn, submittedOnColumn] as any[]).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let approvedTableWrapped = true;
 
   approvedTable = $('#approved-table').DataTable({
@@ -586,7 +559,7 @@ $(function () {
     columns: approvedAoColumns,
     order: [
       [2, 'desc'],
-      [3, 'desc']
+      [3, 'desc'],
     ],
     dom: sDom2InoF,
     buttons: sButtons,
@@ -601,20 +574,20 @@ $(function () {
   });
   dtutil.addFilterHead('#approved-table', approvedAoColumns);
 
-  $('#approved-select-all').click(function () {
+  $('#approved-select-all').click(() => {
     fnSelectAll(approvedTable, 'row-selected', 'select-row', true);
   });
 
-  $('#approved-select-none').click(function () {
+  $('#approved-select-none').click(() => {
     fnDeselect(approvedTable, 'row-selected', 'select-row');
   });
 
-  $('#approved-wrap').click(function () {
+  $('#approved-wrap').click(() => {
     approvedTableWrapped = true;
     fnWrap(approvedTable);
   });
 
-  $('#approved-unwrap').click(function () {
+  $('#approved-unwrap').click(() => {
     approvedTableWrapped = false;
     fnUnwrap(approvedTable);
   });
@@ -622,7 +595,7 @@ $(function () {
   /*approved tab ends*/
 
   /*cables tab starts*/
-  var cableAoCulumns = ([selectColumn, numberColumn, statusColumn, updatedOnColumn] as Array<any>).concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const cableAoCulumns = ([selectColumn, numberColumn, statusColumn, updatedOnColumn] as any[]).concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let cablesTableWrapped = true;
 
   cablesTable = $('#cables-table').DataTable({
@@ -631,7 +604,7 @@ $(function () {
     columns: cableAoCulumns,
     order: [
       [3, 'desc'],
-      [1, 'desc']
+      [1, 'desc'],
     ],
     dom: sDom2InoF,
     buttons: sButtons,
@@ -645,12 +618,12 @@ $(function () {
   });
   dtutil.addFilterHead('#cables-table', cableAoCulumns);
 
-  $('#cables-wrap').click(function () {
+  $('#cables-wrap').click(() => {
     cablesTableWrapped = true;
     fnWrap(cablesTable);
   });
 
-  $('#cables-unwrap').click(function () {
+  $('#cables-unwrap').click(() => {
     cablesTableWrapped = false;
     fnUnwrap(cablesTable);
   });
@@ -659,12 +632,12 @@ $(function () {
 
   initRequests(savedTable, submittedTable, rejectedTable, approvedTable, cablesTable);
 
-  $('#reload').click(function () {
+  $('#reload').click(() => {
     initRequests(savedTable, submittedTable, rejectedTable, approvedTable, cablesTable);
   });
 
   $('#clone').click(function cloneHandler() {
-    var activeTable = $('.tab-pane.active .dataTable').DataTable();
+    const activeTable = $('.tab-pane.active .dataTable').DataTable();
     batchClone(activeTable, savedTable);
   });
 

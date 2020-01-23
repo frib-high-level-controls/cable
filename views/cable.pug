@@ -4,9 +4,8 @@ block head
   meta(charset='utf-8')
   title FRIB Cable :: cable :: #{number}
   meta(name='viewport', content='width=device-width, initial-scale=1.0')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+  script(type='text/javascript', src=basePath + '/dist/cable.js')
 
 
 block content
@@ -14,157 +13,153 @@ block content
     var sysSub = !{JSON.stringify(sysSub)};
   .container
     #message
-    h3 Cable
+    h2 Cable
       = ' '
       span#cableId #{number}
-    .btn-group(data-toggle='buttons-radio')
-      button.btn.btn-info.active#show-history(type='button') Show update history
-      button.btn.btn-info#hide-history(type='button') Hide update history
-    h4 reference request
-    a#request(target='_blank')
-    h4 status
-    span#status
-    h4 version
-    span#version
-    h4 basic
-    div project:
-      = ' '
-      span.property(name='basic.project')
-    div engineer:
-      = ' '
-      span.property(name='basic.engineer')
-    div wbs:
-      = ' '
-      span.property(name='basic.wbs')
-    div origin categrary:
-      = ' '
-      span.property(name='basic.originCategory')
-      = ' - '
-      span.property(name='originCategoryName')
-    div origin subcategory:
-      = ' '
-      span.property(name='basic.originSubcategory')
-      = ' - '
-      span.property(name='originSubcategoryName')
-    div signal classification:
-      = ' '
-      span.property(name='basic.signalClassification')
-      = ' - '
-      span.property(name='signalClassificationName')
-    div cable type:
-      = ' '
-      span.property(name='basic.cableType')
-    div service:
-      = ' '
-      span.property(name='basic.service')
-    div tray section:
-      = ' '
-      span.property(name='basic.traySection')
-    div tags:
-      = ' '
-      span.property(name='basic.tags')
-    div owner provided:
-      = ' '
-      span.property(name='ownerProvided')
+    .btn-toolbar.m-2
+      .btn-group.btn-group-toggle.mr-2(data-toggle='buttons')
+        label.btn.btn-info.active Show History
+          input#show-history(type='radio', autocomplete='off', checked)
+        label.btn.btn-info Hide History
+          input#hide-history(type='radio', autocomplete='off')
 
-    h4 from
-    div location:
-      = ' '
-      span.property(name='from.rack')
-    div termination device:
-      = ' '
-      span.property(name='from.terminationDevice')
-    div termination type:
-      = ' '
-      span.property(name='from.terminationType')
-    div termination port:
-      = ' '
-      span.property(name='from.terminationPort')
-    div wire drawing:
-      = ' '
-      span.property(name='from.wireDrawing')
-    div ready for termination:
-      = ' '
-      span.property(name='from.readyForTerm')
-    div terminated on:
-      = ' '
-      span.property(name='from.terminatedOn')
-    div terminated by:
-      = ' '
-      span.property(name='from.terminatedBy')
+    h4 Original Request
+    .m-2
+      a#request(target='_blank')
+    h4 Status
+    .m-2
+      span#status
+    h4 Version
+    .m-2
+      span#version
+    h4 Basic
+    .m-2
+      div
+        strong Project:&nbsp;
+        span.property(name='basic.project')
+      span
+        strong Engineer:&nbsp;
+        span.property(name='basic.engineer')
+      div 
+        strong WBS:&nbsp;
+        span.property(name='basic.wbs')
+      div 
+        strong Origin Category:&nbsp;
+        span.property(name='basic.originCategory')
+        span &nbsp;—&nbsp;
+        span.property(name='originCategoryName')
+      div
+        strong Origin Subcategory:&nbsp;
+        span.property(name='basic.originSubcategory')
+        span &nbsp;—&nbsp;
+        span.property(name='originSubcategoryName')
+      div
+        strong Signal Classification:&nbsp;
+        span.property(name='basic.signalClassification')
+        span &nbsp;—&nbsp;
+        span.property(name='signalClassificationName')
+      div
+        strong Cable Type:&nbsp;
+        span.property(name='basic.cableType')
+      div
+        strong Service:&nbsp;
+        span.property(name='basic.service')
+      div
+        strong Tray Section:&nbsp;
+        span.property(name='basic.traySection')
+      div
+        strong Tags:&nbsp;
+        span.property(name='basic.tags')
+      div
+        strong Owner Provided:&nbsp;
+        span.property(name='ownerProvided')
 
+    h4 From
+    .m-2
+      div
+        strong Location:&nbsp;
+        span.property(name='from.rack')
+      div
+        strong Termination Device:&nbsp;
+        span.property(name='from.terminationDevice')
+      div
+        strong Termination Type:&nbsp;
+        span.property(name='from.terminationType')
+      div
+        strong Termination Port:&nbsp;
+        span.property(name='from.terminationPort')
+      div
+        strong Wire Drawing:&nbsp;
+        span.property(name='from.wireDrawing')
+      div
+        strong Ready for Termination:&nbsp;
+        span.property(name='from.readyForTerm')
+      div
+        strong Terminated On:&nbsp;
+        span.property(name='from.terminatedOn')
+      div
+        strong Terminated By:&nbsp;
+        span.property(name='from.terminatedBy')
 
-    h4 to
-    div location:
-      = ' '
-      span.property(name='to.rack')
-    div termination device:
-      = ' '
-      span.property(name='to.terminationDevice')
-    div termination type:
-      = ' '
-      span.property(name='to.terminationType')
-    div termination port:
-      = ' '
-      span.property(name='to.terminationPort')
-    div wire drawing:
-      = ' '
-      span.property(name='to.wireDrawing')
-    div ready for termination:
-      = ' '
-      span.property(name='to.readyForTerm')
-    div terminated on:
-      = ' '
-      span.property(name='to.terminatedOn')
-    div terminated by:
-      = ' '
-      span.property(name='to.terminatedBy')
+    h4 To
+    .m-2
+      div
+        strong Location:&nbsp;
+        span.property(name='to.rack')
+      div
+        strong Termination Device:&nbsp;
+        span.property(name='to.terminationDevice')
+      div
+        strong Termination Type:&nbsp;
+        span.property(name='to.terminationType')
+      div
+        strong Termination Port:&nbsp;
+        span.property(name='to.terminationPort')
+      div
+        strong Wire Drawing:&nbsp;
+        span.property(name='to.wireDrawing')
+      div
+        strong Ready for Termination:&nbsp;
+        span.property(name='to.readyForTerm')
+      div
+        strong Terminated On:&nbsp;
+        span.property(name='to.terminatedOn')
+      div
+        strong Terminated By:&nbsp;
+        span.property(name='to.terminatedBy')
 
-    h4 conduit
-    div
+    h4 Conduit
+    .m-2
       span.property(name='conduit')
 
-    h4 length
-    div
+    h4 Length
+    .m-2
       span.property(name='length')
       = ' ft'
 
-    h4 comments
-    span.property(name='comments')
-    h4 workflow
-    ol
-      li submitted by
-        = ' '
-        a#submittedBy(target='_blank')
-        = ' '
-        | on
-        = ' '
-        span#submittedOn
-      li approved by
-        = ' '
-        a#approvedBy(target='_blank')
-        = ' '
-        | on
-        = ' '
-        span#approvedOn
-      li pulled by
-        = ' '
-        a#pulledBy(target='_blank')
-        = ' '
-        | on
-        = ' '
-        span#pulledOn
-      li installed by
-        = ' '
-        a#installedBy(target='_blank')
-        = ' '
-        | on
-        = ' '
-        span#installedOn
+    h4 Comments
+    .m-2
+      span.property(name='comments')
 
-block js
-  script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
-  script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
-  script(type='text/javascript', src=basePath + '/dependencies/jsonpath.js')
-  script(type='text/javascript', src=basePath + '/dependencies/moment.js')
-  script(type='text/javascript', src=basePath + '/javascripts/cable.js')
+    h4 Workflow
+    ol
+      li
+        span Submitted by&nbsp;
+        a#submittedBy(target='_blank')
+        | &nbsp;on&nbsp;
+        span#submittedOn
+      li
+        span Approved by&nbsp;
+        a#approvedBy(target='_blank')
+        | &nbsp;on&nbsp;
+        span#approvedOn
+      li
+        span Pulled by&nbsp;
+        a#pulledBy(target='_blank')
+        | &nbsp;on&nbsp;
+        span#pulledOn
+      li
+        span Installed by&nbsp;
+        a#installedBy(target='_blank')
+        | &nbsp;on&nbsp;
+        span#installedOn
