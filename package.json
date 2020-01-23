@@ -87,6 +87,7 @@
     "jquery-jeditable": "^2.0.14",
     "jquery-ui": "^1.12.1",
     "jquery-validation": "^1.19.1",
+    "jsonpath-plus": "^2.0.0",
     "jsonschema": "^1.2.5",
     "jszip": "^3.2.2",
     "lodash": "^4.17.15",
