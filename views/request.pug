@@ -15,11 +15,13 @@ block content
   .container
     #message
     .modal.hide.fade#modal(tabindex='-1', role='dialog', data-backdrop='static', aria-labelledby='modalLabel', aria-hidden='true')
-      .modal-header
-        h3#modalLabel
-      .modal-body
-      .modal-footer
-        button.btn.btn-primary(type='button', data-dismiss='modal', aria-hidden='true') Return to edit
+      .modal-dialog
+        .modal-content
+          .modal-header
+            h3#modalLabel
+          .modal-body
+          .modal-footer
+            button.btn.btn-primary(type='button', data-dismiss='modal', aria-hidden='true') Return to edit
     form.form-horizontal(name='request')
       if (locals.id)
         h3 Cable Request &nbsp;
