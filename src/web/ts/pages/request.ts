@@ -1,16 +1,12 @@
-import '@fortawesome/fontawesome-free/js/all';
-import 'bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'jquery-ui/themes/base/all.css';
+import './base';
 import 'jquery-validation';
-import {ajax401, disableAjaxCache} from '../lib/ajaxhelper';
-import * as Binder from '../lib/binder';
-import '../lib/util';
 import * as $ from 'jquery';
+import * as Binder from '../lib/binder';
+import {ajax401, disableAjaxCache} from '../lib/ajaxhelper';
+import '../lib/util';
 import _ from 'lodash';
 import * as moment from 'moment';
 import Bloodhound from 'typeahead.js';
-import { request } from 'http';
 let sysSub;
 function sendRequest(data, initModel, binder) {
   const path = window.location.pathname;
@@ -198,8 +194,9 @@ $(async () => {
   });
 
   const requestForm = document.forms[0];
-  const binder = new Binder.FormBinder(requestForm);
+
   let initModel;
+
   $.validator.addMethod('wbs', (value, element) => {
     return this.optional(element) || /^[A-Z]\d{1,5}$/.test(value);
   }, 'Please check the WBS number, remove spaces and dots');
@@ -218,6 +215,7 @@ $(async () => {
       $(element).closest('.form-group').removeClass('error').addClass('success');
     },
   });
+  const binder = new Binder.FormBinder(requestForm);
 
   $('#wbs').rules('add', {wbs: true});
 
@@ -238,16 +236,16 @@ $(async () => {
   usernames.initialize();
 
   $('#engineer').typeahead({
-      minLength: 1,
-      highlight: true,
-      hint: true,
-    },
-    {
-      name: 'usernames',
-      display: 'displayName',
-      source: usernames.ttAdapter(),
-      limit: 20,
-    });
+    minLength: 1,
+    highlight: true,
+    hint: true,
+  },
+  {
+    name: 'usernames',
+    display: 'displayName',
+    source: usernames.ttAdapter(),
+    limit: 20,
+  });
 
   const cabletypes = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
@@ -269,7 +267,6 @@ $(async () => {
     source: cabletypes.ttAdapter(),
     limit: 20,
   });
-
   /*$('#penetration').autocomplete({
     minLength: 1,
     source: function (req, res) {
@@ -311,14 +308,9 @@ $(async () => {
 
       const savedBinder = new Binder.FormBinder(requestForm, json);
       savedBinder.deserialize();
-
       setCSS(proj, cat, sub, signal);
 
-
       $('form[name="request"]').fadeTo('slow', 1);
-
-      validator.form();
-
       initModel = _.cloneDeep(binder.serialize());
 
       // show action buttons
