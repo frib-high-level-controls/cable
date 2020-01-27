@@ -11,15 +11,18 @@ import {
   fnGetSelected,
 } from '../lib/table';
 
+type DTAPI = DataTables.Api;
 
-let plot = null;
-function query(o, s) {
+let plot: Chart | null = null;
+function query(o: object, s: string): object | null {
   s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
   s = s.replace(/^\./, ''); // strip a leading dot
   const a = s.split('.');
   for (const i of a) {
     if (o.hasOwnProperty(i)) {
-      o = o[i];
+      // TS does not use hasOwnProperty to guard type
+      // therefore a type assertion is required.
+      o = (o as any)[i];
     } else {
       return null;
     }
@@ -27,24 +30,26 @@ function query(o, s) {
   return o;
 }
 
-function drawChart(ctx, selected, oTable, groupBy) {
+function drawChart(ctx: CanvasRenderingContext2D, selected: DTAPI[], oTable: DTAPI, groupBy: string) {
   const barChartData = {
-    labels: [],
+    labels: [] as string[],
     datasets: [{
       fillColor: 'rgba(151,187,205,0.5)',
       strokeColor: 'rgba(151,187,205,0.8)',
       highlightFill: 'rgba(151,187,205,0.75)',
       highlightStroke: 'rgba(151,187,205,1)',
-      data: [],
+      data: [] as number[],
     }],
   };
-  let data = [];
+  const data: object[] = [];
   if (selected.length) {
     selected.forEach((row) => {
       data.push(oTable.row(row).data());
     });
   } else {
-    data = oTable.rows().data();
+    oTable.rows().data().each((row) => {
+      data.push(row);
+    });
   }
   const groups = _.countBy(data, (item) => {
     return query(item, groupBy);
@@ -71,7 +76,7 @@ function drawChart(ctx, selected, oTable, groupBy) {
   return barChartData;
 }
 
-function tableBar(oTable) {
+function tableBar(oTable: DTAPI) {
   const selected = fnGetSelected(oTable, 'row-selected');
   if (selected.length) {
     $('#modalLabel').html('Plot a bar chart for the selected ' + selected.length + ' items in current table');
@@ -89,14 +94,16 @@ function tableBar(oTable) {
     // Reset element visibility. Chart must be visible when created.
     $('#barChartData,#barChartHideData').prop('hidden', true);
     $('#barChart,#barChartShowData').prop('hidden', false);
-    const ctx = ($('#barChart')[0] as any).getContext('2d');
-    const groupBy = $('#bar-key').val();
-    const data = drawChart(ctx, selected, oTable, groupBy);
-    const csv = [ '"' + $('#bar-key option:selected').text() + '", "count"'];
-    for (let idx = 0; idx < data.labels.length; idx += 1) {
-      csv.push('"' + data.labels[idx] + '", ' + data.datasets[0].data[idx]);
+    const ctx = $<HTMLCanvasElement>('#barChart')[0].getContext('2d');
+    if (ctx) {
+      const groupBy = String($('#bar-key').val());
+      const data = drawChart(ctx, selected, oTable, groupBy);
+      const csv = [ '"' + $('#bar-key option:selected').text() + '", "count"'];
+      for (let idx = 0; idx < data.labels.length; idx += 1) {
+        csv.push('"' + data.labels[idx] + '", ' + data.datasets[0].data[idx]);
+      }
+      $('#barChartData').val(csv.join('\n'));
     }
-    $('#barChartData').val(csv.join('\n'));
   });
 
   $('#barChartShowData').click((e) => {

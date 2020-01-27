@@ -5,6 +5,7 @@ import * as $ from 'jquery';
 
 import * as moment from 'moment';
 
+type DTAPI = DataTables.Api;
 
 export function selectEvent() {
   $('tbody').on('click', 'input.select-row', function(e) {
@@ -182,7 +183,7 @@ export function fnUnwrap(oTableLocal) {
 
 
 
-export function fnGetSelected(oTableLocal, selectedClass) {
+export function fnGetSelected(oTableLocal: DTAPI, selectedClass: string): DTAPI[] {
   const aReturn = [];
   const aTrs = oTableLocal.rows().nodes();
   // DataTables.Api is only Array-like,
