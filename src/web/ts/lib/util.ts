@@ -3,15 +3,62 @@
  */
 import * as $ from 'jquery';
 
+import * as moment from 'moment';
 
-export function json2List(json: any) {
+type DateParam = string | number | Date | undefined;
+
+type AutocompleteOptions = JQueryUI.AutocompleteOptions;
+
+// From JQuery UI API documention (missing from the type definitions)
+interface AutocompleteRequest  {
+  term: string;
+}
+
+type AutocompleteResponse = (result: string[] | Array<{ label: string; value: string; }>) => void;
+
+export function formatDate(date: DateParam) {
+  return date ? moment(date).fromNow() : '';
+}
+
+export function formatDateLong(date: DateParam) {
+  return date ? moment(date).format('YYYY-MM-DD HH:mm:ss') : '';
+}
+
+export function formatDateShort(date: DateParam) {
+  return date ? moment(date).format('YYYY-MM-DD') : '';
+}
+
+export function formatCableStatus(s: string | number) {
+  const status: { [key: string]: string | undefined } = {
+    100: 'approved',
+    101: 'ordered',
+    102: 'received',
+    103: 'accepted',
+    200: 'to install',
+    201: 'labeled',
+    202: 'bench terminated',
+    203: 'bench tested',
+    249: 'to pull',
+    250: 'pulled',
+    251: 'field terminated',
+    252: 'field tested',
+    300: 'working',
+    400: 'failed',
+    501: 'not needed',
+  };
+  return status[s.toString()] || 'unknown';
+}
+
+export function json2List(json: object) {
   let output = '<dl>';
   for (const k in json) {
     if (json.hasOwnProperty(k)) {
-      if (typeof(json[k]) === 'object') {
-        output = output + '<dl>' + '<dt>' + k + '</dt>' + '<dd>' + json2List(json[k]) + '</dd>' + '</dl>';
+      //
+      const v = (json as any)[k];
+      if (typeof(v) === 'object') {
+        output = output + '<dl>' + '<dt>' + k + '</dt>' + '<dd>' + json2List(v) + '</dd>' + '</dl>';
       } else {
-        output = output + '<p><strong>' + k + '</strong> : ' + json[k] + '</p>';
+        output = output + '<p><strong>' + k + '</strong> : ' + v + '</p>';
       }
     }
   }
@@ -19,12 +66,12 @@ export function json2List(json: any) {
   return output;
 }
 
-export function nameAuto(input: any, nameCache: any) {
+export function nameAuto(input: string, nameCache: any): AutocompleteOptions {
   return {
     minLength: 1,
-    source: (req, res) => {
+    source: (req: AutocompleteRequest, res: AutocompleteResponse) => {
       const filter = (t: string, names: string[]) => {
-          const output = [];
+          const output: string[] = [];
           for (const name of names) {
             if (name.toLowerCase().indexOf(t) === 0) {
               output.push(name);

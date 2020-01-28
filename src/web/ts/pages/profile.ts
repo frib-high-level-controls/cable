@@ -25,7 +25,7 @@ $(() => {
         dataType: 'json',
       }).done((json) => {
         const timestamp = request.getResponseHeader('Date');
-        const dateObj = moment(timestamp);
+        const dateObj = timestamp ? moment(timestamp) : moment();
         $('#message').append('<div class="alert alert-info"><button class="close" data-dismiss="alert">x</button>The modification was saved at ' + dateObj.format('HH:mm:ss') + '.</div>');
       }).fail((jqXHR, status, error) => {
         // TODO change to modal

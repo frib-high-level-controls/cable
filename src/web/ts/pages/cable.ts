@@ -5,44 +5,40 @@ import './base';
 
 import * as $ from 'jquery';
 
-import * as moment from 'moment';
-
 import { JSONPath } from 'jsonpath-plus';
 
+import {
+  formatCableStatus,
+  formatDateLong,
+  formatDateShort,
+} from '../lib/util';
 
-function formatCableStatus(s) {
-  const status = {
-    100: 'approved',
-    101: 'ordered',
-    102: 'received',
-    103: 'accepted',
-    200: 'to install',
-    201: 'labeled',
-    202: 'bench terminated',
-    203: 'bench tested',
-    249: 'to pull',
-    250: 'pulled',
-    251: 'field terminated',
-    252: 'field tested',
-    300: 'working',
-    400: 'failed',
-    501: 'not needed',
-  };
-  if (status[s.toString()]) {
-    return status[s.toString()];
-  }
-  return 'unknown';
+interface TransformLeaf {
+  e: string;
+  l: string | ((v: any) => void);
+  t?: (v: any) => string;
+  h?: (v: any) => string;
 }
 
-function formatDateLong(date) {
-  return date ? moment(date).format('YYYY-MM-DD HH:mm:ss') : '';
+interface TransformGroup {
+  [key: string]: TransformLeaf | string;
+  root: string;
 }
 
-function formatDateShort(date) {
-  return date ? moment(date).format('YYYY-MM-DD') : '';
+interface TransformRoot {
+  [key: string]: TransformGroup | TransformLeaf;
 }
 
-const TRANSFORMS = {
+function isTransformGroup(t: TransformGroup | TransformLeaf | string): t is TransformGroup {
+  return  (typeof (t as TransformGroup).root === 'string');
+}
+
+function isTransformLeaf(t: TransformGroup | TransformLeaf | string): t is TransformLeaf {
+  return (typeof (t as TransformLeaf).e === 'string');
+}
+
+
+const TRANSFORMS: TransformRoot = {
   request: {
     e: '$.request_id',
     l: (v) => {
@@ -281,21 +277,22 @@ function history(found: any[]) {
   return output;
 }
 
-function jsonETL(json, transforms) {
+function jsonETL(json: any, transforms: TransformRoot | TransformGroup) {
   for (const prop in transforms) {
     if (transforms.hasOwnProperty(prop)) {
-      if (transforms[prop].root) {
-        jsonETL(JSONPath({ json: json, path: transforms[prop].root })[0], transforms[prop]);
-      } else if (transforms[prop].e) {
-        let value = JSONPath({ json: json, path: transforms[prop].e });
-        if (transforms[prop].t && typeof transforms[prop].t === 'function') {
-          value = transforms[prop].t(value);
+      const transform = transforms[prop];
+      if (isTransformGroup(transform)) {
+        jsonETL(JSONPath({ json: json, path: transform.root })[0], transform);
+      } else if (isTransformLeaf(transform)) {
+        let value = JSONPath({ json: json, path: transform.e });
+        if (transform.t && typeof transform.t === 'function') {
+          value = transform.t(value);
         }
-        if (transforms[prop].l) {
-          if (typeof transforms[prop].l === 'string') {
-            $(transforms[prop].l).text(value);
-          } else if (typeof transforms[prop].l === 'function') {
-            transforms[prop].l(value);
+        if (transform.l) {
+          if (typeof transform.l === 'string') {
+            $(transform.l).text(value);
+          } else if (typeof transform.l === 'function') {
+            transform.l(value);
           }
         }
       }
@@ -313,7 +310,10 @@ $(() => {
     jsonETL(json, TRANSFORMS);
   }).fail((jqXHR, status, error) => {
     $('#message').append('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">x</button>Cannot reach the server for cable details.</div>');
-    $(window).scrollTop($('#message div:last-child').offset().top - 40);
+    const offset = $('#message div:last-child').offset();
+    if (offset) {
+      $(window).scrollTop(offset.top - 40);
+    }
   });
 
   $.ajax({
@@ -321,16 +321,23 @@ $(() => {
     type: 'GET',
     dataType: 'json',
   }).done((json) => {
-    const changes = [];
-    $.each(json, (index, value) => {
+    const changes: webapi.Change[] = [];
+    $.each(json as Array<webapi.Change | webapi.MultiChange>, (index, value) => {
       if (value.hasOwnProperty('updates')) {
-        $.each(value.updates, (i, v) => {
-          v.updatedOn = value.updatedOn;
-          v.updatedBy = value.updatedBy;
-          changes.push(v);
+        // If object has an 'updates' property then assert it is a MultiChange
+        $.each((value as webapi.MultiChange).updates!, (i, v) => {
+          changes.push({
+            cableName: value.cableName,
+            updatedOn: value.updatedOn,
+            updatedBy: value.updatedBy,
+            property: v.property,
+            oldValue: v.oldValue,
+            newValue: v.newValue,
+          });
         });
       } else {
-        changes.push(value);
+        // Otherwise assert it is a simple Change
+        changes.push(value as webapi.Change);
       }
     });
     $('span.property').each((index, element) => {
@@ -343,7 +350,7 @@ $(() => {
       if (found.length) {
         if (found.length > 1) {
           found.sort((a, b) => {
-            if (a.updatedOn > b.updatedOn) {
+            if (a.updatedOn && b.updatedOn && a.updatedOn > b.updatedOn) {
               return -1;
             }
             return 1;
@@ -355,7 +362,10 @@ $(() => {
     });
   }).fail((jqXHR, status, error) => {
     $('#message').append('<div class="alert alert-error"><button type="button", class="close" data-dismiss="alert">x</button>Cannot reach the server for cable change history.</div>');
-    $(window).scrollTop($('#message div:last-child').offset().top - 40);
+    const offset = $('#message div:last-child').offset();
+    if (offset) {
+      $(window).scrollTop(offset.top - 40);
+    }
   });
 
   $('#show-history').click((e) => {

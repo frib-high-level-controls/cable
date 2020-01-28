@@ -29,9 +29,9 @@ $(() => {
     $('#modify').prop('hidden', false);
   });
   $('#modify').click((e) => {
-    const currentRoles = [];
+    const currentRoles: string[] = [];
     $('#roles input:checked').each((idx, elm) => {
-      currentRoles.push($(elm).val());
+      currentRoles.push(String($(elm).val()));
     });
     if (roles.sort().join() === currentRoles.sort().join()) {
       $('#message').append('<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert">x</button>Nothing was changed.</div>');
@@ -48,7 +48,7 @@ $(() => {
         dataType: 'json',
       }).done((json) => {
         const timestamp = request.getResponseHeader('Date');
-        const dateObj = moment(timestamp);
+        const dateObj = timestamp ? moment(timestamp) : moment();
         $('#message').append('<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert">x</button>The modification was saved at ' + dateObj.format('HH:mm:ss') + '.</div>');
         $('#modify').prop('hidden', true);
       }).fail((jqXHR, status, error) => {
@@ -74,7 +74,11 @@ $(() => {
           if (wbs.indexOf(newwbs) !== -1) {
             cleanWbsForm();
             $('#message').append('<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert">x</button>The WBS number <strong>' + newwbs + '</strong> is already in the user list. </div>');
-            return $(window).scrollTop($('#message div:last-child').offset().top - 40);
+            const offset = $('#message div:last-child').offset();
+            if (offset) {
+              $(window).scrollTop(offset.top - 40);
+            }
+            return;
           }
         } else {
           wbs = [];
@@ -94,7 +98,10 @@ $(() => {
         }).fail((jqXHR, status, error) => {
           if (jqXHR.status !== 401) {
             $('#message').append('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">x</button>Cannot add the WBS number.</div>');
-            $(window).scrollTop($('#message div:last-child').offset().top - 40);
+            const offset = $('#message div:last-child').offset();
+            if (offset) {
+              $(window).scrollTop(offset.top - 40);
+            }
           }
         });
       } else {
@@ -119,7 +126,10 @@ $(() => {
     }).fail((jqXHR, status, error) => {
       if (jqXHR.status !== 401) {
         $('#message').append('<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">x</button>Cannot remove the device</div>');
-        $(window).scrollTop($('#message div:last-child').offset().top - 40);
+        const offset = $('#message div:last-child').offset();
+        if (offset) {
+          $(window).scrollTop(offset.top - 40);
+        }
       }
     });
   });

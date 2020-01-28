@@ -3,7 +3,12 @@
  */
 import * as $ from 'jquery';
 
-import * as moment from 'moment';
+import {
+  formatCableStatus,
+  formatDate,
+  formatDateLong,
+  formatDateShort,
+} from '../lib/util';
 
 type DTAPI = DataTables.Api;
 
@@ -80,43 +85,6 @@ export function filterEvent(opt?: any) {
     }
   });
 }
-
-function formatDate(date) {
-  return date ? moment(date).fromNow() : '';
-}
-
-function formatDateLong(date) {
-  return date ? moment(date).format('YYYY-MM-DD HH:mm:ss') : '';
-}
-
-function formatDateShort(date) {
-  return date ? moment(date).format('YYYY-MM-DD') : '';
-}
-
-export function formatCableStatus(s) {
-  const status = {
-    100: 'approved',
-    101: 'ordered',
-    102: 'received',
-    103: 'accepted',
-    200: 'to install',
-    201: 'labeled',
-    202: 'bench terminated',
-    203: 'bench tested',
-    249: 'to pull',
-    250: 'pulled',
-    251: 'field terminated',
-    252: 'field tested',
-    300: 'working',
-    400: 'failed',
-    501: 'not needed',
-  };
-  if (status[s.toString()]) {
-    return status[s.toString()];
-  }
-  return 'unknown';
-}
-
 
 function dateColumn(title, key, long?: any) {
   return {

@@ -26,6 +26,7 @@ import * as moment from 'moment';
 import * as dtutil from '../shared/datatablesutil';
 
 import {
+  formatCableStatus,
   json2List,
   nameAuto,
 } from '../lib/util';
@@ -52,7 +53,6 @@ import {
   fnSetDeselect,
   fnUnwrap,
   fnWrap,
-  formatCableStatus,
   fromColumns,
   highlightedEvent,
   lengthColumn,

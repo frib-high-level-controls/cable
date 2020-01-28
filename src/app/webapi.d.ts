@@ -34,4 +34,22 @@ declare namespace webapi {
 
   // Application specific types defined below.
 
+  export interface Update {
+    property?: string;
+    oldValue?: {} | null;
+    newValue?: {};
+  }
+
+  export interface Change extends Update {
+    cableName?: string;
+    updatedBy?: string;
+    updatedOn?: string;
+  }
+
+  export interface MultiChange {
+    cableName?: string;
+    updates?: Update[];
+    updatedBy?: string;
+    updatedOn?: string;
+  }
 }
