@@ -50,10 +50,10 @@ export function highlightedEvent() {
 }
 
 
-export function filterEvent(opt?: any) {
+export function filterEvent(opt?: { selectedClass?: string; checkboxClass?: string; }) {
   opt = opt || {};
-  opt.selectedClass = opt.selectedClass || 'row-selected';
-  opt.checkboxClass = opt.checkboxClass || 'select-row';
+  const selectedClass = opt.selectedClass || 'row-selected';
+  const checkboxClass = opt.checkboxClass || 'select-row';
   $('.filter').on('change', 'input', function(e) {
     let bodyTable;
     const tableScroll = $(this).closest('.dataTables_scroll');
@@ -79,13 +79,15 @@ export function filterEvent(opt?: any) {
       index = $('tfoot.filter th', table).index(th);
       $('thead.filter th:nth-child(' + (index + 1) + ') input', wrapper).val(this.value);
     }
-    fnDeselect(bodyTable.dataTable(), opt.selectedClass, opt.checkboxClass);
-    bodyTable.dataTable().fnFilter(this.value, index);
-    let scrollDiv;
+    fnDeselect(bodyTable.DataTable(), selectedClass, checkboxClass);
+    bodyTable.DataTable().column(index).search(this.value);
     if ($(this).closest('.table-overflow').length) {
-      scrollDiv = $(this).closest('.table-overflow')[0];
-      if ($(this).offset().left > $(scrollDiv).offset().left + $(scrollDiv).width()) {
-        $(scrollDiv).scrollLeft($(this).offset().left - $(scrollDiv).width());
+      const scrollDiv = $<HTMLElement>(this).closest('.table-overflow')[0];
+      const scrollDivWidth = $(scrollDiv).width() || 0;
+      const scrollDivOffsetLeft = $(scrollDiv).offset()?.left || 0;
+      const offsetLeft = $(this).offset()?.left || 0;
+      if (offsetLeft > scrollDivOffsetLeft + scrollDivWidth) {
+        $(scrollDiv).scrollLeft(offsetLeft - scrollDivWidth);
       }
     }
   });
@@ -94,7 +96,7 @@ export function filterEvent(opt?: any) {
 function dateColumn(title: string, key: string, long?: boolean): ColumnSettings {
   return {
     title: title,
-    data: (source, type, val) => {
+    data: (source: any, type: string, val: any) => {
       if (type === 'sort') {
         // return formatDateLong(source[key]);
         return source[key];
@@ -142,13 +144,13 @@ function createNullArray(size: number): null[] {
 
 
 
-export function fnWrap(oTableLocal) {
+export function fnWrap(oTableLocal: DTAPI): void {
   $(oTableLocal.rows().nodes()).each((idx, row) => {
     $(row).removeClass('nowrap');
   });
 }
 
-export function fnUnwrap(oTableLocal) {
+export function fnUnwrap(oTableLocal: DTAPI): void {
   $(oTableLocal.rows().nodes()).each((idx, cell) => {
     $(cell).addClass('nowrap');
   });
@@ -170,7 +172,7 @@ export function fnGetSelected(oTableLocal: DTAPI, selectedClass: string): DTAPI[
   return aReturn;
 }
 
-export function fnDeselect(oTableLocal, selectedClass, checkboxClass) {
+export function fnDeselect(oTableLocal: DTAPI, selectedClass: string, checkboxClass: string): void {
   const aTrs = oTableLocal.rows().nodes();
   // DataTables.Api is only Array-like,
   // so TS does not allow use of for-of.
@@ -183,7 +185,7 @@ export function fnDeselect(oTableLocal, selectedClass, checkboxClass) {
   }
 }
 
-export function fnSelectAll(oTableLocal, selectedClass, checkboxClass, current) {
+export function fnSelectAll(oTableLocal: DTAPI, selectedClass: string, checkboxClass: string, current: boolean): void {
   let rows;
   if (current) {
     rows = oTableLocal.$('tr', {
@@ -202,20 +204,20 @@ export function fnSelectAll(oTableLocal, selectedClass, checkboxClass, current) 
   }
 }
 
-export function fnSetDeselect(nTr, selectedClass, checkboxClass) {
+export function fnSetDeselect(nTr: string, selectedClass: string, checkboxClass: string): void {
   if ($(nTr).hasClass(selectedClass)) {
     $(nTr).removeClass(selectedClass);
     $(nTr).find('input.' + checkboxClass + ':checked').prop('checked', false);
   }
 }
 
-function fnSetColumnsVis(oTableLocal, columns, show) {
+function fnSetColumnsVis(oTableLocal: DTAPI, columns: number[], show: boolean): void {
   columns.forEach((e, i, a) => {
-    oTableLocal.fnSetColumnVis(e, show);
+    oTableLocal.column(e).visible(show);
   });
 }
 
-export function fnAddFilterFoot(sTable, aoColumns) {
+export function fnAddFilterFoot(sTable: DTAPI, aoColumns: ColumnSettings[]): void {
   const tr = $('<tr role="row">');
   aoColumns.forEach((c) => {
     if (c.bFilter) {
@@ -227,7 +229,7 @@ export function fnAddFilterFoot(sTable, aoColumns) {
   $(sTable).append($('<tfoot class="filter">').append(tr));
 }
 
-function fnAddFilterHead(sTable, aoColumns) {
+function fnAddFilterHead(sTable: DTAPI, aoColumns: ColumnSettings[]): void {
   const tr = $('<tr role="row">');
   aoColumns.forEach((c) => {
     if (c.bFilter) {
@@ -239,7 +241,7 @@ function fnAddFilterHead(sTable, aoColumns) {
   $(sTable).append($('<thead class="filter">').append(tr));
 }
 
-function fnAddFilterHeadScroll(sTable, aoColumns) {
+function fnAddFilterHeadScroll(sTable: DTAPI, aoColumns: ColumnSettings[]): void {
   const tr = $('<tr role="row">');
   aoColumns.forEach((c) => {
     if (c.bFilter) {
@@ -414,7 +416,7 @@ export const basicColumns: ColumnSettings[] = [{
 }, {
   title: 'Category',
   defaultContent: '',
-  data: (source, type, val) => {
+  data: (source: any, type: string, val: any): string => {
     return (source.basic.originCategory || '?')
             + (source.basic.originSubcategory || '?')
             + (source.basic.signalClassification || '?');
@@ -507,7 +509,7 @@ export const fromColumns: ColumnSettings[] = [{
 }, {
   title: 'From terminated on',
   defaultContent: '',
-  data: (source, type, val) => {
+  data: (source: any, type: string, val: any): string => {
     if ( source.from && source.from.terminatedOn ) {
       if ( type === 'sort' ) {
         return source.from.terminatedOn;
@@ -567,7 +569,7 @@ export const toColumns: ColumnSettings[] = [{
 }, {
   title: 'To terminated on',
   defaultContent: '',
-  data: (source, type, val) => {
+  data: (source: any, type: string, val: any) => {
     if ( source.to && source.to.terminatedOn ) {
       if ( type === 'sort' ) {
         return source.to.terminatedOn;
@@ -619,7 +621,7 @@ export const statusColumn: ColumnSettings = {
   // render: function(data, type, full) {
   //   return formatCableStatus(data);
   // },
-  data: (source, type, val) => {
+  data: (source: any, type: string, val: any) => {
     return formatCableStatus(source.status);
   },
   bFilter: true,
@@ -627,7 +629,7 @@ export const statusColumn: ColumnSettings = {
 
 export const requiredColumn: ColumnSettings = {
   title: 'Required',
-  data: (source, type, val) => {
+  data: (source: any, type: string, val: any) => {
     if (source.required) {
       const result = [];
       for (const i in source.required) {
@@ -739,7 +741,7 @@ export const rolesColumn: ColumnSettings = {
 
 export const wbsColumn: ColumnSettings = {
   title: 'WBS',
-  data: (source) => {
+  data: (source: any) => {
     if (source.wbs) {
       return source.wbs.join(', ');
     }
