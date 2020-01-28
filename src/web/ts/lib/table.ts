@@ -12,6 +12,11 @@ import {
 
 type DTAPI = DataTables.Api;
 
+interface ColumnSettings extends DataTables.ColumnSettings {
+  bFilter?: boolean;
+  sParseType?: string;
+}
+
 export function selectEvent() {
   $('tbody').on('click', 'input.select-row', function(e) {
     if ($(this).prop('checked')) {
@@ -86,10 +91,10 @@ export function filterEvent(opt?: any) {
   });
 }
 
-function dateColumn(title, key, long?: any) {
+function dateColumn(title: string, key: string, long?: boolean): ColumnSettings {
   return {
-    sTitle: title,
-    mData: (source, type, val) => {
+    title: title,
+    data: (source, type, val) => {
       if (type === 'sort') {
         // return formatDateLong(source[key]);
         return source[key];
@@ -99,36 +104,36 @@ function dateColumn(title, key, long?: any) {
       }
       return formatDate(source[key]);
     },
-    sDefaultContent: '',
+    defaultContent: '',
   };
 }
 
-function personColumn(title, key) {
+function personColumn(title: string, key: string): ColumnSettings {
   return {
-    sTitle: title,
-    mData: key,
-    sDefaultContent: '',
-    mRender: (data, type, full) => {
+    title: title,
+    data: key,
+    defaultContent: '',
+    render: (data, type, full) => {
       return '<a href = "' + basePath + '/users/' + data + '" target="_blank">' + data + '</a>';
     },
     bFilter: true,
   };
 }
 
-function personNameColumn(title, key) {
+function personNameColumn(title: string, key: string): ColumnSettings {
   return {
-    sTitle: title,
-    mData: key,
-    sDefaultContent: '',
-    mRender: (data, type, full) => {
+    title: title,
+    data: key,
+    defaultContent: '',
+    render: (data, type, full) => {
       return '<a href = "' + basePath + '/usernames/' + data + '" target="_blank">' + data + '</a>';
     },
     bFilter: true,
   };
 }
 
-function createNullArray(size) {
-  const out = [];
+function createNullArray(size: number): null[] {
+  const out: null[] = [];
   for (let i = 0; i < size; i += 1) {
     out.push(null);
   }
@@ -214,7 +219,7 @@ export function fnAddFilterFoot(sTable, aoColumns) {
   const tr = $('<tr role="row">');
   aoColumns.forEach((c) => {
     if (c.bFilter) {
-      tr.append('<th><input type="text" placeholder="' + c.sTitle + '" style="width:80%;" autocomplete="off"></th>');
+      tr.append('<th><input type="text" placeholder="' + c.title + '" style="width:80%;" autocomplete="off"></th>');
     } else {
       tr.append('<th></th>');
     }
@@ -226,7 +231,7 @@ function fnAddFilterHead(sTable, aoColumns) {
   const tr = $('<tr role="row">');
   aoColumns.forEach((c) => {
     if (c.bFilter) {
-      tr.append('<th><input type="text" placeholder="' + c.sTitle + '" style="width:80%;" autocomplete="off"></th>');
+      tr.append('<th><input type="text" placeholder="' + c.title + '" style="width:80%;" autocomplete="off"></th>');
     } else {
       tr.append('<th></th>');
     }
@@ -238,7 +243,7 @@ function fnAddFilterHeadScroll(sTable, aoColumns) {
   const tr = $('<tr role="row">');
   aoColumns.forEach((c) => {
     if (c.bFilter) {
-      tr.append('<th><input type="text" placeholder="' + c.sTitle + '" style="width:80%;" autocomplete="off"></th>');
+      tr.append('<th><input type="text" placeholder="' + c.title + '" style="width:80%;" autocomplete="off"></th>');
     } else {
       tr.append('<th></th>');
     }
@@ -309,35 +314,35 @@ function fnAddFilterHeadScroll(sTable, aoColumns) {
 
 // global cable variables
 
-export const selectColumn = {
-  sTitle: '',
-  sDefaultContent: '<label class="checkbox"><input type="checkbox" class="select-row"></label>',
-  sSortDataType: 'dom-checkbox',
-  asSorting: ['desc', 'asc'],
+export const selectColumn: ColumnSettings = {
+  title: '',
+  defaultContent: '<label class="checkbox"><input type="checkbox" class="select-row"></label>',
+  orderDataType: 'dom-checkbox',
+  orderSequence: ['desc', 'asc'],
 };
 
-const idColumn = {
-  sTitle: '',
-  mData: '_id',
-  bVisible: false,
+const idColumn: ColumnSettings = {
+  title: '',
+  data: '_id',
+  visible: false,
 };
 
-export const editLinkColumn = {
-  sTitle: '',
-  mData: '_id',
-  mRender: (data, type, full) => {
+export const editLinkColumn: ColumnSettings = {
+  title: '',
+  data: '_id',
+  render: (data, type, full) => {
     return '<a href="' + basePath + '/requests/' + data + '" target="_blank"><i class="fa fa-edit fa-lg"></i></a>';
   },
-  bSortable: false,
+  orderable: false,
 };
 
-export const detailsLinkColumn = {
-  sTitle: '',
-  mData: '_id',
-  mRender: (data, type, full) => {
+export const detailsLinkColumn: ColumnSettings = {
+  title: '',
+  data: '_id',
+  render: (data, type, full) => {
     return '<a href="' + basePath + '/requests/' + data + '/details" target="_blank"><i class="fa fa-file-alt fa-lg"></i></a>';
   },
-  bSortable: false,
+  orderable: false,
 };
 
 export const createdOnColumn = dateColumn('Created', 'createdOn');
@@ -361,89 +366,89 @@ const obsoletedOnColumn = dateColumn('Obsoleted', 'obsoletedOn');
 export const obsoletedOnLongColumn = dateColumn('Obsoleted', 'obsoletedOn', true);
 export const obsoletedByColumn = personColumn('Obsoleted by', 'obsoletedBy');
 
-export const commentsColumn = {
-  sTitle: 'Comments',
-  sDefaultContent: '',
-  mData: 'comments',
-  sClass: 'editable',
+export const commentsColumn: ColumnSettings = {
+  title: 'Comments',
+  defaultContent: '',
+  data: 'comments',
+  className: 'editable',
   bFilter: true,
 };
 
-export const lengthColumn = {
-  sTitle: 'Length(ft)',
-  sDefaultContent: '',
-  mData: 'length',
-  sClass: 'editable',
+export const lengthColumn: ColumnSettings = {
+  title: 'Length(ft)',
+  defaultContent: '',
+  data: 'length',
+  className: 'editable',
   sParseType: 'number',
   bFilter: true,
 };
 
-export const versionColumn = {
-  sTitle: 'version',
-  sDefaultContent: 0,
-  mData: '__v',
+export const versionColumn: ColumnSettings = {
+  title: 'version',
+  defaultContent: '0',
+  data: '__v',
   bFilter: true,
 };
 
-export const ownerProvidedColumn = {
-  sTitle: 'Owner provided',
-  sDefaultContent: false,
-  mData: 'ownerProvided',
-  sClass: 'editable',
+export const ownerProvidedColumn: ColumnSettings = {
+  title: 'Owner provided',
+  defaultContent: 'false',
+  data: 'ownerProvided',
+  className: 'editable',
   sParseType: 'boolean',
   bFilter: true,
 };
 
-export const basicColumns = [{
-  sTitle: 'Project',
-  sDefaultContent: '',
-  mData: 'basic.project',
-  sClass: 'editable',
+export const basicColumns: ColumnSettings[] = [{
+  title: 'Project',
+  defaultContent: '',
+  data: 'basic.project',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'WBS',
-  sDefaultContent: '',
-  mData: 'basic.wbs',
-  sClass: 'editable',
+  title: 'WBS',
+  defaultContent: '',
+  data: 'basic.wbs',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'Category',
-  sDefaultContent: '',
-  mData: (source, type, val) => {
+  title: 'Category',
+  defaultContent: '',
+  data: (source, type, val) => {
     return (source.basic.originCategory || '?')
             + (source.basic.originSubcategory || '?')
             + (source.basic.signalClassification || '?');
   },
   bFilter: true,
 }, {
-  sTitle: 'Tray section',
-  sDefaultContent: '',
-  mData: 'basic.traySection',
-  sClass: 'editable',
+  title: 'Tray section',
+  defaultContent: '',
+  data: 'basic.traySection',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'Cable type',
-  sDefaultContent: '',
-  mData: 'basic.cableType',
-  sClass: 'editable',
+  title: 'Cable type',
+  defaultContent: '',
+  data: 'basic.cableType',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'Engineer',
-  sDefaultContent: '',
-  mData: 'basic.engineer',
-  sClass: 'editable',
+  title: 'Engineer',
+  defaultContent: '',
+  data: 'basic.engineer',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'Function',
-  sDefaultContent: '',
-  mData: 'basic.service',
-  sClass: 'editable',
+  title: 'Function',
+  defaultContent: '',
+  data: 'basic.service',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'Tags',
-  sDefaultContent: '',
-  mData: 'basic.tags',
-  mRender: (data, type, full) => {
+  title: 'Tags',
+  defaultContent: '',
+  data: 'basic.tags',
+  render: (data, type, full) => {
     if (data) {
       return data.join();
     }
@@ -453,56 +458,56 @@ export const basicColumns = [{
   //   return s ? s.replace(/^(?:\s*,?)+/, '').replace(/(?:\s*,?)*$/, '').split(/\s*,\s*/) : [];
   // },
   sParseType: 'array',
-  sClass: 'editable',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'Quantity',
-  sDefaultContent: '',
-  mData: 'basic.quantity',
+  title: 'Quantity',
+  defaultContent: '',
+  data: 'basic.quantity',
   bFilter: true,
 }];
 
-export const fromColumns = [{
-  sTitle: 'From location',
-  sDefaultContent: '',
-  mData: 'from.rack',
-  sClass: 'editable',
+export const fromColumns: ColumnSettings[] = [{
+  title: 'From location',
+  defaultContent: '',
+  data: 'from.rack',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'From termination device',
-  sDefaultContent: '',
-  mData: 'from.terminationDevice',
-  sClass: 'editable',
+  title: 'From termination device',
+  defaultContent: '',
+  data: 'from.terminationDevice',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'From termination type',
-  sDefaultContent: '',
-  mData: 'from.terminationType',
-  sClass: 'editable',
+  title: 'From termination type',
+  defaultContent: '',
+  data: 'from.terminationType',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'From termination port',
-  sDefaultContent: '',
-  mData: 'from.terminationPort',
-  sClass: 'editable',
+  title: 'From termination port',
+  defaultContent: '',
+  data: 'from.terminationPort',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'From wiring drawing',
-  sDefaultContent: '',
-  mData: 'from.wiringDrawing',
-  sClass: 'editable',
+  title: 'From wiring drawing',
+  defaultContent: '',
+  data: 'from.wiringDrawing',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'From ready for termination',
-  sDefaultContent: false,
-  mData: 'from.readyForTerm',
-  sClass: 'editable',
+  title: 'From ready for termination',
+  defaultContent: 'false',
+  data: 'from.readyForTerm',
+  className: 'editable',
   sParseType: 'boolean',
   bFilter: true,
 }, {
-  sTitle: 'From terminated on',
-  sDefaultContent: '',
-  mData: (source, type, val) => {
+  title: 'From terminated on',
+  defaultContent: '',
+  data: (source, type, val) => {
     if ( source.from && source.from.terminatedOn ) {
       if ( type === 'sort' ) {
         return source.from.terminatedOn;
@@ -512,57 +517,57 @@ export const fromColumns = [{
     }
     return '';
   },
-  sClass: 'editable',
+  className: 'editable',
   bFilter: true,
 }, {
-    sTitle: 'From terminated by',
-    sDefaultContent: '',
-    mData: 'from.terminatedBy',
-    sClass: 'editable',
+    title: 'From terminated by',
+    defaultContent: '',
+    data: 'from.terminatedBy',
+    className: 'editable',
     bFilter: true,
 }];
 
-export const toColumns = [{
-  sTitle: 'To location',
-  sDefaultContent: '',
-  mData: 'to.rack',
-  sClass: 'editable',
+export const toColumns: ColumnSettings[] = [{
+  title: 'To location',
+  defaultContent: '',
+  data: 'to.rack',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'To termination device',
-  sDefaultContent: '',
-  mData: 'to.terminationDevice',
-  sClass: 'editable',
+  title: 'To termination device',
+  defaultContent: '',
+  data: 'to.terminationDevice',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'To termination type',
-  sDefaultContent: '',
-  mData: 'to.terminationType',
-  sClass: 'editable',
+  title: 'To termination type',
+  defaultContent: '',
+  data: 'to.terminationType',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'To termination port',
-  sDefaultContent: '',
-  mData: 'to.terminationPort',
-  sClass: 'editable',
+  title: 'To termination port',
+  defaultContent: '',
+  data: 'to.terminationPort',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'To wiring drawing',
-  sDefaultContent: '',
-  mData: 'to.wiringDrawing',
-  sClass: 'editable',
+  title: 'To wiring drawing',
+  defaultContent: '',
+  data: 'to.wiringDrawing',
+  className: 'editable',
   bFilter: true,
 }, {
-  sTitle: 'To ready for termination',
-  sDefaultContent: false,
-  mData: 'to.readyForTerm',
-  sClass: 'editable',
+  title: 'To ready for termination',
+  defaultContent: 'false',
+  data: 'to.readyForTerm',
+  className: 'editable',
   sParseType: 'boolean',
   bFilter: true,
 }, {
-  sTitle: 'To terminated on',
-  sDefaultContent: '',
-  mData: (source, type, val) => {
+  title: 'To terminated on',
+  defaultContent: '',
+  data: (source, type, val) => {
     if ( source.to && source.to.terminatedOn ) {
       if ( type === 'sort' ) {
         return source.to.terminatedOn;
@@ -572,57 +577,57 @@ export const toColumns = [{
     }
     return '';
   },
-  sClass: 'editable',
+  className: 'editable',
   bFilter: true,
 }, {
-    sTitle: 'To terminated by',
-    sDefaultContent: '',
-    mData: 'to.terminatedBy',
-    sClass: 'editable',
+    title: 'To terminated by',
+    defaultContent: '',
+    data: 'to.terminatedBy',
+    className: 'editable',
     bFilter: true,
 }];
 
-export const conduitColumn = {
-  sTitle: 'Conduit',
-  sDefaultContent: '',
-  mData: 'conduit',
-  sClass: 'editable',
+export const conduitColumn: ColumnSettings = {
+  title: 'Conduit',
+  defaultContent: '',
+  data: 'conduit',
+  className: 'editable',
   bFilter: true,
 };
 
-export const numberColumn = {
-  sTitle: 'Number',
-  mData: 'number',
-  mRender: (data, type, full) => {
+export const numberColumn: ColumnSettings = {
+  title: 'Number',
+  data: 'number',
+  render: (data, type, full) => {
     return '<a href="' + basePath + '/cables/' + data + '/" target="_blank">' + data + '</a>';
   },
   bFilter: true,
 };
 
-export const requestNumberColumn = {
-  sTitle: 'Request',
-  mData: 'request_id',
-  mRender: (data, type, full) => {
+export const requestNumberColumn: ColumnSettings = {
+  title: 'Request',
+  data: 'request_id',
+  render: (data, type, full) => {
     return '<a href="' + basePath + '/requests/' + data + '/" target="_blank">' + data + '</a>';
   },
   bFilter: true,
 };
 
-export const statusColumn = {
-  sTitle: 'Status',
-  // mData: 'status',
-  // mRender: function(data, type, full) {
+export const statusColumn: ColumnSettings = {
+  title: 'Status',
+  // data: 'status',
+  // render: function(data, type, full) {
   //   return formatCableStatus(data);
   // },
-  mData: (source, type, val) => {
+  data: (source, type, val) => {
     return formatCableStatus(source.status);
   },
   bFilter: true,
 };
 
-export const requiredColumn = {
-  sTitle: 'Required',
-  mData: (source, type, val) => {
+export const requiredColumn: ColumnSettings = {
+  title: 'Required',
+  data: (source, type, val) => {
     if (source.required) {
       const result = [];
       for (const i in source.required) {
@@ -637,74 +642,74 @@ export const requiredColumn = {
   bFilter: true,
 };
 
-export const typeColumns: any = [{
-  sTitle: 'Name',
-  mData: 'name',
+export const typeColumns: ColumnSettings[] = [{
+  title: 'Name',
+  data: 'name',
   bFilter: true,
 }, {
-  sTitle: 'Service',
-  mData: 'service',
-  sDefaultContent: '',
+  title: 'Service',
+  data: 'service',
+  defaultContent: '',
   bFilter: true,
 }, {
-  sTitle: 'Conductor number',
-  mData: 'conductorNumber',
-  sDefaultContent: '',
+  title: 'Conductor number',
+  data: 'conductorNumber',
+  defaultContent: '',
   bFilter: true,
 }, {
-  sTitle: 'Conductor size',
-  mData: 'conductorSize',
-  sDefaultContent: '',
+  title: 'Conductor size',
+  data: 'conductorSize',
+  defaultContent: '',
   bFilter: true,
 }, {
-  sTitle: 'Type',
-  mData: 'fribType',
-  sDefaultContent: '',
+  title: 'Type',
+  data: 'fribType',
+  defaultContent: '',
   bFilter: true,
 }, {
-  sTitle: 'Pairing',
-  mData: 'pairing',
-  sDefaultContent: '',
+  title: 'Pairing',
+  data: 'pairing',
+  defaultContent: '',
   bFilter: true,
 }, {
-  sTitle: 'Shielding',
-  mData: 'shielding',
-  sDefaultContent: '',
+  title: 'Shielding',
+  data: 'shielding',
+  defaultContent: '',
   bFilter: true,
 }, {
-  sTitle: 'Outer Diameter',
-  mData: 'outerDiameter',
-  sDefaultContent: '',
+  title: 'Outer Diameter',
+  data: 'outerDiameter',
+  defaultContent: '',
   bFilter: true,
 }, {
-  sTitle: 'Voltage Rating',
-  mData: 'voltageRating',
-  sDefaultContent: '',
+  title: 'Voltage Rating',
+  data: 'voltageRating',
+  defaultContent: '',
   bFilter: true,
 }, {
-  sTitle: 'Raceway',
-  mData: 'raceway',
-  sDefaultContent: '',
+  title: 'Raceway',
+  data: 'raceway',
+  defaultContent: '',
   bFilter: true,
 }, {
-  sTitle: 'Tunnel/Hotcell',
-  mData: 'tunnelHotcell',
-  sDefaultContent: '',
+  title: 'Tunnel/Hotcell',
+  data: 'tunnelHotcell',
+  defaultContent: '',
   bFilter: true,
 }, {
-  sTitle: 'Manufacturer',
-  mData: 'manufacturer',
-  sDefaultContent: '',
+  title: 'Manufacturer',
+  data: 'manufacturer',
+  defaultContent: '',
   bFilter: true,
 }, {
-  sTitle: 'Part number',
-  mData: 'partNumber',
-  sDefaultContent: '',
+  title: 'Part number',
+  data: 'partNumber',
+  defaultContent: '',
   bFilter: true,
 }, {
-  sTitle: 'Other Requirements',
-  mData: 'otherRequirements',
-  sDefaultContent: '',
+  title: 'Other Requirements',
+  data: 'otherRequirements',
+  defaultContent: '',
   bFilter: true,
 }];
 
@@ -712,18 +717,18 @@ export const typeColumns: any = [{
 
 export const useridColumn = personColumn('User id', 'adid');
 
-export const fullNameNoLinkColumn = {
-  sTitle: 'Full name',
-  mData: 'name',
-  sDefaultContent: '',
+export const fullNameNoLinkColumn: ColumnSettings = {
+  title: 'Full name',
+  data: 'name',
+  defaultContent: '',
   bFilter: true,
 };
 
-export const rolesColumn = {
-  sTitle: 'Roles',
-  mData: 'roles',
-  // sDefaultContent: '',
-  mRender: (data, type, full) => {
+export const rolesColumn: ColumnSettings = {
+  title: 'Roles',
+  data: 'roles',
+  // defaultContent: '',
+  render: (data, type, full) => {
     if (data) {
       return data.join(', ');
     }
@@ -732,9 +737,9 @@ export const rolesColumn = {
   bFilter: true,
 };
 
-export const wbsColumn = {
-  sTitle: 'WBS',
-  mData: (source) => {
+export const wbsColumn: ColumnSettings = {
+  title: 'WBS',
+  data: (source) => {
     if (source.wbs) {
       return source.wbs.join(', ');
     }

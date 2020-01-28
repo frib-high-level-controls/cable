@@ -168,9 +168,9 @@ function updateTd(td, oTable, columns: dtutil.ColumnSettings[]) {
   const cableData = oTable.row(td.parentNode).data();
   const cableNumber = cableData.number;
   const columnDef = columns[oTable.cell(td).index().column] as any;
-  const property = columnDef.mData;
+  const property = columnDef.data;
   const parseType = columnDef.sParseType;
-  const title = columnDef.sTitle;
+  const title = columnDef.title;
   const oldValue = oTable.cell(td).data();
   let renderedValue = oldValue;
   if (parseType && parseType === 'array') {
@@ -457,7 +457,7 @@ $(() => {
   let obsoletedTable;
   /*procuring tab starts*/
   // tslint:disable-next-line:max-line-length
-  const procuringAoColumns = ([selectColumn, numberColumn, requestNumberColumn, statusColumn, versionColumn, updatedOnLongColumn, approvedOnLongColumn, approvedByColumn, submittedByColumn] as any[]).concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const procuringAoColumns = [selectColumn, numberColumn, requestNumberColumn, statusColumn, versionColumn, updatedOnLongColumn, approvedOnLongColumn, approvedByColumn, submittedByColumn].concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), ownerProvidedColumn, fromColumns, toColumns).concat(conduitColumn, lengthColumn, commentsColumn);
   let procuringTableWrapped = true;
 
   procuringTable = $('#procuring-table').DataTable({
@@ -544,7 +544,7 @@ $(() => {
 
   /*installing tab starts*/
   // tslint:disable-next-line:max-line-length
-  const installingAoColumns = ([selectColumn, numberColumn, statusColumn, versionColumn, updatedOnLongColumn, submittedByColumn, requiredColumn] as any[]).concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const installingAoColumns = [selectColumn, numberColumn, statusColumn, versionColumn, updatedOnLongColumn, submittedByColumn, requiredColumn].concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let installingTableWrapped = true;
 
   installingTable = $('#installing-table').DataTable({
@@ -653,7 +653,7 @@ $(() => {
 
   /*installed tab starts*/
   // tslint:disable-next-line:max-line-length
-  const installedAoColumns = ([selectColumn, numberColumn, statusColumn, versionColumn, updatedOnLongColumn, submittedByColumn] as any[]).concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const installedAoColumns = [selectColumn, numberColumn, statusColumn, versionColumn, updatedOnLongColumn, submittedByColumn].concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let installedTableWrapped = true;
 
   installedTable = $('#installed-table').DataTable({
@@ -710,7 +710,7 @@ $(() => {
 
   /*obsoleted tab starts*/
   // tslint:disable-next-line:max-line-length
-  const obsoletedAoColumns = ([selectColumn, numberColumn, requestNumberColumn, statusColumn, versionColumn, obsoletedOnLongColumn, obsoletedByColumn, submittedByColumn] as any[]).concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const obsoletedAoColumns = [selectColumn, numberColumn, requestNumberColumn, statusColumn, versionColumn, obsoletedOnLongColumn, obsoletedByColumn, submittedByColumn].concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let obsoletedTableWrapped = true;
 
   obsoletedTable = $('#obsoleted-table').DataTable({

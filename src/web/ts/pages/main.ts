@@ -398,7 +398,7 @@ $(() => {
 
   /*saved tab starts*/
   // add footer first
-  const savedAoColumns = ([selectColumn, editLinkColumn, createdOnColumn, updatedOnColumn] as any[]).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const savedAoColumns = [selectColumn, editLinkColumn, createdOnColumn, updatedOnColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let savedTableWrapped = true;
 
   savedTable = $('#saved-table').DataTable({
@@ -451,7 +451,7 @@ $(() => {
   /*saved tab ends*/
 
   /*submitted tab starts*/
-  const submittedAoColumns = ([selectColumn, detailsLinkColumn, submittedOnColumn, updatedOnColumn] as any[]).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const submittedAoColumns = [selectColumn, detailsLinkColumn, submittedOnColumn, updatedOnColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let submittedTableWrapped = true;
 
   submittedTable = $('#submitted-table').DataTable({
@@ -501,7 +501,7 @@ $(() => {
 
   /*rejected tab starts*/
 
-  const rejectedAoColumns = ([selectColumn, detailsLinkColumn, rejectedOnColumn, submittedOnColumn, rejectedByColumn] as any[]).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const rejectedAoColumns = [selectColumn, detailsLinkColumn, rejectedOnColumn, submittedOnColumn, rejectedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let rejectedTableWrapped = true;
 
   rejectedTable = $('#rejected-table').DataTable({
@@ -550,7 +550,7 @@ $(() => {
   /*rejected tab ends*/
 
   /*approved tab starts*/
-  const approvedAoColumns = ([selectColumn, detailsLinkColumn, approvedOnColumn, approvedByColumn, submittedOnColumn] as any[]).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const approvedAoColumns = [selectColumn, detailsLinkColumn, approvedOnColumn, approvedByColumn, submittedOnColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let approvedTableWrapped = true;
 
   approvedTable = $('#approved-table').DataTable({
@@ -595,7 +595,7 @@ $(() => {
   /*approved tab ends*/
 
   /*cables tab starts*/
-  const cableAoCulumns = ([selectColumn, numberColumn, statusColumn, updatedOnColumn] as any[]).concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const cableAoCulumns = [selectColumn, numberColumn, statusColumn, updatedOnColumn].concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let cablesTableWrapped = true;
 
   cablesTable = $('#cables-table').DataTable({

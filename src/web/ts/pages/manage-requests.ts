@@ -180,7 +180,7 @@ $(() => {
 
   /*approving table starts*/
   // tslint:disable-next-line:max-line-length
-  const approvingAoCulumns = ([selectColumn, editLinkColumn, submittedOnLongColumn, submittedByColumn] as any[]).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const approvingAoCulumns = [selectColumn, editLinkColumn, submittedOnLongColumn, submittedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let approvingTableWrapped = true;
 
   approvingTable = $('#approving-table').DataTable({
@@ -246,7 +246,7 @@ $(() => {
 
   /*rejected tab starts*/
   // tslint:disable-next-line:max-line-length
-  const rejectedAoColumns = ([detailsLinkColumn, rejectedOnLongColumn, submittedOnLongColumn, submittedByColumn] as any[]).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const rejectedAoColumns = [detailsLinkColumn, rejectedOnLongColumn, submittedOnLongColumn, submittedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let rejectedTableWrapped = true;
 
   rejectedTable = $('#rejected-table').DataTable({
@@ -297,7 +297,7 @@ $(() => {
 
   /*approved tab starts*/
   // tslint:disable-next-line:max-line-length
-  const approvedAoColumns = ([detailsLinkColumn, approvedOnLongColumn, submittedOnLongColumn, submittedByColumn] as any[]).concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const approvedAoColumns = [detailsLinkColumn, approvedOnLongColumn, submittedOnLongColumn, submittedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let approvedTableWrapped = true;
 
   approvedTable = $('#approved-table').DataTable({

@@ -49,7 +49,7 @@ function tdEdit(oTable) {
       return newValue;
     }
     const data: { target?: string; update?: string; original?: string; } = {};
-    data.target = typeColumns[oTable.column(that).index()].mData;
+    data.target = String(typeColumns[oTable.column(that).index()].data);
     data.update = newValue;
     data.original = oldValue;
     if (data.original === '') {
