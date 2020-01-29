@@ -57,9 +57,10 @@ import {
   toColumns,
 } from '../lib/table';
 
+type DTAPI = DataTables.Api;
 
 
-function approveFromModal(requests, approvingTable, approvedTable?: any, other?: any) {
+function approveFromModal(requests: DTAPI[], approvingTable: DTAPI, approvedTable: DTAPI, other?: DTAPI) {
   $('#approve').prop('disabled', true);
   $('#modal .modal-body div').each(function(index) {
     const that = this;
@@ -75,7 +76,8 @@ function approveFromModal(requests, approvingTable, approvedTable?: any, other?:
       $(that).prepend('<i class="far fa-check-square text-success"></i>&nbsp;');
       $(that).addClass('text-success');
       // remove the request row
-      approvingTable.row(requests[index]).remove().draw('full-hold');
+      // Type definitions are missing the draw method!
+      (approvingTable.row(requests[index]).remove() as any).draw('full-hold');
       // add the requests to the approved table
       approvedTable.row.add(result.request).draw('full-hold');
     }).fail((jqXHR) => {
@@ -87,14 +89,14 @@ function approveFromModal(requests, approvingTable, approvedTable?: any, other?:
 }
 
 
-function batchApprove(oTable, approvedTable, procuringTable?: any) {
+function batchApprove(oTable: DTAPI, approvedTable: DTAPI, procuringTable?: DTAPI) {
   const selected = fnGetSelected(oTable, 'row-selected');
-  const requests = [];
+  const requests: DTAPI[] = [];
   if (selected.length) {
     $('#modalLabel').html('Approve the following ' + selected.length + ' requests? ');
     $('#modal .modal-body').empty();
     selected.forEach((row) => {
-      const data = oTable.row(row).data();
+      const data = oTable.row(row).data() as webapi.CableRequest;
       // tslint:disable-next-line:max-line-length
       $('#modal .modal-body').append('<div id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + '</div>');
       requests.push(row);
@@ -114,7 +116,7 @@ function batchApprove(oTable, approvedTable, procuringTable?: any) {
 }
 
 
-function rejectFromModal(requests, approvingTable, rejectedTable) {
+function rejectFromModal(requests: DTAPI[], approvingTable: DTAPI, rejectedTable: DTAPI) {
   $('#reject').prop('disabled', true);
   $('#modal .modal-body div').each(function(index) {
     const that = this;
@@ -130,7 +132,8 @@ function rejectFromModal(requests, approvingTable, rejectedTable) {
       $(that).prepend('<i class="fas fa-times text-success"></i>&nbsp;');
       $(that).addClass('text-success');
       // remove the request row
-      approvingTable.row(requests[index]).remove().draw('full-hold');
+      // Type definitions are missing draw method!
+      (approvingTable.row(requests[index]).remove() as any).draw('full-hold');
       // add the new cables to the procuring table
       rejectedTable.row.add(request).draw('full-hold');
     }).fail((jqXHR) => {
@@ -141,14 +144,14 @@ function rejectFromModal(requests, approvingTable, rejectedTable) {
   });
 }
 
-function batchReject(oTable, rejectedTable) {
+function batchReject(oTable: DTAPI, rejectedTable: DTAPI) {
   const selected = fnGetSelected(oTable, 'row-selected');
-  const requests = [];
+  const requests: DTAPI[] = [];
   if (selected.length) {
     $('#modalLabel').html('Reject the following ' + selected.length + ' requests? ');
     $('#modal .modal-body').empty();
     selected.forEach((row) => {
-      const data = oTable.row(row).data();
+      const data = oTable.row(row).data() as webapi.CableRequest;
       // tslint:disable-next-line:max-line-length
       $('#modal .modal-body').append('<div id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + '</div>');
       requests.push(row);
@@ -174,16 +177,12 @@ $(() => {
 
   const readyTime = Date.now();
 
-  let approvingTable;
-  let rejectedTable;
-  let approvedTable;
-
   /*approving table starts*/
   // tslint:disable-next-line:max-line-length
   const approvingAoCulumns = [selectColumn, editLinkColumn, submittedOnLongColumn, submittedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let approvingTableWrapped = true;
 
-  approvingTable = $('#approving-table').DataTable({
+  const approvingTable = $('#approving-table').DataTable({
     ajax: {
       url: basePath + '/requests/statuses/1/json',
       dataSrc: '',
@@ -249,7 +248,7 @@ $(() => {
   const rejectedAoColumns = [detailsLinkColumn, rejectedOnLongColumn, submittedOnLongColumn, submittedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let rejectedTableWrapped = true;
 
-  rejectedTable = $('#rejected-table').DataTable({
+  const rejectedTable = $('#rejected-table').DataTable({
     ajax: {
       url: basePath + '/requests/statuses/3/json',
       dataSrc: '',
@@ -300,7 +299,7 @@ $(() => {
   const approvedAoColumns = [detailsLinkColumn, approvedOnLongColumn, submittedOnLongColumn, submittedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let approvedTableWrapped = true;
 
-  approvedTable = $('#approved-table').DataTable({
+  const approvedTable = $('#approved-table').DataTable({
     ajax: {
       url: basePath + '/requests/statuses/2/json',
       dataSrc: '',
