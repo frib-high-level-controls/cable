@@ -33,6 +33,69 @@ declare namespace webapi {
   }
 
   // Application specific types defined below.
+  export interface CableRequest {
+    _id: string
+
+    basic: {
+      project: string;
+      engineer?: string;
+      wbs: string;
+      originCategory: string;
+      originSubcategory: string;
+      signalClassification: string;
+      cableType?: string,
+      service?: string,
+      traySection?: string;
+      tags?: string[];
+      quantity: number;
+    };
+
+    from: {
+      rack?: string;
+      terminationDevice?: string,
+      terminationType?: string,
+      terminationPort?: string,
+      wiringDrawing?: string,
+      label?: string,
+    };
+
+    to: {
+      rack?: string;
+      terminationDevice?: string;
+      terminationType?: string;
+      terminationPort?: string;
+      wiringDrawing?: string;
+      label?: string;
+    };
+
+    required?: {
+      label?: boolean;
+      benchTerm?: boolean;
+      benchTest?: boolean;
+      fieldTerm?: boolean;
+    };
+
+    ownerProvided: boolean;
+
+    length?: number;
+    conduit?: string;
+    routing?: Array<{}>;
+
+    comments?: string;
+    status?: number;
+    createdBy?: string;
+    createdOn?: string;
+    updatedBy?: string;
+    updatedOn?: string;
+    submittedBy?: string;
+    submittedOn?: string;
+    revertedBy?: string;
+    revertedOn?: string;
+    approvedBy?: string;
+    approvedOn?: string;
+    rejectedBy?: string;
+    rejectedOn?: string;
+  }
 
   export interface Update {
     property?: string;

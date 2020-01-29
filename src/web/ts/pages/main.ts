@@ -59,8 +59,13 @@ import {
   updatedOnColumn,
 } from '../lib/table';
 
+type DTAPI = DataTables.Api;
 
-function initCable(table) {
+interface RequestMap {
+  [key: string]: webapi.CableRequest | undefined;
+}
+
+function initCable(table: DTAPI) {
   $.ajax({
     url: basePath + '/cables/json',
     type: 'GET',
@@ -76,11 +81,14 @@ function initCable(table) {
 
   }).fail(() => {
     $('#message').append('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">x</button>Cannot reach the server for cable requests.</div>');
-    $(window).scrollTop($('#message div:last-child').offset().top - 40);
+    const offset = $('#message div:last-child').offset();
+    if (offset) {
+      $(window).scrollTop(offset.top - 40);
+    }
   });
 }
-
-function initRequests(savedTable, submittedTable?: any, rejectedTable?: any, approvedTable?: any, cablesTable?: any) {
+// tslint:disable-next-line:max-line-length
+function initRequests(savedTable?: DTAPI, submittedTable?: DTAPI, rejectedTable?: DTAPI, approvedTable?: DTAPI, cablesTable?: DTAPI): void {
   if (cablesTable) {
     initCable(cablesTable);
   }
@@ -90,12 +98,12 @@ function initRequests(savedTable, submittedTable?: any, rejectedTable?: any, app
     contentType: 'application/json',
     dataType: 'json',
   }).done((json) => {
-    const saved = [];
-    const submitted = [];
-    const rejected = [];
-    const approved = [];
+    const saved: webapi.CableRequest[] = [];
+    const submitted: webapi.CableRequest[] = [];
+    const rejected: webapi.CableRequest[] = [];
+    const approved: webapi.CableRequest[] = [];
 
-    json.forEach((r) => {
+    json.forEach((r: webapi.CableRequest) => {
       if (savedTable) {
         if (r.status === 0) {
           saved.push(r);
@@ -157,11 +165,14 @@ function initRequests(savedTable, submittedTable?: any, rejectedTable?: any, app
     }
   }).fail(() => {
     $('#message').append('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">x</button>Cannot reach the server for cable requests.</div>');
-    $(window).scrollTop($('#message div:last-child').offset().top - 40);
+    const offset = $('#message div:last-child').offset();
+    if (offset) {
+      $(window).scrollTop(offset.top - 40);
+    }
   });
 }
 
-function submitFromModal(rows, savedTable, submittedTable) {
+function submitFromModal(rows: DTAPI[], savedTable: DTAPI, submittedTable: DTAPI): void {
   $('#submit').prop('disabled', true);
   let n = $('#modal .modal-body .request').length;
   $('#modal .modal-body .request').each(function(index) {
@@ -190,15 +201,15 @@ function submitFromModal(rows, savedTable, submittedTable) {
   });
 }
 
-function batchSubmit(savedTable, submittedTable) {
+function batchSubmit(savedTable: DTAPI, submittedTable: DTAPI): void {
   const selected = fnGetSelected(savedTable, 'row-selected');
-  const rows = [];
+  const rows: DTAPI[] = [];
   if (selected.length) {
     $('#modalLabel').html('Submit the following ' + selected.length + ' requests for approval? ');
     $('#modal .modal-body').empty();
     selected.forEach((row) => {
       rows.push(row);
-      const data = savedTable.row(row).data();
+      const data = savedTable.row(row).data() as webapi.CableRequest;
       $('#modal .modal-body').append('<div class="request" id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + '</div>');
     });
     $('#modal .modal-footer').html('<button id="submit" type="button" class="btn btn-primary">Confirm</button><button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
@@ -214,7 +225,7 @@ function batchSubmit(savedTable, submittedTable) {
   }
 }
 
-function cloneFromModal(rows, requests, savedTable) {
+function cloneFromModal(rows: DTAPI[], requests: RequestMap, savedTable: DTAPI): void {
   $('#action').prop('disabled', true);
   let n = $('#modal .modal-body .request').length;
   $('#modal .modal-body .request').each(function(index) {
@@ -252,18 +263,19 @@ function cloneFromModal(rows, requests, savedTable) {
   });
 }
 
-function batchClone(table, savedTable) {
+function batchClone(table: DTAPI, savedTable: DTAPI): void {
   const selected = fnGetSelected(table, 'row-selected');
-  const requests = {};
-  const rows = [];
+  const requests: RequestMap = {};
+  const rows: DTAPI[] = [];
   if (selected.length) {
     $('#modalLabel').html('Clone the following ' + selected.length + ' items? ');
     $('#modal .modal-body').empty();
     selected.forEach((row) => {
       rows.push(row);
-      const data = table.row(row).data();
+      const data = table.row(row).data() as webapi.CableRequest;
       $('#modal .modal-body').append('<div class="request" id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + ' <input type="text" placeholder="quantity" value="1" class="type[number] input-mini" min=1 max=20></div>');
       requests[data._id] = {
+        _id: data._id,
         basic: data.basic,
         ownerProvided: data.ownerProvided,
         from: data.from,
@@ -287,7 +299,7 @@ function batchClone(table, savedTable) {
   }
 }
 
-function revertFromModal(rows, savedTable, submittedTable) {
+function revertFromModal(rows: DTAPI[], savedTable: DTAPI, submittedTable: DTAPI): void {
   $('#revert').prop('disabled', true);
   let n = $('#modal .modal-body .request').length;
   $('#modal .modal-body .request').each(function(index) {
@@ -317,15 +329,15 @@ function revertFromModal(rows, savedTable, submittedTable) {
 }
 
 
-function batchRevert(savedTable, submittedTable) {
+function batchRevert(savedTable: DTAPI, submittedTable: DTAPI): void {
   const selected = fnGetSelected(submittedTable, 'row-selected');
-  const rows = [];
+  const rows: DTAPI[] = [];
   if (selected.length) {
     $('#modalLabel').html('Revert the following ' + selected.length + ' requests? ');
     $('#modal .modal-body').empty();
     selected.forEach((row) => {
       rows.push(row);
-      const data = submittedTable.row(row).data();
+      const data = submittedTable.row(row).data() as webapi.CableRequest;
       $('#modal .modal-body').append('<div class="request" id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + '</div>');
     });
     $('#modal .modal-footer').html('<button id="revert" type="button" class="btn btn-primary">Confirm</button><button type="button" data-dismiss="modal" type="button" class="btn btn-secondary">Close</button>');
@@ -341,7 +353,7 @@ function batchRevert(savedTable, submittedTable) {
   }
 }
 
-function deleteFromModal(table, rows) {
+function deleteFromModal(table: DTAPI, rows: DTAPI[]): void {
   $('#delete').prop('disabled', true);
   // var number = $('#modal .modal-body .request').length;
   $('#modal .modal-body .request').each(function(index) {
@@ -352,7 +364,8 @@ function deleteFromModal(table, rows) {
     }).done(() => {
       $(that).wrap('<del></del>');
       $(that).addClass('text-success');
-      table.row(rows[index]).remove().draw();
+      // DataTables type definitions missing draw()!
+      (table.row(rows[index]).remove() as any).draw();
     }).fail((jqXHR) => {
       $(that).append(' : ' + jqXHR.responseText);
       $(that).addClass('text-danger');
@@ -360,14 +373,14 @@ function deleteFromModal(table, rows) {
   });
 }
 
-function batchDelete(table) {
+function batchDelete(table: DTAPI) {
   const selected = fnGetSelected(table, 'row-selected');
-  const rows = [];
+  const rows: DTAPI[] = [];
   if (selected.length) {
     $('#modalLabel').html('Delete the following ' + selected.length + ' requests? ');
     $('#modal .modal-body').empty();
     selected.forEach((row) => {
-      const data = table.row(row).data();
+      const data = table.row(row).data() as webapi.CableRequest;
       rows.push(row);
       $('#modal .modal-body').append('<div class="request" id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + '</div>');
     });
@@ -386,22 +399,15 @@ function batchDelete(table) {
 
 
 $(() => {
-  let savedTable;
-  let submittedTable;
-  let rejectedTable;
-  let approvedTable;
-  let cablesTable;
-
 
   ajax401('');
   disableAjaxCache();
 
   /*saved tab starts*/
-  // add footer first
   const savedAoColumns = [selectColumn, editLinkColumn, createdOnColumn, updatedOnColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let savedTableWrapped = true;
 
-  savedTable = $('#saved-table').DataTable({
+  const savedTable = $('#saved-table').DataTable({
     data: [],
     autoWidth: false,
     columns: savedAoColumns,
@@ -454,7 +460,7 @@ $(() => {
   const submittedAoColumns = [selectColumn, detailsLinkColumn, submittedOnColumn, updatedOnColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let submittedTableWrapped = true;
 
-  submittedTable = $('#submitted-table').DataTable({
+  const submittedTable = $('#submitted-table').DataTable({
     data: [],
     autoWidth: false,
     columns: submittedAoColumns,
@@ -504,7 +510,7 @@ $(() => {
   const rejectedAoColumns = [selectColumn, detailsLinkColumn, rejectedOnColumn, submittedOnColumn, rejectedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let rejectedTableWrapped = true;
 
-  rejectedTable = $('#rejected-table').DataTable({
+  const rejectedTable = $('#rejected-table').DataTable({
     data: [],
     autoWidth: false,
     columns: rejectedAoColumns,
@@ -553,7 +559,7 @@ $(() => {
   const approvedAoColumns = [selectColumn, detailsLinkColumn, approvedOnColumn, approvedByColumn, submittedOnColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let approvedTableWrapped = true;
 
-  approvedTable = $('#approved-table').DataTable({
+  const approvedTable = $('#approved-table').DataTable({
     data: [],
     autoWidth: false,
     columns: approvedAoColumns,
@@ -598,7 +604,7 @@ $(() => {
   const cableAoCulumns = [selectColumn, numberColumn, statusColumn, updatedOnColumn].concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let cablesTableWrapped = true;
 
-  cablesTable = $('#cables-table').DataTable({
+  const cablesTable = $('#cables-table').DataTable({
     data: [],
     autoWidth: false,
     columns: cableAoCulumns,

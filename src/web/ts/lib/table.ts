@@ -204,7 +204,7 @@ export function fnSelectAll(oTableLocal: DTAPI, selectedClass: string, checkboxC
   }
 }
 
-export function fnSetDeselect(nTr: string, selectedClass: string, checkboxClass: string): void {
+export function fnSetDeselect(nTr: DTAPI, selectedClass: string, checkboxClass: string): void {
   if ($(nTr).hasClass(selectedClass)) {
     $(nTr).removeClass(selectedClass);
     $(nTr).find('input.' + checkboxClass + ':checked').prop('checked', false);
