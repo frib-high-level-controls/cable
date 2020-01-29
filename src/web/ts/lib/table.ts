@@ -12,7 +12,7 @@ import {
 
 type DTAPI = DataTables.Api;
 
-interface ColumnSettings extends DataTables.ColumnSettings {
+export interface ColumnSettings extends DataTables.ColumnSettings {
   bFilter?: boolean;
   sParseType?: string;
 }

@@ -97,6 +97,94 @@ declare namespace webapi {
     rejectedOn?: string;
   }
 
+  export interface Cable {
+    _id: string;
+
+    request_id: string;
+    number: string;
+    status: number;
+    ownerProvided: boolean;
+
+    basic: {
+      project: string;
+      engineer?: string;
+      wbs: string;
+      originCategory: string;
+      originSubcategory: string;
+      signalClassification: string;
+      cableType?: string;
+      service?: string;
+      traySection: string;
+      tags: string[];
+    };
+
+    from: {
+      rack?: string,
+      terminationDevice?: string;
+      terminationType?: string;
+      terminationPort?: string;
+      wiringDrawing?: string;
+      label?: string;
+      readyForTerm?: boolean;
+      terminatedBy?: string;
+      terminatedOn?: Date;
+    };
+
+    to: {
+      rack?: string;
+      terminationDevice?: string;
+      terminationType?: string;
+      terminationPort?: string;
+      wiringDrawing?: string;
+      label?: string;
+      readyForTerm?: boolean;
+      terminatedBy?: string;
+      terminatedOn?: Date;
+    };
+
+    required?: {
+      label?: boolean;
+      benchTerm?: boolean;
+      benchTest?: boolean;
+      fieldTerm?: boolean;
+    };
+
+    length?: number;
+    conduit?: string;
+    routing?: Array<{}>;
+
+    comments?: string;
+    submittedBy?: string;
+    submittedOn?: string;
+    approvedBy?: string;
+    approvedOn?: string;
+    updatedOn?: string;
+    updatedBy?: string;
+    obsoletedOn?: string;
+    obsoletedBy?: string;
+    orderedBy?: string;
+    orderedOn?: string;
+    receivedBy?: string;
+    receivedOn?: string;
+    acceptedBy?: string;
+    acceptedOn?: string;
+    labeledBy?: string;
+    labeledOn?: string;
+    benchTerminatedBy?: string;
+    benchTerminatedOn?: string;
+    benchTestedBy?: string;
+    benchTestedOn?: string;
+    pulledBy?: string;
+    pulledOn?: string;
+    fieldTerminatedBy?: string;
+    fieldTerminatedOn?: string;
+    fieldTestedBy?: string;
+    fieldTestedOn?: string;
+    installedBy?: string;
+    installedOn?: string;
+    changeHistory: string[];
+  }
+
   export interface Update {
     property?: string;
     oldValue?: {} | null;

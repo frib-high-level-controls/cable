@@ -44,6 +44,7 @@ import {
   approvedByColumn,
   approvedOnLongColumn,
   basicColumns,
+  ColumnSettings,
   commentsColumn,
   conduitColumn,
   filterEvent,
@@ -74,16 +75,26 @@ import {
   versionColumn,
 } from '../lib/table';
 
+type DTAPI = DataTables.Api;
+
+interface ActionData<T = undefined> {
+  action: string;
+  property?: string;
+  oldValue?: T;
+  newValue?: T;
+  name?: string;
+  date?: Date;
+}
 
 const managerGlobal = {
   procuring_edit: false,
 };
 
-function splitTags(s) {
+function splitTags(s?: string) {
   return s ? s.replace(/^(?:\s*,?)+/, '').replace(/(?:\s*,?)*$/, '').split(/\s*[,;]\s*/) : [];
 }
-
-function updateTdFromModal(cableNumber, property, parseType, oldValue, newValue, td, oTable) {
+// tslint:disable-next-line:max-line-length
+function updateTdFromModal(cableNumber: string, property: string, parseType: string | undefined, oldValue: any, newValue: any, td: HTMLElement, oTable: DTAPI) {
   $('#update').prop('disabled', true);
   let sOldValue = oldValue;
   if (parseType && parseType === 'array') {
@@ -154,8 +165,8 @@ function updateTdFromModal(cableNumber, property, parseType, oldValue, newValue,
   });
 }
 
-function cableDetails(cableData) {
-  delete cableData[0];
+function cableDetails(cableData: webapi.Cable) {
+  delete (cableData as any)[0]; // Why this is here!?
   let details = '';
   details += '<div id="cable-details" class="collapse out">';
   details += '<h4>Cable details</h4>';
@@ -164,11 +175,11 @@ function cableDetails(cableData) {
   return details;
 }
 
-function updateTd(td, oTable, columns: dtutil.ColumnSettings[]) {
-  const cableData = oTable.row(td.parentNode).data();
+function updateTd(td: HTMLElement, oTable: DTAPI, columns: ColumnSettings[]) {
+  const cableData = oTable.row(td.parentNode).data() as webapi.Cable;
   const cableNumber = cableData.number;
-  const columnDef = columns[oTable.cell(td).index().column] as any;
-  const property = columnDef.data;
+  const columnDef = columns[oTable.cell(td).index().column];
+  const property = String(columnDef.data);
   const parseType = columnDef.sParseType;
   const title = columnDef.title;
   const oldValue = oTable.cell(td).data();
@@ -189,8 +200,8 @@ function updateTd(td, oTable, columns: dtutil.ColumnSettings[]) {
     updateTdFromModal(cableNumber, property, parseType, oldValue, newValue, td, oTable);
   });
 }
-
-function actionFromModal(rows, action, data, activeTable, destinationTable) {
+// tslint:disable-next-line:max-line-length
+function actionFromModal<T>(rows: DTAPI[], action: string, data: ActionData<T> | null, activeTable: DTAPI, destinationTable: DTAPI) {
   if (!data) {
     data = { action: action };
   }
@@ -208,7 +219,8 @@ function actionFromModal(rows, action, data, activeTable, destinationTable) {
       fnSetDeselect(rows[index], 'row-selected', 'select-row');
       switch (action) {
       case 'obsolete':
-        activeTable.row(rows[index]).remove().draw('full-hold');
+        // Type definition missing draw method!
+        (activeTable.row(rows[index]).remove() as any).draw('full-hold');
         destinationTable.row.add(cable).draw('full-hold');
         break;
       case 'To terminated':
@@ -218,7 +230,8 @@ function actionFromModal(rows, action, data, activeTable, destinationTable) {
         activeTable.row(rows[index]).data(cable).draw('full-hold');
         break;
       case 'Ready to use':
-        activeTable.row(rows[index]).remove().draw('full-hold');
+        // Type definition missing draw method!
+        (activeTable.row(rows[index]).remove() as any).draw('full-hold');
         destinationTable.row.add(cable).draw('full-hold');
         break;
       default:
@@ -232,7 +245,7 @@ function actionFromModal(rows, action, data, activeTable, destinationTable) {
   });
 }
 
-function newRequestFromModal(cables, rows) {
+function newRequestFromModal(cables: webapi.Cable[], rows: DTAPI[]) {
   $('#modal .modal-body .cable').each(function(index) {
     const that = this;
     const request = {
@@ -266,17 +279,17 @@ function newRequestFromModal(cables, rows) {
   });
 }
 
-function batchAction(oTable, action, data, obsoletedTable) {
+function batchAction<T>(oTable: DTAPI, action: string, data: ActionData<T> | null, obsoletedTable: DTAPI): void {
   const selected = fnGetSelected(oTable, 'row-selected');
-  const cables = [];
-  const rows = [];
+  const cables: webapi.Cable[] = [];
+  const rows: DTAPI[] = [];
   if (selected.length) {
     $('#modalLabel').html(action + ' the following ' + selected.length + ' cables? ');
     $('#modal .modal-body').empty();
 
     selected.forEach((row) => {
       rows.push(row);
-      const d = oTable.row(row).data();
+      const d = oTable.row(row).data() as webapi.Cable;
       cables.push(d);
       // tslint:disable-next-line:max-line-length
       $('#modal .modal-body').append('<div class="cable" id="' + d.number + '">' + d.number + '||' + formatCableStatus(d.status) + '||' + moment(d.approvedOn).format('YYYY-MM-DD HH:mm:ss') + '||' + d.submittedBy + '||' + d.basic.project + '</div>');
@@ -301,19 +314,19 @@ function batchAction(oTable, action, data, obsoletedTable) {
   }
 }
 
-
-function batchActionWithNameAndDate(oTable, action, data, destinationTable) {
+// tslint:disable-next-line:max-line-length
+function batchActionWithNameAndDate<T>(oTable: DTAPI, action: string, data: ActionData<T> | null, destinationTable: DTAPI) {
   const selected = fnGetSelected(oTable, 'row-selected');
-  const cables = [];
-  const rows = [];
+  const cables: webapi.Cable[] = [];
+  const rows: DTAPI[] = [];
   if (selected.length) {
     $('#modalLabel').html(action + ' the following ' + selected.length + ' cables? ');
     $('#modal .modal-body').empty();
     $('#modal .modal-body').append('<form class="form-horizontal" id="modalform"><div class="control-group"><label class="control-label">Staff name</label><div class="controls ui-front"><input id="modal-name" type="text" class="input-small" placeholder="Last, First"></div></div><div class="control-group"><label class="control-label">Date</label><div class="controls"><input id="modal-date" type="text" class="input-small" placeholder="date"></div></div></form>');
     selected.forEach((row) => {
       rows.push(row);
-      const d = oTable.row(row).data();
-      cables.push(row);
+      const d = oTable.row(row).data() as webapi.Cable;
+      cables.push(d);
       // tslint:disable-next-line:max-line-length
       $('#modal .modal-body').append('<div class="cable" id="' + d.number + '">' + d.number + '||' + formatCableStatus(d.status) + '||' + moment(d.approvedOn).format('YYYY-MM-DD HH:mm:ss') + '||' + d.submittedBy + '||' + d.basic.project + '</div>');
     });
@@ -326,7 +339,7 @@ function batchActionWithNameAndDate(oTable, action, data, destinationTable) {
       if (!data) {
         data = { action: action };
       }
-      data.name = $('#modal-name').val();
+      data.name = String($('#modal-name').val());
       data.date = $('#modal-date').datepicker('getDate');
       actionFromModal(rows, action, data, oTable, destinationTable);
     });
@@ -451,16 +464,11 @@ $(() => {
 
   const readyTime = Date.now();
 
-  let procuringTable;
-  let installingTable;
-  let installedTable;
-  let obsoletedTable;
-  /*procuring tab starts*/
   // tslint:disable-next-line:max-line-length
   const procuringAoColumns = [selectColumn, numberColumn, requestNumberColumn, statusColumn, versionColumn, updatedOnLongColumn, approvedOnLongColumn, approvedByColumn, submittedByColumn].concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), ownerProvidedColumn, fromColumns, toColumns).concat(conduitColumn, lengthColumn, commentsColumn);
   let procuringTableWrapped = true;
 
-  procuringTable = $('#procuring-table').DataTable({
+  const procuringTable = $('#procuring-table').DataTable({
     ajax: {
       url: basePath + '/cables/statuses/1/json',
       dataSrc: '',
@@ -526,7 +534,7 @@ $(() => {
     }
   });
 
-  $('#procuring-table').on('dblclick', 'td.editable', function(e) {
+  $('#procuring-table').on('dblclick', 'td.editable', function(this: HTMLElement, e) {
     e.preventDefault();
     if (managerGlobal.procuring_edit) {
       updateTd(this, procuringTable, procuringAoColumns);
@@ -547,7 +555,7 @@ $(() => {
   const installingAoColumns = [selectColumn, numberColumn, statusColumn, versionColumn, updatedOnLongColumn, submittedByColumn, requiredColumn].concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let installingTableWrapped = true;
 
-  installingTable = $('#installing-table').DataTable({
+  const installingTable = $('#installing-table').DataTable({
     ajax: {
       url: basePath + '/cables/statuses/2/json',
       dataSrc: '',
@@ -600,7 +608,7 @@ $(() => {
 
   $('#installing-to-ready-for-term').click((e) => {
     const activeTable = $('.tab-pane.active .dataTable').DataTable();
-    const data = {
+    const data: ActionData<boolean> = {
       action: 'update',
       property: 'to.readyForTerm',
       oldValue: false,
@@ -611,7 +619,7 @@ $(() => {
 
   $('#installing-from-ready-for-term').click((e) => {
     const activeTable = $('.tab-pane.active .dataTable').DataTable();
-    const data = {
+    const data: ActionData<boolean> = {
       action: 'update',
       property: 'from.readyForTerm',
       oldValue: false,
@@ -622,7 +630,7 @@ $(() => {
 
   $('#installing-to-terminated').click((e) => {
     const activeTable = $('.tab-pane.active .dataTable').DataTable();
-    const data = {
+    const data: ActionData = {
       action: 'to-terminated',
     };
     batchActionWithNameAndDate(activeTable, 'To terminated', data, obsoletedTable);
@@ -630,7 +638,7 @@ $(() => {
 
   $('#installing-from-terminated').click((e) => {
     const activeTable = $('.tab-pane.active .dataTable').DataTable();
-    const data = {
+    const data: ActionData = {
       action: 'from-terminated',
     };
     batchActionWithNameAndDate(activeTable, 'From terminated', data, obsoletedTable);
@@ -656,7 +664,7 @@ $(() => {
   const installedAoColumns = [selectColumn, numberColumn, statusColumn, versionColumn, updatedOnLongColumn, submittedByColumn].concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let installedTableWrapped = true;
 
-  installedTable = $('#installed-table').DataTable({
+  const installedTable = $('#installed-table').DataTable({
     ajax: {
       url: basePath + '/cables/statuses/3/json',
       dataSrc: '',
@@ -713,7 +721,7 @@ $(() => {
   const obsoletedAoColumns = [selectColumn, numberColumn, requestNumberColumn, statusColumn, versionColumn, obsoletedOnLongColumn, obsoletedByColumn, submittedByColumn].concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let obsoletedTableWrapped = true;
 
-  obsoletedTable = $('#obsoleted-table').DataTable({
+  const obsoletedTable = $('#obsoleted-table').DataTable({
     ajax: {
       url: basePath + '/cables/statuses/5/json',
       dataSrc: '',
