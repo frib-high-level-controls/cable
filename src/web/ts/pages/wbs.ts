@@ -85,7 +85,7 @@ $(() => {
 
     let focus = root;
 
-    function clicked(p: TargetedHierarchyRectangularNode<WBSDatum>) {
+    function clicked(p: TargetedHierarchyRectangularNode<WBSDatum> | null) {
       if (focus === p) {
         p = p.parent;
       }
@@ -95,22 +95,24 @@ $(() => {
       focus = p;
 
       root.each((d) => {
-        d.target = {
-          x0: (d.x0 - p.x0) / (p.x1 - p.x0) * h,
-          x1: (d.x1 - p.x0) / (p.x1 - p.x0) * h,
-          y0: d.y0 - p.y0,
-          y1: d.y1 - p.y0,
-        };
+        if (p) {
+          d.target = {
+            x0: (d.x0 - p.x0) / (p.x1 - p.x0) * h,
+            x1: (d.x1 - p.x0) / (p.x1 - p.x0) * h,
+            y0: d.y0 - p.y0,
+            y1: d.y1 - p.y0,
+          };
+        }
       });
 
       const t = cell.transition()
                     .duration(750)
-                    .attr('transform', (d) => `translate(${d.target.y0},${d.target.x0})`);
+                    .attr('transform', (d) => d.target ? `translate(${d.target.y0},${d.target.x0})` : null);
 
-      rect.transition(t).attr('height', (d) => rectHeight(d.target));
-      text.transition(t).attr('y', (d) => labelPositionX(d.target));
-      text.transition(t).attr('fill-opacity', (d) => labelVisible(d.target));
-      tspan.transition(t).attr('fill-opacity', (d) => labelVisible(d.target) * 0.7);
+      rect.transition(t).attr('height', (d) => d.target ? rectHeight(d.target) : null);
+      text.transition(t).attr('y', (d) => d.target ? labelPositionX(d.target) : null);
+      text.transition(t).attr('fill-opacity', (d) => d.target ? labelVisible(d.target) : null);
+      tspan.transition(t).attr('fill-opacity', (d) => d.target ? labelVisible(d.target) * 0.7 : null);
     }
   });
 });

@@ -53,7 +53,7 @@ export function json2List(json: object) {
   let output = '<dl>';
   for (const k in json) {
     if (json.hasOwnProperty(k)) {
-      //
+      // TS does not infer property from hasOwnProperty!
       const v = (json as any)[k];
       if (typeof(v) === 'object') {
         output = output + '<dl>' + '<dt>' + k + '</dt>' + '<dd>' + json2List(v) + '</dd>' + '</dl>';
