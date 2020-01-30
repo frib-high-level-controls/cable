@@ -203,16 +203,16 @@ $(async () => {
 
   const validator = $(requestForm).validate({
     errorElement: 'span',
-    errorClass: 'error',
-    validClass: 'success',
+    errorClass: 'is-invalid',
+    validClass: 'is-valid',
     errorPlacement(error, element) {
       error.appendTo($(element).closest('.controls'));
     },
     highlight(element) {
-      $(element).closest('.form-group').removeClass('success').addClass('error');
+      $(element).closest('.form-group').removeClass('is-valid').addClass('is-invalid');
     },
     success(element) {
-      $(element).closest('.form-group').removeClass('error').addClass('success');
+      $(element).closest('.form-group').removeClass('is-invalid').addClass('is-valid');
     },
   });
   const binder = new Binder.FormBinder(requestForm);

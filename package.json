@@ -14,6 +14,7 @@
   "dependencies": {
     "@jcu/passport-cas": "^0.1.2",
     "body-parser": "^1.19.0",
+    "bootstrap": "^4.4.1",
     "cas.js": "^0.1.0",
     "commander": "^4.0.1",
     "compression": "^1.7.4",
@@ -73,7 +74,6 @@
     "@types/tmp": "^0.1.0",
     "@types/typeahead": "^0.11.32",
     "@types/validator": "^12.0.1",
-    "bootstrap": "^4.4.1",
     "chai": "^4.0.2",
     "chart.js": "^2.9.3",
     "css-loader": "^3.2.0",
