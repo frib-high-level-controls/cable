@@ -197,7 +197,7 @@ $(async () => {
 
   let initModel;
 
-  $.validator.addMethod('wbs', (value, element) => {
+  $.validator.addMethod('wbs', function(value, element) {
     return this.optional(element) || /^[A-Z]\d{1,5}$/.test(value);
   }, 'Please check the WBS number, remove spaces and dots');
 
@@ -370,14 +370,18 @@ $(async () => {
     }
 
     if (action === 'save' || action === 'submit' || action === 'adjust') {
-      if ($(requestForm).valid()) {
-        sendRequest(data, initModel, binder);
-      } else {
-        $('#modalLabel').html('The request is not validated');
-        $('#modal .modal-body').html('The form has ' + validator.numberOfInvalids()
-        + ' invalid form-control(s) to fix.');
-        $('#modal').modal('show');
-        return;
+      try {
+        if ($(requestForm).valid()) {
+          sendRequest(data, initModel, binder);
+        } else {
+          $('#modalLabel').html('The request is not validated');
+          $('#modal .modal-body').html('The form has ' + validator.numberOfInvalids()
+          + ' invalid form-control(s) to fix.');
+          $('#modal').modal('show');
+          return;
+        }
+      } catch(e) {
+        console.log(e)
       }
     }
 
