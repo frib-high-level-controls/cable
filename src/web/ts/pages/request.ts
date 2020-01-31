@@ -85,7 +85,7 @@ function updateCat(json) {
       }).text(v.name));
     }
   });
-  $('#cat').next('.add-on').text($('#cat option:selected').val() as string);
+  $('#cat').next('.input-group-text').text($('#cat option:selected').val() as string);
 }
 
 function updateSub(json) {
@@ -104,7 +104,7 @@ function updateSub(json) {
       }
     });
   }
-  $('#sub').next('.add-on').text($('#sub option:selected').val() as string);
+  $('#sub').next('.input-group-text').text($('#sub option:selected').val() as string);
 }
 
 function updateSignal(json) {
@@ -123,7 +123,7 @@ function updateSignal(json) {
       }
     });
   }
-  $('#signal').next('.add-on').text($('#signal option:selected').val() as string);
+  $('#signal').next('.input-group-text').text($('#signal option:selected').val() as string);
 }
 
 function update(select, json) {
@@ -148,15 +148,15 @@ function css() {
   $('#cat').change(() => {
     updateSub(sysSub);
     updateSignal(sysSub);
-    $('#cat').next('.add-on').text($('#cat option:selected').val() as string);
+    $('#cat').next('.input-group-text').text($('#cat option:selected').val() as string);
   });
 
   $('#sub').change(() => {
-    $('#sub').next('.add-on').text($('#sub option:selected').val() as string);
+    $('#sub').next('.input-group-text').text($('#sub option:selected').val() as string);
   });
 
   $('#signal').change(() => {
-    $('#signal').next('.add-on').text($('#signal option:selected').val() as string);
+    $('#signal').next('.input-group-text').text($('#signal option:selected').val() as string);
   });
 }
 
@@ -169,17 +169,17 @@ function setCSS(proj, cat, sub, signal) {
   }
   if (cat) {
     $('#cat').val(cat);
-    $('#cat').next('.add-on').text(cat);
+    $('#cat').next('.input-group-text').text(cat);
     updateSub(sysSub);
     updateSignal(sysSub);
   }
   if (signal) {
     $('#signal').val(signal);
-    $('#signal').next('.add-on').text(signal);
+    $('#signal').next('.input-group-text').text(signal);
   }
   if (sub) {
     $('#sub').val(sub);
-    $('#sub').next('.add-on').text(sub);
+    $('#sub').next('.input-group-text').text(sub);
   }
 }
 
@@ -200,21 +200,19 @@ $(async () => {
   $.validator.addMethod('wbs', function(value, element) {
     return this.optional(element) || /^[A-Z]\d{1,5}$/.test(value);
   }, 'Please check the WBS number, remove spaces and dots');
-
   const validator = $(requestForm).validate({
-    errorElement: 'span',
-    errorClass: 'is-invalid',
-    validClass: 'is-valid',
-    errorPlacement(error, element) {
-      error.appendTo($(element).closest('.controls'));
+    errorClass: 'invalid-feedback',
+    highlight: (element) => {
+      $(element).addClass('is-invalid');
     },
-    highlight(element) {
-      $(element).closest('.form-group').removeClass('is-valid').addClass('is-invalid');
+    unhighlight: (element) => {
+      $(element).removeClass('is-invalid');
     },
     success(element) {
       $(element).closest('.form-group').removeClass('is-invalid').addClass('is-valid');
     },
   });
+
   const binder = new Binder.FormBinder(requestForm);
 
   $('#wbs').rules('add', {wbs: true});
