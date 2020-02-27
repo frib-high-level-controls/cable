@@ -203,4 +203,30 @@ declare namespace webapi {
     updatedBy?: string;
     updatedOn?: string;
   }
+
+  export interface CableType {
+    _id: string;
+
+    name: string;
+    service?: string;
+    conductorNumber: number;
+    conductorSize: string;
+    fribType: string;
+    typeNumber: string;
+    pairing?: string;
+    shielding?: string;
+    outerDiameter?: string;
+    voltageRating?: string;
+    raceway?: string;
+    tunnelHotcell?: boolean;
+    otherRequirements?: string;
+    manufacturer?: string;
+    partNumber?: string;
+    altManufacturer?: string;
+    altPartNumber?: string;
+    createdBy?: string;
+    createdOn?: string;
+    updatedBy?: string;
+    updatedOn?: string;
+  }
 }

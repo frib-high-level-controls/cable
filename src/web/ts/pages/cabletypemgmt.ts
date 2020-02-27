@@ -27,18 +27,20 @@ import {
   typeColumns,
 } from '../lib/table';
 
-/*global fnAddFilterFoot: false, typeColumns: false, sDom: false, oTableTools: false, filterEvent: false*/
-/*global window: false*/
+type DTAPI = DataTables.Api;
 
 $(document).ajaxError((event, jqxhr) => {
   if (jqxhr.status === 401) {
     $('#message').append('<div class="alert alert-danger"><button class="close" data-dismiss="alert">x</button>Please click <a href="/" target="_blank">home</a>, log in, and then save the changes on this page.</div>');
-    $(window).scrollTop($('#message div:last-child').offset().top - 40);
+    const offset = $('#message div:last-child').offset();
+    if (offset) {
+      $(window).scrollTop(offset.top - 40);
+    }
   }
 });
 
-function tdEdit(oTable) {
-  $(oTable.cells().nodes()).editable(function(value) {
+function tdEdit(oTable: DTAPI) {
+  $(oTable.cells().nodes()).editable(function(this: HTMLElement, value: string) {
     const that = this;
     const newValue = value.trim();
     let oldValue = oTable.cell(that).data();
@@ -48,10 +50,11 @@ function tdEdit(oTable) {
     if (newValue === oldValue) {
       return newValue;
     }
-    const data: { target?: string; update?: string; original?: string; } = {};
-    data.target = String(typeColumns[oTable.column(that).index()].data);
-    data.update = newValue;
-    data.original = oldValue;
+    const data: { target: string; update?: string | null; original?: string | null; } = {
+      target: String(typeColumns[oTable.column(that).index()].data),
+      update: newValue,
+      original: oldValue,
+    };
     if (data.original === '') {
       data.original = null;
     }
@@ -59,19 +62,23 @@ function tdEdit(oTable) {
       data.update = null;
     }
 
+    const d = oTable.row(that).data() as webapi.CableType;
     $.ajax({
-      url: basePath + '/cabletypes/' + oTable.row(that).data()._id,
+      url: basePath + '/cabletypes/' + d._id,
       type: 'PUT',
       contentType: 'application/json',
       data: JSON.stringify(data),
       success: () => {
-        oTable.row(that).data()[data.target] = newValue;
+        (d as any)[data.target] = newValue;
         oTable.draw();
       },
       error: (jqXHR) => {
         $(that).text(oldValue);
         $('#message').append('<div class="alert alert-danger"><button class="close" data-dismiss="alert">x</button>Cannot update the cable type : ' + jqXHR.statusText + '</div>');
-        $(window).scrollTop($('#message div:last-child').offset().top - 40);
+        const offset = $('#message div:last-child').offset();
+        if (offset) {
+          $(window).scrollTop(offset.top - 40);
+        }
       },
     });
     return value;
