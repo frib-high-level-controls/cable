@@ -14,7 +14,7 @@ import 'datatables.net-buttons-bs4';
 import 'datatables.net-buttons/js/buttons.html5.min.js';
 import 'datatables.net-buttons/js/buttons.print.min.js';
 
-import Bloodhound from 'typeahead.js';
+import Bloodhound from 'bloodhound';
 
 import * as $ from 'jquery';
 
@@ -32,8 +32,11 @@ import {
   wbsColumn,
 } from '../lib/table';
 
+type DTAPI = DataTables.Api;
 
-function inArray(name, ao: DataTables.Api) {
+function inArray(name: string, ao: DTAPI) {
+  // DataTables.Api is only Array-like,
+  // so TS does not allow use of for-of.
   // tslint:disable:prefer-for-of
   for (let i = 0; i < ao.length; i += 1) {
     if (ao[i].name === name) {
@@ -43,7 +46,7 @@ function inArray(name, ao: DataTables.Api) {
   return false;
 }
 
-function initTable(oTable) {
+function initTable(oTable: DTAPI) {
   $.ajax({
     url: basePath + '/users/json',
     type: 'GET',
@@ -86,9 +89,9 @@ function updateFromModal(cb?: () => void) {
 function modifyFromModal(cb?: () => void) {
   $('#remove').prop('disabled', true);
   let n = $('#modal .modal-body .user-modify-list div').length;
-  const roles = [];
+  const roles: string[] = [];
   $('#modal-roles input:checked').each((idx, elm) => {
-    roles.push($(elm).val());
+    roles.push(String($(elm).val()));
   });
   $('#modal .modal-body .user-modify-list div').each((index, element) => {
     $.ajax({
@@ -124,7 +127,10 @@ $(() => {
   $(document).ajaxError((event, jqxhr) => {
     if (jqxhr.status === 401) {
       $('#message').append('<div class="alert alert-danger"><button class="close" data-dismiss="alert">x</button>Please click <a href="/" target="_blank">home</a>, log in, and then save the changes on this page.</div>');
-      $(window).scrollTop($('#message div:last-child').offset().top - 40);
+      const offset = $('#message div:last-child').offset();
+      if (offset) {
+        $(window).scrollTop(offset.top - 40);
+      }
     }
   });
 
@@ -171,7 +177,7 @@ $(() => {
 
   $('#add').click((e) => {
     e.preventDefault();
-    const name = $('#username').val();
+    const name = String($('#username').val());
     if (inArray(name, userTable.rows().data())) {
       // show message
       $('#message').append('<div class="alert alert-info"><button class="close" data-dismiss="alert">x</button>The user named <strong>' + name + '</strong> is already in the user list. </div>');
