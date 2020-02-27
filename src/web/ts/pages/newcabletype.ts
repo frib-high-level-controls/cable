@@ -10,7 +10,7 @@ import * as $ from 'jquery';
 import * as Binder from '../lib/binder';
 
 
-function sendRequest(data) {
+function sendRequest(data: any) {
   const url = basePath + '/cabletypes/';
   const type = 'POST';
   $('form[name="cabletype"]').fadeTo('slow', 0.5);
@@ -30,7 +30,7 @@ function sendRequest(data) {
 }
 
 
-function naming(conductorNumber, conductorSize, fribType, typeNumber) {
+function naming(conductorNumber: any, conductorSize: any, fribType: any, typeNumber: any) {
   return conductorNumber + 'C_' + conductorSize + '_' + fribType + '_' + typeNumber;
 }
 
