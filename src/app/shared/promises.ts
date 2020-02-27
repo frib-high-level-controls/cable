@@ -111,3 +111,27 @@ export function finalize<T>(p: Promise<T>, finalizer: () => void | Promise<void>
     (err) => Promise.resolve(finalizer()).then(() => { throw err; }),
   );
 }
+
+/**
+ * A useful type of promise that can be easily resolved or rejected.
+ * (See: https://github.com/denoland/deno/blob/master/std/util/async.ts)
+ */
+export interface Deferred<T> extends Promise<T> {
+  resolve: (value?: T | PromiseLike<T>) => void;
+  reject: (reason?: any) => void;
+}
+
+/** Creates a Promise with the `reject` and `resolve` functions
+ * placed as methods on the promise object itself. It allows you to do:
+ *
+ *     const p = deferred<number>();
+ *     // ...
+ *     p.resolve(42);
+ */
+export function deferred<T>(): Deferred<T> {
+  let methods;
+  const promise = new Promise<T>((resolve, reject): void => {
+    methods = { resolve, reject };
+  });
+  return Object.assign(promise, methods)! as Deferred<T>;
+}
