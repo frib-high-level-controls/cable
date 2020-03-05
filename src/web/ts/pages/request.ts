@@ -137,7 +137,6 @@ function update(select, json) {
   });
 }
 
-
 function css() {
   $('#project').change(() => {
     updateCat(sysSub);
@@ -184,7 +183,7 @@ function setCSS(proj, cat, sub, signal) {
 }
 
 $(async () => {
-  sysSub =  (window as any).sysSub;
+  sysSub =  (window as any).sysSub
   ajax401('');
   disableAjaxCache();
   $('form-control').keypress((e) => {
@@ -312,17 +311,16 @@ $(async () => {
       initModel = _.cloneDeep(binder.serialize());
 
       // show action buttons
-
       if (json.status === 0) {
-        $('#save').closest('.btn-group').removeClass('hide');
-        $('#submit').closest('.btn-group').removeClass('hide');
-        $('#reset').closest('.btn-group').removeClass('hide');
+        $('#save').closest('.btn-group').removeClass('d-none');
+        $('#submit').closest('.btn-group').removeClass('d-none');
+        $('#reset').closest('.btn-group').removeClass('d-none');
       }
 
       if (json.status === 1) {
-        $('#adjust').closest('.btn-group').removeClass('hide');
-        $('#reject').closest('.btn-group').removeClass('hide');
-        $('#approve').closest('.btn-group').removeClass('hide');
+        $('#adjust').closest('.btn-group').removeClass('d-none');
+        $('#reject').closest('.btn-group').removeClass('d-none');
+        $('#approve').closest('.btn-group').removeClass('d-none');
       }
 
       if (json.status === 2 || json.status === 3) {
@@ -337,9 +335,9 @@ $(async () => {
     validator.form();
     initModel = _.cloneDeep(binder.serialize());
 
-    $('#save').closest('.btn-group').removeClass('hide');
-    $('#submit').closest('.btn-group').removeClass('hide');
-    $('#reset').closest('.btn-group').removeClass('hide');
+    $('#save').closest('.btn-group').removeClass('d-none');
+    $('#submit').closest('.btn-group').removeClass('d-none');
+    $('#reset').closest('.btn-group').removeClass('d-none');
   }
 
   $('#reset').click((e) => {

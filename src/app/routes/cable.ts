@@ -571,6 +571,18 @@ export function init(app: express.Application) {
     request.updatedBy = req.session.userid;
     request.updatedOn = Date.now();
 
+    CableRequest.find({
+      _id: req.params.id,
+    }, (err, cableRequest) => {
+      if (err) {
+        error(err);
+      }
+      if (cableRequest) {
+        console.log(cableRequest)
+      }
+      error(req.params.id + ' gone');
+    })
+
     if (req.body.action === 'save') {
       CableRequest.findOneAndUpdate({
         _id: req.params.id,
