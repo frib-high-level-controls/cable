@@ -14,7 +14,7 @@ import 'datatables.net-buttons-bs4';
 import 'datatables.net-buttons/js/buttons.html5.min.js';
 import 'datatables.net-buttons/js/buttons.print.min.js';
 
-import Bloodhound from 'bloodhound';
+import Bloodhound from 'typeahead.js';
 
 import * as $ from 'jquery';
 

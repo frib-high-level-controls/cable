@@ -186,7 +186,7 @@ $(async () => {
   sysSub =  (window as any).sysSub
   ajax401('');
   disableAjaxCache();
-  $('form-control').keypress((e) => {
+  $('.form-control').keypress((e) => {
     if (e.which === 13) {
       return false;
     }
@@ -324,7 +324,7 @@ $(async () => {
       }
 
       if (json.status === 2 || json.status === 3) {
-        $('form-control, select, textarea').prop('disabled', true);
+        $('.form-control, select, textarea').prop('disabled', true);
       }
 
     }).fail(() => {
