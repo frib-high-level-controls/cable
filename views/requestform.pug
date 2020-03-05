@@ -11,7 +11,7 @@ legend Basic information
   label(for="wbs") WBS
   .controls
     input.form-control#wbs(type='text', name='basic.wbs', required)
-.form-group
+.form-group 
   label(for="engineer")  Engineer
   .controls
     input.form-control#engineer(type='text', placeholder='Last, First', name='basic.engineer', required)
@@ -71,13 +71,11 @@ legend Basic information
   .controls
     .d-flex.flex-row
       input.p-10.form-control#from-rack(type='text', name='from.rack')
-      a.p-2.btn.btn-info(href='https://controls.frib.msu.edu/conf/index.xhtml', target='_blank') Browse
 .form-group
   label(for="from-termination")  Termination device
   .controls
     .d-flex.flex-row
       input.p-10.form-control#from-termination(type='text', name='from.terminationDevice')
-      a.p-2.btn.btn-info(href='https://controls.frib.msu.edu/conf/index.xhtml', target='_blank') Browse
 .form-group
   label(for="from-type")  Termination type
   .controls
@@ -92,12 +90,10 @@ legend Destination(to)
   label(for="to-rack")  Location
   .controls.d-flex.flex-row
     input.p-10.form-control#to-rack(type='text', name='to.rack')
-    a.p-2.btn.btn-info(href='https://controls.frib.msu.edu/conf/index.xhtml', target='_blank') Browse
 .form-group
   label(for="to-termination")  Termination device
   .controls.d-flex.flex-row
     input.p-10.form-control#to-termination(type='text', name='to.terminationDevice')
-    a.p-2.btn.btn-info(href='https://controls.frib.msu.edu/conf/index.xhtml', target='_blank') Browse
 .form-group
   label(for="to-type")  Termination type
   .controls
