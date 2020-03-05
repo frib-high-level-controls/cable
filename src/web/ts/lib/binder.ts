@@ -15,6 +15,11 @@
 
 // The original project is hosted at https://code.google.com/p/js-binding/
 
+interface TypeDefinition {
+  format(value: any): string;
+  parse(value: string): any;
+}
+
 // tslint:disable:member-ordering prefer-for-of
 export class Util {
   // tslint:disable:ban-types
@@ -71,12 +76,12 @@ export class PropertyAccessor {
   }
 
   private _setProperty(obj: any, path: string[], value: any): any {
-    if (path.length === 0 || obj === undefined) {
+    let current = path.shift();
+    if (!current || obj === undefined) {
       return value;
     }
-    let current = path.shift();
-    if (current.indexOf('[') >= 0) {
-      const match = current.match(this.index_regexp);
+    const match = current.match(this.index_regexp);
+    if (match) {
       const index = match[2];
       current = match[1];
       obj[current] = obj[current] || (Util.isNumeric(index) ? [] : {});
@@ -96,12 +101,12 @@ export class PropertyAccessor {
     return obj;
   }
   private _getProperty(obj: any, path: string[]): any {
-    if (path.length === 0 || obj === undefined) {
+    let current = path.shift();
+    if (!current || obj === undefined) {
       return obj;
     }
-    let current = path.shift();
-    if (current.indexOf('[') >= 0) {
-      const match = current.match(this.index_regexp);
+    const match = current.match(this.index_regexp);
+    if (match) {
       current = match[1];
       if (match[2]) {
         return this._getProperty(obj[current][match[2]], path);
@@ -145,12 +150,12 @@ export class PropertyAccessor {
   }
 }
 
-export const TypeRegistry = {
+export const TypeRegistry: { [key: string]: TypeDefinition | undefined } = {
   string: {
-    format(value) {
+    format(value: any) {
       return value ? String(value) : '';
     },
-    parse(value) {
+    parse(value: any) {
       return value ? value : null;
     },
   },
@@ -197,7 +202,7 @@ export class FormBinder {
     return new FormBinder(form, obj);
   }
 
-  constructor(form, accessor?) {
+  constructor(form: HTMLFormElement, accessor?: any) {
     this.form = form;
     this.accessor = this._getAccessor(accessor);
     this.type_regexp = /type\[(.*)\]/;
@@ -215,7 +220,7 @@ export class FormBinder {
       return Boolean(options);
     }
   }
-  public _getType(element: any): string {
+  public _getType(element: HTMLElement): string {
     if (element.className) {
       const m = element.className.match(this.type_regexp);
       if (m && m[1]) {
@@ -227,7 +232,7 @@ export class FormBinder {
   private _format(path: string, value: any, element: any): string | string[] {
     const type = this._getType(element);
     const handler = TypeRegistry[type];
-    if (type === 'stringArray') {
+    if (type === 'stringArray' && handler) {
       return handler.format(value);
     }
     if (Util.isArray(value) && handler) {
@@ -268,7 +273,7 @@ export class FormBinder {
   }
   public serializeField(element: any, obj: any) {
     const accessor = this._getAccessor(obj);
-    let value;
+    let value: string | string[];
     if (element.type === 'radio' || element.type === 'checkbox') {
       if (element.value !== '' && element.value !== 'on') {
         value = this._parse(element.name, element.value, element);
