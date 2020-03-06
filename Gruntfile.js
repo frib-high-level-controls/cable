@@ -74,7 +74,7 @@ module.exports = function(grunt) {
       app: [ './app' ],
       test: [ './test' ],
       tools: [ './tools' ],
-      public: [ './public/javascripts' ],
+      public: [ './public/javascripts', './public/dist' ],
     },
   });
 
