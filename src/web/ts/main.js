@@ -45,7 +45,7 @@ function initRequests(savedTable, submittedTable, rejectedTable, approvedTable, 
         }
       }
       if (submittedTable) {
-        if (r.status === 1) {
+        if (r.status === 1 || r.status === 1.5) {
           submitted.push(r);
           return;
         }

@@ -377,6 +377,10 @@ var submittedOnColumn = dateColumn('Submitted', 'submittedOn');
 var submittedOnLongColumn = dateColumn('Submitted', 'submittedOn', true);
 var submittedByColumn = personColumn('Submitted by', 'submittedBy');
 
+var validatedOnColumn = dateColumn('Validated', 'validatedOn');
+var validatedOnLongColumn = dateColumn('Validated', 'validatedOn', true);
+var validatedByColumn = personColumn('Validated by', 'validatedBy');
+
 var approvedOnColumn = dateColumn('Approved', 'approvedOn');
 var approvedOnLongColumn = dateColumn('Approved', 'approvedOn', true);
 var approvedByColumn = personColumn('Approved by', 'approvedBy');

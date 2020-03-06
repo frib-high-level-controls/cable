@@ -314,6 +314,12 @@ $(function () {
       if (json.status === 1) {
         $('#adjust').closest('.btn-group').removeClass('hide');
         $('#reject').closest('.btn-group').removeClass('hide');
+        $('#validate').closest('.btn-group').removeClass('hide');
+      }
+
+      if (json.status === 1.5) {
+        $('#adjust').closest('.btn-group').removeClass('hide');
+        $('#reject').closest('.btn-group').removeClass('hide');
         $('#approve').closest('.btn-group').removeClass('hide');
       }
 
@@ -368,7 +374,7 @@ $(function () {
       }
     }
 
-    if (action === 'clone' || action === 'reject' || action === 'approve') {
+    if (action === 'clone' || action === 'reject' || action === 'validate' || action === 'approve') {
       sendRequest(data, initModel, binder);
     }
 

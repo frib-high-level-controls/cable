@@ -38,6 +38,7 @@ interface Config {
     options: {};
   };
   dryrun?: {};
+  valid?: {};
   _?: Array<{}>;
   metadata: {
     syssubsystem_path?: string;
@@ -89,6 +90,7 @@ if (cfg.h || cfg.help) {
       --help               display help information
       --config [rcfile]    load configuration from rcfile
       --dryrun [dryrun]    validate CSV data (default: true)
+      --valid  [valid]     requests are validated (default: false)
   `);
   process.exit(1);
 }
@@ -340,6 +342,11 @@ function createRequest(i: number): Request | undefined {
       submittedBy: 'system',
       submittedOn: new Date(),
     };
+  }
+  if (cfg.valid === true || cfg.valid === 'true') {
+    newRequest.status = 1.5;
+    newRequest.validatedBy = 'system';
+    newRequest.validatedOn = new Date();
   }
   if (validate) {
     // dryrun only, create document and validate, but do not save!

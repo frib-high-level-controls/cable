@@ -65,6 +65,8 @@ block content
       .modal-footer
     .tabbable.tabs-left#tabs
       ul.nav.nav-tabs
+        li
+          a(href='#validating', data-toggle='tab') Requests to validate
         li.active
           a(href='#approving', data-toggle='tab') Requests to approve
         li
@@ -72,6 +74,29 @@ block content
         li
           a(href='#approved', data-toggle='tab') Approved requests
       .tab-content
+        .tab-pane#validating
+          .btn-toolbar
+            .btn-group
+              button.btn.btn-primary#validating-validate(type='button')
+                i.fa.fa-check-square-o.fa-lg
+                | &nbsp;Validate
+            .btn-group
+              button.btn.btn-primary#validating-reject(type='button')
+                i.fa.fa-exclamation-circle.fa-lg
+                | &nbsp;Reject
+            .btn-group
+              button.btn.btn-info#validating-select-all(type='button', data-toggle='tooltip', title='select all the items in the table no matter visiable or not')
+                i.fa.fa-list.fa-lg
+                | &nbsp;Select all
+            .btn-group
+              button.btn.btn-info#validating-select-none(type='button')
+                i.fa.fa-square-o.fa-lg
+                | &nbsp;Clear selection
+            .btn-group(data-toggle='buttons-radio')
+              button.btn.btn-info.active#validating-wrap(type='button') Wrap
+              button.btn.btn-info#validating-unwrap(type='button') Unwrap
+          .table-overflow
+            table.table.table-bordered.table-hover.table-condensed#validating-table
         .tab-pane.active#approving
           .btn-toolbar
             .btn-group

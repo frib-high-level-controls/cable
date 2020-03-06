@@ -55,6 +55,60 @@ function batchApprove(oTable, approvedTable, procuringTable) {
 }
 
 
+function validateFromModal(requests, validatingTable, approvingTable) {
+  $('#approve').prop('disabled', true);
+  $('#modal .modal-body div').each(function (index) {
+    var that = this;
+    $.ajax({
+      url: basePath + '/requests/' + that.id + '/',
+      type: 'PUT',
+      contentType: 'application/json',
+      dataType: 'json',
+      data: JSON.stringify({
+        action: 'validate'
+      })
+    }).done(function (result) {
+      $(that).prepend('<i class="icon-check"></i>');
+      $(that).addClass('text-success');
+      // remove the request row
+      validatingTable.fnDeleteRow(requests[index]);
+      // add the requests to the approved table
+      if (approvingTable) {
+        approvingTable.fnAddData(result.request);
+      }
+    }).fail(function (jqXHR) {
+      $(that).prepend('<i class="icon-question"></i>');
+      $(that).append(' : ' + jqXHR.responseText);
+      $(that).addClass('text-error');
+    });
+  });
+}
+
+
+function batchValidate(oTable, validatingTable, approvingTable) {
+  var selected = fnGetSelected(oTable, 'row-selected');
+  var requests = [];
+  if (selected.length) {
+    $('#modalLabel').html('Validate the following ' + selected.length + ' requests? ');
+    $('#modal .modal-body').empty();
+    selected.forEach(function (row) {
+      var data = oTable.fnGetData(row);
+      $('#modal .modal-body').append('<div id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + '</div>');
+      requests.push(row);
+    });
+    $('#modal .modal-footer').html('<button id="approve" class="btn btn-primary">Confirm</button><button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal').modal('show');
+    $('#approve').click(function () {
+      validateFromModal(requests, oTable, validatingTable, approvingTable);
+    });
+  } else {
+    $('#modalLabel').html('Alert');
+    $('#modal .modal-body').html('No request has been selected!');
+    $('#modal .modal-footer').html('<button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal').modal('show');
+  }
+}
+
 function rejectFromModal(requests, approvingTable, rejectedTable) {
   $('#reject').prop('disabled', true);
   $('#modal .modal-body div').each(function (index) {
@@ -73,7 +127,9 @@ function rejectFromModal(requests, approvingTable, rejectedTable) {
       // remove the request row
       approvingTable.fnDeleteRow(requests[index]);
       // add the new cables to the procuring table
-      rejectedTable.fnAddData(request);
+      if (rejectedTable) {
+        rejectedTable.fnAddData(request);
+      }
     }).fail(function (jqXHR) {
       $(that).prepend('<i class="icon-question"></i>');
       $(that).append(' : ' + jqXHR.responseText);
@@ -111,14 +167,67 @@ $(function () {
   ajax401('');
   disableAjaxCache();
 
+  var validatingTable;
   var approvingTable;
   var rejectedTable;
   var approvedTable;
+
+  /*validating table starts*/
+  var validatingAoColumns = [selectColumn, editLinkColumn, submittedOnLongColumn, submittedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  validatingTable = $('#validating-table').dataTable({
+    sAjaxSource: basePath + '/requests/statuses/1/json',
+    sAjaxDataProp: '',
+    bAutoWidth: false,
+    bProcessing: true,
+    oLanguage: {
+      sLoadingRecords: 'Please wait - loading data from the server ...'
+    },
+    bDeferRender: true,
+    aoColumns: validatingAoColumns,
+    aaSorting: [
+      [1, 'desc'],
+      [2, 'desc'],
+      [3, 'desc']
+    ],
+    sDom: sDom2InoF,
+    oTableTools: oTableTools,
+    sScrollY: '50vh',
+    bScrollCollapse: true
+  });
+  fnAddFilterHeadScroll('#validating-table', validatingAoColumns);
+
+  $('#validating-wrap').click(function () {
+    $('#validating-table td').removeClass('nowrap');
+    validatingTable.fnAdjustColumnSizing();
+  });
+
+  $('#validating-unwrap').click(function () {
+    $('#validating-table td').addClass('nowrap');
+    validatingTable.fnAdjustColumnSizing();
+  });
+
+  $('#validating-select-none').click(function () {
+    fnDeselect(validatingTable, 'row-selected', 'select-row');
+  });
+
+  $('#validating-select-all').click(function () {
+    fnSelectAll(validatingTable, 'row-selected', 'select-row', true);
+  });
+
+  $('#validating-validate').click(function () {
+    batchValidate(validatingTable);
+  });
+
+  $('#validating-reject').click(function () {
+    batchReject(validatingTable);
+  });
+
+
   /*approving table starts*/
-  var approvingAoCulumns = [selectColumn, editLinkColumn, submittedOnLongColumn, submittedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  var approvingAoCulumns = [selectColumn, editLinkColumn, submittedOnLongColumn, submittedByColumn, validatedOnLongColumn, validatedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
 
   approvingTable = $('#approving-table').dataTable({
-    sAjaxSource: basePath + '/requests/statuses/1/json',
+    sAjaxSource: basePath + '/requests/statuses/1.5/json',
     sAjaxDataProp: '',
     bAutoWidth: false,
     bProcessing: true,
@@ -129,7 +238,7 @@ $(function () {
     aoColumns: approvingAoCulumns,
     aaSorting: [
       [2, 'desc'],
-      [5, 'desc']
+      [7, 'desc']
     ],
     sDom: sDom2InoF,
     oTableTools: oTableTools,
@@ -247,6 +356,7 @@ $(function () {
   highlightedEvent();
 
   $('#reload').click(function () {
+    validatingTable.fnReloadAjax();
     approvingTable.fnReloadAjax();
     rejectedTable.fnReloadAjax();
     approvedTable.fnReloadAjax();

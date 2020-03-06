@@ -63,6 +63,8 @@ export interface ICableRequest {
   approvedOn?: Date;
   rejectedBy?: string;
   rejectedOn?: Date;
+  validatedBy?: string;
+  validatedOn?: Date;
 }
 
 export interface CableRequest extends ICableRequest, mongoose.Document {
@@ -365,6 +367,8 @@ const requestSchema = new Schema({
   approvedOn: Date,
   rejectedBy: String,
   rejectedOn: Date,
+  validatedBy: String,
+  validatedOn: Date,
 });
 
 // cable status

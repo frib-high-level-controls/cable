@@ -29,7 +29,11 @@ type Response = express.Response;
 type NextFunction = express.NextFunction;
 
 // request status
-// 0: saved 1: submitted 2: approved 3: rejected
+// 0: saved
+// 1: submitted
+// 1.5: verified
+// 2: approved
+// 3: rejected
 
 // cable status
 // procuring
@@ -481,12 +485,12 @@ export function init(app: express.Application) {
     });
   }
 
-  app.get('/requests/statuses/:s/json', auth.ensureAuthenticated, auth.verifyRoles(['manager', 'admin']), (req, res) => {
+  app.get('/requests/statuses/:s/json', auth.ensureAuthenticated, auth.verifyRoles(['validator', 'manager', 'admin']), (req, res) => {
     if (!req.session) {
       res.status(500).send('session missing');
       return;
     }
-    const status = parseInt(req.params.s, 10);
+    const status = parseFloat(req.params.s);
     if (status < 0 || status > 4) {
       return res.status(400).send('the status ' + status + ' is invalid.');
     }
@@ -497,6 +501,17 @@ export function init(app: express.Application) {
         status: status,
       };
       findRequest(query, res);
+    } else if (status === 1) {
+      if (req.session.roles.indexOf('validator') !== -1) {
+        // validators see all submitted requests
+        query = {
+          status: status,
+        };
+        findRequest(query, res);
+      } else {
+        // other users see none
+        res.status(200).json([]);
+      }
     } else {
       // manager see his own wbs
       User.findOne({
@@ -541,6 +556,11 @@ export function init(app: express.Application) {
       next();
     } else if (action === 'save' || action === 'submit' || action === 'revert') {
       // assume no way to guess the request id
+      next();
+    } else if (action === 'validate') {
+      if (roles.length === 0 || roles.indexOf('validator') === -1) {
+        return res.status(404).send('You are not authorized to modify this resource. ');
+      }
       next();
     } else {
       return res.status(400).send('action not understood.');
@@ -616,7 +636,7 @@ export function init(app: express.Application) {
       error(request);
       CableRequest.findOneAndUpdate({
         _id: req.params.id,
-        status: 1,
+        status: { $in: [1, 1.5] },
       }, request, {
         new: true,
       }, (err, cableRequest) => {
@@ -665,7 +685,7 @@ export function init(app: express.Application) {
       request.status = 3;
       CableRequest.findOneAndUpdate({
         _id: req.params.id,
-        status: 1,
+        status: { $in: [ 1, 1.5 ] },
       }, request, {
         new: true,
       }, (err, cableRequest) => {
@@ -691,7 +711,7 @@ export function init(app: express.Application) {
       request.status = 2;
       CableRequest.findOneAndUpdate({
         _id: req.params.id,
-        status: 1,
+        status: 1.5,
       }, request, {
         new: true,
       }).exec(
@@ -704,6 +724,35 @@ export function init(app: express.Application) {
           }
           if (cableRequest) {
             createCable(cableRequest.toJSON(), req, res, cableRequest.basic.quantity, []);
+          } else {
+            error(req.params.id + ' gone');
+            return res.status(410).json({
+              error: req.params.id + ' gone',
+            });
+          }
+        },
+      );
+    }
+
+    if (req.body.action === 'validate') {
+      request.validatedBy = req.session.userid;
+      request.validatedOn = Date.now();
+      request.status = 1.5;
+      CableRequest.findOneAndUpdate({
+        _id: req.params.id,
+        status: 1,
+      }, request, {
+        new: true,
+      }).exec(
+        (err, cableRequest) => {
+          if (err) {
+            error(err);
+            return res.status(500).json({
+              error: err.message,
+            });
+          }
+          if (cableRequest) {
+            return res.status(200).json(cableRequest.toJSON());
           } else {
             error(req.params.id + ' gone');
             return res.status(410).json({

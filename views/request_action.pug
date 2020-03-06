@@ -11,6 +11,9 @@
   if (locals.roles && roles.length && roles.indexOf('manager') !== -1)
     .btn-group.hide
       button.btn.btn-warning#reject(type='button') Reject
+  if (locals.roles && roles.length && roles.indexOf('validator') !== -1)
+    .btn-group.hide
+      button.btn.btn-primary#validate(type='submit') Validate
   if (locals.roles && roles.length && roles.indexOf('manager') !== -1)
     .btn-group.hide
       button.btn.btn-primary#approve(type='submit') Approve
