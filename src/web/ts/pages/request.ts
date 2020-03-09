@@ -235,7 +235,7 @@ $(async () => {
   $('#engineer').typeahead({
     minLength: 1,
     highlight: true,
-    hint: true,
+    hint: false,
   },
   {
     name: 'usernames',
@@ -253,11 +253,10 @@ $(async () => {
   });
 
   cabletypes.initialize();
-
   $('#type').typeahead({
     minLength: 1,
     highlight: true,
-    hint: true,
+    hint: false,
   }, {
     name: 'cabletypes',
     display: 'name',
