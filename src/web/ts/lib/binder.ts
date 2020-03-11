@@ -101,12 +101,12 @@ export class PropertyAccessor {
     return obj;
   }
   private _getProperty(obj: any, path: string[]): any {
-    let current = path.shift();
-    if (!current || obj === undefined) {
+    if (path.length == 0 || obj == undefined) {
       return obj;
     }
-    const match = current.match(this.index_regexp);
-    if (match) {
+    var current = path.shift();
+    if (current.indexOf("[") >= 0) {
+      var match = current.match(this.index_regexp);
       current = match[1];
       if (match[2]) {
         return this._getProperty(obj[current][match[2]], path);
