@@ -11,10 +11,10 @@ legend Basic information
   label(for="wbs") WBS
   .controls
     input.form-control#wbs(type='text', name='basic.wbs', required)
-.form-group 
+.form-group.mr-2
   label(for="engineer")  Engineer
   .controls
-    input.form-control#engineer(type='text', placeholder='Last, First', name='basic.engineer', required)
+    input.form-control.typeahead#engineer(type='text', placeholder='Last, First', name='engineer', required)
 .form-group
   label(for="cat")  Origin category
   .controls.d-flex

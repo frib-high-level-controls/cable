@@ -7,6 +7,7 @@ import '../lib/util';
 import _ from 'lodash';
 import * as moment from 'moment';
 import Bloodhound from 'typeahead.js';
+
 let sysSub;
 function sendRequest(data, initModel, binder) {
   const path = window.location.pathname;
@@ -184,47 +185,48 @@ function setCSS(proj, cat, sub, signal) {
 
 $(async () => {
   sysSub =  (window as any).sysSub
-  ajax401('');
-  disableAjaxCache();
-  $('.form-control').keypress((e) => {
-    if (e.which === 13) {
-      return false;
-    }
-  });
+  // ajax401('');
+  // disableAjaxCache();
+  // $('.form-control').keypress((e) => {
+  //   if (e.which === 13) {
+  //     return false;
+  //   }
+  // });
 
   const requestForm = document.forms[0];
 
   let initModel;
 
-  $.validator.addMethod('wbs', function(value, element) {
-    return this.optional(element) || /^[A-Z]\d{1,5}$/.test(value);
-  }, 'Please check the WBS number, remove spaces and dots');
-  const validator = $(requestForm).validate({
-    errorClass: 'invalid-feedback',
-    highlight: (element) => {
-      $(element).addClass('is-invalid');
-    },
-    unhighlight: (element) => {
-      $(element).removeClass('is-invalid');
-    },
-    success(element) {
-      $(element).closest('.form-group').removeClass('is-invalid').addClass('is-valid');
-    },
-  });
+  // $.validator.addMethod('wbs', function(value, element) {
+  //   return this.optional(element) || /^[A-Z]\d{1,5}$/.test(value);
+  // }, 'Please check the WBS number, remove spaces and dots');
+  // const validator = $(requestForm).validate({
+  //   errorClass: 'invalid-feedback',
+  //   highlight: (element) => {
+  //     $(element).addClass('is-invalid');
+  //   },
+  //   unhighlight: (element) => {
+  //     $(element).removeClass('is-invalid');
+  //   },
+  //   success(element) {
+  //     $(element).closest('.form-group').removeClass('is-invalid').addClass('is-valid');
+  //   },
+  // });
 
   const binder = new Binder.FormBinder(requestForm);
 
-  $('#wbs').rules('add', {wbs: true});
+  // $('#wbs').rules('add', {wbs: true});
 
-  if ($('#requestId').length) {
-    $('form[name="request"]').fadeTo('slow', 0.2);
-  }
+  // if ($('#requestId').length) {
+  //   $('form[name="request"]').fadeTo('slow', 0.2);
+  // }
 
   css();
 
   const usernames = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('displayName'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
+    // limit: 20,
     prefetch: {
       url: basePath + '/adusernames',
     },
@@ -232,16 +234,16 @@ $(async () => {
 
   usernames.initialize();
 
-  $('#engineer').typeahead({
+  $('#engineer').typeahead<string>({
     minLength: 1,
     highlight: true,
-    hint: false,
-  },
-  {
+    hint: true,
+  }, {
     name: 'usernames',
-    display: 'displayName',
-    source: usernames.ttAdapter(),
     limit: 20,
+    display: 'displayName',
+    // displayKey: 'displayName',
+    source: usernames.ttAdapter(),
   });
 
   const cabletypes = new Bloodhound({
@@ -311,15 +313,15 @@ $(async () => {
 
       // show action buttons
       if (json.status === 0) {
-        $('#save').closest('.btn-group').removeClass('d-none');
-        $('#submit').closest('.btn-group').removeClass('d-none');
-        $('#reset').closest('.btn-group').removeClass('d-none');
+        $('#save').closest('.btn-group').removeAttr('hidden');
+        $('#submit').closest('.btn-group').removeAttr('hidden');
+        $('#reset').closest('.btn-group').removeAttr('hidden');
       }
 
       if (json.status === 1) {
-        $('#adjust').closest('.btn-group').removeClass('d-none');
-        $('#reject').closest('.btn-group').removeClass('d-none');
-        $('#approve').closest('.btn-group').removeClass('d-none');
+        $('#adjust').closest('.btn-group').removeAttr('hidden');
+        $('#reject').closest('.btn-group').removeAttr('hidden');
+        $('#approve').closest('.btn-group').removeAttr('hidden');
       }
 
       if (json.status === 2 || json.status === 3) {
@@ -330,58 +332,58 @@ $(async () => {
       $('#message').append('<div class="alert alert-error"><button class="close" data-dismiss="alert">x</button>\
       Cannot find the saved request. You might need to try again or contact the admin.</div>');
     });
-  } else {
-    validator.form();
-    initModel = _.cloneDeep(binder.serialize());
+  // } else {
+  //   validator.form();
+  //   initModel = _.cloneDeep(binder.serialize());
 
-    $('#save').closest('.btn-group').removeClass('d-none');
-    $('#submit').closest('.btn-group').removeClass('d-none');
-    $('#reset').closest('.btn-group').removeClass('d-none');
+  //   $('#save').closest('.btn-group').removeAttr('hidden');
+  //   $('#submit').closest('.btn-group').removeAttr('hidden');
+  //   $('#reset').closest('.btn-group').removeAttr('hidden');
   }
 
-  $('#reset').click((e) => {
-    e.preventDefault();
-    binder.deserialize(initModel);
-  });
+  // $('#reset').click((e) => {
+  //   e.preventDefault();
+  //   binder.deserialize(initModel);
+  // });
 
-  $('.form-actions button').not('#reset').click((e) => {
-    e.preventDefault();
-    const action = e.target.id;
-    let currentModel = {};
-    currentModel = binder.serialize();
-    const data = {
-      request: currentModel,
-      action: action,
-    };
+  // $('.form-actions button').not('#reset').click((e) => {
+  //   e.preventDefault();
+  //   const action = e.target.id;
+  //   let currentModel = {};
+  //   currentModel = binder.serialize();
+  //   const data = {
+  //     request: currentModel,
+  //     action: action,
+  //   };
 
-    if (action === 'save' || action === 'adjust') {
-      if (_.isEqual(initModel, currentModel)) {
+  //   if (action === 'save' || action === 'adjust') {
+  //     if (_.isEqual(initModel, currentModel)) {
 
-        $('#modalLabel').html('The request cannot be sent');
-        $('#modal .modal-body').html('No change has been made in the form');
-        $('#modal').modal('show');
-        return;
-      }
-    }
+  //       $('#modalLabel').html('The request cannot be sent');
+  //       $('#modal .modal-body').html('No change has been made in the form');
+  //       $('#modal').modal('show');
+  //       return;
+  //     }
+  //   }
 
-    if (action === 'save' || action === 'submit' || action === 'adjust') {
-      try {
-        if ($(requestForm).valid()) {
-          sendRequest(data, initModel, binder);
-        } else {
-          $('#modalLabel').html('The request is not validated');
-          $('#modal .modal-body').html('The form has ' + validator.numberOfInvalids()
-          + ' invalid form-control(s) to fix.');
-          $('#modal').modal('show');
-          return;
-        }
-      } catch(e) {
-        console.log(e)
-      }
-    }
+  //   if (action === 'save' || action === 'submit' || action === 'adjust') {
+  //     try {
+  //       if ($(requestForm).valid()) {
+  //         sendRequest(data, initModel, binder);
+  //       } else {
+  //         $('#modalLabel').html('The request is not validated');
+  //         $('#modal .modal-body').html('The form has ' + validator.numberOfInvalids()
+  //         + ' invalid form-control(s) to fix.');
+  //         $('#modal').modal('show');
+  //         return;
+  //       }
+  //     } catch(e) {
+  //       console.log(e)
+  //     }
+  //   }
 
-    if (action === 'clone' || action === 'reject' || action === 'approve') {
-      sendRequest(data, initModel, binder);
-    }
-  });
+  //   if (action === 'clone' || action === 'reject' || action === 'approve') {
+  //     sendRequest(data, initModel, binder);
+  //   }
+  // });
 });

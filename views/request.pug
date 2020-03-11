@@ -22,15 +22,17 @@ block content
           .modal-body
           .modal-footer
             button.btn.btn-primary(type='button', data-dismiss='modal', aria-hidden='true') Return to edit
-    form.form-horizontal(name='request')
-      if (locals.id)
-        h3 Cable Request &nbsp;
-          span#requestId #{id}
-      else
-        h3 New Cable Request
-      include requestform.pug
-      include request_action.pug
-      br
+    .row
+      .card.card-body.bg-light
+        form
+          if (locals.id)
+            h3 Cable Request &nbsp;
+              span#requestId #{id}
+          else
+            h3 New Cable Request
+          include requestform.pug
+          include request_action.pug
+          br
 block js
   //- script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
   //- script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')

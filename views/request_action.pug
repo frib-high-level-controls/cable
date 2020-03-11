@@ -1,19 +1,19 @@
 .form-actions
-  .btn-group.d-none.mx-1
+  .btn-group.mx-1(hidden)
     button.btn.btn-info#save(type='button') Save changes
-  .btn-group.d-none.mx-1
+  .btn-group.mx-1(hidden)
     button.btn.btn-primary#submit(type='submit') Submit
-  .btn-group.d-none.mx-1
+  .btn-group.mx-1(hidden)
     button.btn.btn-warning#reset(type='button') Reset
   if (locals.roles && roles.length && roles.indexOf('manager') !== -1)
-    .btn-group.d-none.mx-1
+    .btn-group.mx-1(hidden)
       button.btn.btn-info#adjust(type='button') Save adjustment
   if (locals.roles && roles.length && roles.indexOf('manager') !== -1)
-    .btn-group.d-none.mx-1
+    .btn-group.mx-1(hidden)
       button.btn.btn-warning#reject(type='button') Reject
   if (locals.roles && roles.length && roles.indexOf('manager') !== -1)
-    .btn-group.d-none.mx-1
+    .btn-group.mx-1(hidden)
       button.btn.btn-primary#approve(type='submit') Approve
   if (!(locals.id === undefined))
-    .btn-group
+    .btn-group.mx-1
       button.btn.btn-primary#clone(type='button') Clone
