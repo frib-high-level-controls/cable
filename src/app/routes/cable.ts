@@ -659,7 +659,7 @@ export function init(app: express.Application) {
     if (req.body.action === 'adjust') {
       CableRequest.findOneAndUpdate({
         _id: req.params.id,
-        status: 1,
+        status: { $in: [ 1, 1.5 ] },
       }, request, {
         new: true,
       }, (err, cableRequest) => {
