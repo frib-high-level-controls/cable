@@ -257,7 +257,7 @@ $(async () => {
   $('#type').typeahead({
     minLength: 1,
     highlight: true,
-    hint: false,
+    hint: true,
   }, {
     name: 'cabletypes',
     display: 'name',

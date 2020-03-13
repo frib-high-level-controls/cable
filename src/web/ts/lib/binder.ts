@@ -306,6 +306,13 @@ export class FormBinder {
   public deserialize(obj?: any) {
     const accessor = this._getAccessor(obj);
     for (let i = 0; i < this.form.elements.length; i++) {
+      const e: Element = this.form.elements[i];
+
+      // skip hint fields 
+      if(e.classList.contains('tt-hint') || e.getAttribute('name') === null) { 
+        continue; 
+      };
+
       this.deserializeField(this.form.elements[i], accessor);
     }
     return accessor.target;
