@@ -302,30 +302,30 @@ $(async () => {
         sub = json.basic.originSubcategory || null;
         signal = json.basic.signalClassification || null;
       }
-
+      console.log(json)
       const savedBinder = new Binder.FormBinder(requestForm, json);
       savedBinder.deserialize();
-      setCSS(proj, cat, sub, signal);
+      // setCSS(proj, cat, sub, signal);
 
-      $('form[name="request"]').fadeTo('slow', 1);
-      initModel = _.cloneDeep(binder.serialize());
+      // $('form[name="request"]').fadeTo('slow', 1);
+      // initModel = _.cloneDeep(binder.serialize());
 
-      // show action buttons
-      if (json.status === 0) {
-        $('#save').closest('.btn-group').removeAttr('hidden');
-        $('#submit').closest('.btn-group').removeAttr('hidden');
-        $('#reset').closest('.btn-group').removeAttr('hidden');
-      }
+      // // show action buttons
+      // if (json.status === 0) {
+      //   $('#save').closest('.btn-group').removeAttr('hidden');
+      //   $('#submit').closest('.btn-group').removeAttr('hidden');
+      //   $('#reset').closest('.btn-group').removeAttr('hidden');
+      // }
 
-      if (json.status === 1) {
-        $('#adjust').closest('.btn-group').removeAttr('hidden');
-        $('#reject').closest('.btn-group').removeAttr('hidden');
-        $('#approve').closest('.btn-group').removeAttr('hidden');
-      }
+      // if (json.status === 1) {
+      //   $('#adjust').closest('.btn-group').removeAttr('hidden');
+      //   $('#reject').closest('.btn-group').removeAttr('hidden');
+      //   $('#approve').closest('.btn-group').removeAttr('hidden');
+      // }
 
-      if (json.status === 2 || json.status === 3) {
-        $('.form-control, select, textarea').prop('disabled', true);
-      }
+      // if (json.status === 2 || json.status === 3) {
+      //   $('.form-control, select, textarea').prop('disabled', true);
+      // }
 
     }).fail(() => {
       $('#message').append('<div class="alert alert-error"><button class="close" data-dismiss="alert">x</button>\
