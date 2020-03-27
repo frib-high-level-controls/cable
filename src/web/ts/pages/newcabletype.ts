@@ -41,15 +41,19 @@ $(() => {
   });
 
   const form = document.forms[0];
-
-  const validator = $(form).validate({
+  var validator = $(form).validate({
+    errorElement: 'span',
     errorClass: 'invalid-feedback',
-    highlight: (element) => {
-      $(element).addClass('is-invalid');
+    validClass: 'success',
+    errorPlacement: function (error, element) {
+      error.appendTo($(element).closest('.controls'));
     },
-    unhighlight: (element) => {
-      $(element).removeClass('is-invalid');
+    highlight: function (element) {
+      $(element).closest('.control-group').removeClass('success').addClass('error');
     },
+    success: function (element) {
+      $(element).closest('.control-group').removeClass('error').addClass('success');
+    }
   });
 
   validator.form();
