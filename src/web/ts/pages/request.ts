@@ -206,14 +206,17 @@ $(async () => {
     errorElement: 'span',
     errorClass: 'invalid-feedback',
     validClass: 'is-valid',
-    errorPlacement: function (error, element) {
-      error.appendTo($(element).closest('.controls'));
+    errorPlacement(error, element) {
+      error.appendTo($(element).closest('.input-group'));
     },
-    highlight: function (element) {
-      $(element).closest('.input-group').removeClass('is-valid').addClass('is-invalid');
+    highlight(element) {
+      $(element).removeClass('valid').addClass('is-invalid');
     },
-    success: function (element) {
-      $(element).closest('.input-group').removeClass('is-invalid').addClass('is-valid');
+    unhighlight(element) {
+      $(element).removeClass('is-invalid').addClass('is-valid');
+    },
+    success(element) {
+      $(element).closest('.form-group').addClass('is-valid');
     }
   });
 

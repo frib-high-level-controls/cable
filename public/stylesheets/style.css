@@ -576,3 +576,17 @@ td.info.editable {
   text-align: center;
   color: #5a5a5a;
 }
+
+.form-group.is-valid .input-group-append .input-group-text {
+  color: #468847;
+  background-color: #dff0d8;
+  border-color: #468847;
+}
+
+.form-control.is-valid {
+  background-image: none !important;
+}
+
+.form-control.is-invalid {
+  background: none !important;
+}
