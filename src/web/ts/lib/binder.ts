@@ -76,10 +76,10 @@ export class PropertyAccessor {
   }
 
   private _setProperty(obj: any, path: string[], value: any): any {
-    let current = path.shift();
-    if (!current || obj === undefined) {
+    if (!path || path.length === 0 || obj === undefined) {
       return value;
     }
+    let current = path.shift();
     const match = current.match(this.index_regexp);
     if (match) {
       const index = match[2];
@@ -101,12 +101,12 @@ export class PropertyAccessor {
     return obj;
   }
   private _getProperty(obj: any, path: string[]): any {
-    if (path.length == 0 || obj == undefined) {
+    if (!path || path.length === 0 || obj === undefined) {
       return obj;
     }
-    var current = path.shift();
-    if (current.indexOf("[") >= 0) {
-      var match = current.match(this.index_regexp);
+    let current = path.shift();
+    const match = current.match(this.index_regexp);
+    if (match) {
       current = match[1];
       if (match[2]) {
         return this._getProperty(obj[current][match[2]], path);
