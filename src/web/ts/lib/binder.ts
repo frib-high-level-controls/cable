@@ -101,12 +101,12 @@ export class PropertyAccessor {
     return obj;
   }
   private _getProperty(obj: any, path: string[]): any {
-    if (path.length == 0 || obj == undefined) {
+    if (path.length === 0 || obj === undefined) {
       return obj;
     }
-    var current = path.shift();
-    if (current.indexOf("[") >= 0) {
-      var match = current.match(this.index_regexp);
+    let current = path.shift();
+    if (current.indexOf('[') >= 0) {
+      let match = current.match(this.index_regexp);
       current = match[1];
       if (match[2]) {
         return this._getProperty(obj[current][match[2]], path);
@@ -303,15 +303,17 @@ export class FormBinder {
       accessor.set(element.name, value);
     }
   }
-  public deserialize(obj?: any) {
+  public deserialize(obj?: any, blacklist?: string[]) {
     const accessor = this._getAccessor(obj);
     for (let i = 0; i < this.form.elements.length; i++) {
       const e: Element = this.form.elements[i];
 
-      // skip hint fields 
-      if(e.classList.contains('tt-hint') || e.getAttribute('name') === null) { 
-        continue; 
-      };
+      const classList = e.classList.value.split(' ');
+
+      // skip hint fields
+      if(blacklist && classList.some((r) => blacklist.indexOf(r) >= 0)) {
+        continue;
+      }
 
       this.deserializeField(this.form.elements[i], accessor);
     }
@@ -321,7 +323,7 @@ export class FormBinder {
     const accessor = this._getAccessor(obj);
     let value = accessor.get(element.name);
     // do not deserialize undefined
-    if (typeof value !== 'undefined') {
+    if (typeof value !== 'undefined' && element.getAttribute('name') !== null) {
       value = this._format(element.name, value, element);
       if (element.type === 'radio' || element.type === 'checkbox') {
         element.checked = this._isSelected(element.value, value);
