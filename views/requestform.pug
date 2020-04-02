@@ -1,121 +1,200 @@
 //- fieldset
+
 legend Basic information
-.form-group
-  label Project
-  .controls
-    select.form-control#project(type='text', name='basic.project', required)
-      option(value='', disabled=true, selected) choose
-      for project in projects
-        option(value=project.value)= project.title
-.form-group
-  label(for="wbs") WBS
-  .controls
-    input.form-control#wbs(type='text', name='basic.wbs', required)
-.form-group.mr-2
-  label(for="engineer")  Engineer
-  .controls
-    input.form-control#engineer(type='text', placeholder='Last, First', name='basic.engineer', required)
-.form-group
-  label(for="cat")  Origin category
-  .controls.d-flex
-    select.form-control#cat(disabled=true, name='basic.originCategory', required)
-      option(value='', disabled=true, selected) choose
-    span.input-group-text.p-2
-    span.p-2 See 
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Project
+  .col-sm-8
+    .input-group
+      select.form-control#project(type='text', name='basic.project', required)
+        option(value='', disabled=true, selected) choose
+        for project in projects
+          option(value=project.value)= project.title
+.form-group.row
+  label.col-form-label.col-sm-2.text-right WBS
+  .col-sm-8
+    .input-group
+      input.form-control#wbs(type='text', name='basic.wbs', required)
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Engineer
+  .col-sm-8
+    .input-group
+      input.form-control#engineer(type='text', placeholder='Last, First', name='basic.engineer', required)
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Origin category
+  .col-sm-8
+    .input-group
+      select.form-control#cat(disabled=true, name='basic.originCategory', required)
+        option(value='', disabled=true, selected) choose
+      .input-group-append
+        span.input-group-text &nbsp;
+    span &nbsp;See&nbsp;
       a(href=basePath + '/shared/frib_cable_map.pdf', target='_blank') Map
-.form-group
-  label(for="sub")  Origin subcategory
-  .controls.d-flex
-    select.form-control#sub(disabled=true, name='basic.originSubcategory', required)
-      option(value='', disabled=true, selected) choose
-    span.input-group-text.p-2
-.form-group
-  label(for="signal")  Signal classification
-  .controls.d-flex
-    select.form-control#signal(disabled=true, name='basic.signalClassification', required)
-      option(value='', disabled=true, selected) choose
-    span.input-group-text.p-2
-.form-group
-  label(for="tray-section")  Tray section
-  .controls
-    select.form-control#tray-section(name='basic.traySection')
-      for traySect in traySects
-        option(value=traySect.value)= traySect.title
-.form-group
-  label(for="type")  Type
-  .controls
-    input.form-control#type(type='text', name='basic.cableType')
-.form-group
-  label(for="function")  Function
-  .controls
-    input.form-control#function(type='text', name='basic.service')
-.form-group
-  label(for="tags")  Tags
-  .controls
-    input.form-control#tags(type='text', name='basic.tags', class=String('type[stringArray]'))
-    span.help-inline Seperate tags by ","
-.form-group
-  label(for="quantity")  Quantity
-  .controls
-    input.form-control#quantity(type='text', name='basic.quantity', class=String('type[number]'), value=1, required, min=1)
-.form-group
-  label(for="ownerProvided")  Owner provided
-  .controls
-    select.form-control#ownerProvided(type='boolean', name='ownerProvided')
-      option(value='false') No
-      option(value='true') Yes
-  //- fieldset
-  legend Source(from)
-.form-group
-  label(for="from-rack")  Location
-  .controls
-    .d-flex.flex-row
-      input.p-10.form-control#from-rack(type='text', name='from.rack')
-.form-group
-  label(for="from-termination")  Termination device
-  .controls
-    .d-flex.flex-row
-      input.p-10.form-control#from-termination(type='text', name='from.terminationDevice')
-.form-group
-  label(for="from-type")  Termination type
-  .controls
-    input.form-control#from-type(type='text', name='from.terminationType')
-.form-group
-  label(for="from-drawing")  Wiring (pinout) drawing
-  .controls
-    input.form-control#from-drawing(type='text', name='from.wiringDrawing')
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Origin subcategory
+  .col-sm-8
+    .input-group
+      select.form-control#sub(disabled=true, name='basic.originSubcategory', required)
+        option(value='', disabled=true, selected) choose
+      .input-group-append
+        span.input-group-text &nbsp;
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Signal classification
+  .col-sm-8
+    .input-group
+      select.form-control#signal(disabled=true, name='basic.signalClassification', required)
+        option(value='', disabled=true, selected) choose
+      .input-group-append
+        span.input-group-text &nbsp;
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Tray section
+  .col-sm-8
+    .input-group
+      select.form-control#tray-section(name='basic.traySection')
+        for traySect in traySects
+          option(value=traySect.value)= traySect.title
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Type
+  .col-sm-8
+    .input-group
+      input.form-control.tt-input#type(type='text', name='basic.cableType')
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Function
+  .col-sm-8
+    .input-group
+      input#function(type='text', name='basic.service')
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Tags
+  .col-sm-8
+    .input-group
+      input#tags(type='text', name='basic.tags', class=String('type[stringArray]'))
+      span.help-inline &nbsp; Seperate tags by ","
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Quantity
+  .col-sm-8
+    .input-group
+      input.form-control#quantity(type='text', name='basic.quantity', class=String('type[number]'), value=1, required, min=1)
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Owner provided
+  .col-sm-8
+    .input-group
+      select.form-control#ownerProvided(type='boolean', name='ownerProvided')
+        option(value='false') No
+        option(value='true') Yes
+//- fieldset
+legend Source(from)
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Location
+  .col-sm-8
+    .input-group
+      input#from-rack(type='text', name='from.rack')
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Termination device
+  .col-sm-8
+    .input-group
+      input#from-termination(type='text', name='from.terminationDevice')
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Termination type
+  .col-sm-8
+    .input-group
+      input#from-type(type='text', name='from.terminationType')
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Wiring (pinout) drawing
+  .col-sm-8
+    .input-group
+      input#from-drawing(type='text', name='from.wiringDrawing')
 //- fieldset
 legend Destination(to)
-.form-group
-  label(for="to-rack")  Location
-  .controls.d-flex.flex-row
-    input.p-10.form-control#to-rack(type='text', name='to.rack')
-.form-group
-  label(for="to-termination")  Termination device
-  .controls.d-flex.flex-row
-    input.p-10.form-control#to-termination(type='text', name='to.terminationDevice')
-.form-group
-  label(for="to-type")  Termination type
-  .controls
-    input.form-control#to-type(type='text', name='to.terminationType')
-.form-group
-  label(for="to-drawing")  Wiring (pinout) drawing
-  .controls
-    input.form-control#to-drawing(type='text', name='to.wiringDrawing')
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Location
+  .col-sm-8
+    .input-group
+      input#to-rack(type='text', name='to.rack')
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Termination device
+  .col-sm-8
+    .input-group
+      input#to-termination(type='text', name='to.terminationDevice')
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Termination type
+  .col-sm-8
+    .input-group
+      input#to-type(type='text', name='to.terminationType')
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Wiring (pinout) drawing
+  .col-sm-8
+    .input-group
+      input#to-drawing(type='text', name='to.wiringDrawing')
 legend Routing
-.form-group
-  label Conduit
-  .controls
-    input.form-control(type='text', name='conduit')
-.form-group
-  label Length
-  .controls.d-flex
-    input.form-control(type='number', name='length')
-    span.input-group-text.p-2 ft
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Conduit
+  .col-sm-8
+    .input-group
+      input(type='text', name='conduit')
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Length
+  .col-sm-8
+    .input-group
+      input(type='number', name='length')
+      .input-group-append
+        span.input-group-text ft
+
+//-   #rounting-element
+//-     .form-group.row
+//-       label.col-form-label.col-sm-2.text-right Tray group
+//-       .col-sm-8
+  .input-group
+//-         input#tray(type='text', name='routing.trayGroup')
+//-     .form-group.row
+//-       label.col-form-label.col-sm-2.text-right Penetration #
+//-       .col-sm-8
+  .input-group
+//-         .input-group-append
+//-           input#penetration(type='text', name='routing.penetration')
+//-           a.btn.btn-info(href='https://portal.frib.msu.edu/dcc/Drawings/T20302-MDE-0007-0001.pdf', target='_blank') Browse
+//-     .form-group.row
+//-       label.col-form-label.col-sm-2.text-right Penetration Z position
+//-       .col-sm-8
+  .input-group
+//-         input#position(type='text', name='routing.penetrationZ')
+//- fieldset
+//- legend General information
+//- .form-group.row
+//-   label.col-form-label.col-sm-2.text-right Fabricated by
+//-   .col-sm-8
+  .input-group
+//-     input#fab(type='text', name='other.fabricatedBy')
+//- .form-group.row
+//-   label.col-form-label.col-sm-2.text-right Installed by
+//-   .col-sm-8
+  .input-group
+//-     input#ins(type='text')
+//- .form-group.row
+//-   label.col-form-label.col-sm-2.text-right Terminated by
+//-   .col-sm-8
+  .input-group
+//-     input#term(type='text', name='other.terminatedBy')
+//- fieldset
+//- legend Required steps
+//- p.text-info Steps like pull and field test are always required
+//- .form-group.row
+//-   .col-sm-8
+  .input-group
+//-     label.col-form-label.col-sm-2.text-right.checkbox
+//-       input(type='checkbox', name='required.label.col-form-label.col-sm-2.text-right')
+//-       | label.col-form-label.col-sm-2.text-right
+//-     label.col-form-label.col-sm-2.text-right.checkbox
+//-       input(type='checkbox', name='required.benchTerm')
+//-       | Bench termination
+//-     label.col-form-label.col-sm-2.text-right.checkbox
+//-       input(type='checkbox', name='required.benchTest')
+//-       | Bench test
+//-     label.col-form-label.col-sm-2.text-right.checkbox
+//-       input(type='checkbox', name='required.fieldTerm')
+//-       | Field termination
 
 legend Other
-.form-group
-  label Comments
-  .controls
-    textarea.form-control#comments(rows=3, name='comments')
-
+.form-group.row
+  label.col-form-label.col-sm-2.text-right Comments
+  .col-sm-8
+    .input-group
+      textarea.input-xlarge#comments(rows=3, name='comments')

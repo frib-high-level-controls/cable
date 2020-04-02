@@ -62,6 +62,7 @@ function sendRequest(data, initModel, binder) {
       }
     }
   }).fail(() => {
+
     // TODO change to modal
     $('#message').append('<div class="alert alert-error"><button class="close" data-dismiss="alert">x</button>\
     The save request failed. You might need to try again or contact the admin.</div>');
@@ -86,7 +87,7 @@ function updateCat(json) {
       }).text(v.name));
     }
   });
-  $('#cat').next('.input-group-text').text($('#cat option:selected').val() as string);
+  $('#cat').next('.input-group-append').find('.input-group-text').text($('#cat option:selected').val() as string);
 }
 
 function updateSub(json) {
@@ -105,7 +106,7 @@ function updateSub(json) {
       }
     });
   }
-  $('#sub').next('.input-group-text').text($('#sub option:selected').val() as string);
+  $('#sub').next('.input-group-append').find('.input-group-text').text($('#sub option:selected').val() as string);
 }
 
 function updateSignal(json) {
@@ -124,7 +125,7 @@ function updateSignal(json) {
       }
     });
   }
-  $('#signal').next('.input-group-text').text($('#signal option:selected').val() as string);
+  $('#signal').next('.input-group-append').find('.input-group-text').text($('#signal option:selected').val() as string);
 }
 
 function update(select, json) {
@@ -148,15 +149,15 @@ function css() {
   $('#cat').change(() => {
     updateSub(sysSub);
     updateSignal(sysSub);
-    $('#cat').next('.input-group-text').text($('#cat option:selected').val() as string);
+    $('#cat').next('.input-group-append').find('.input-group-text').text($('#cat option:selected').val() as string);
   });
 
   $('#sub').change(() => {
-    $('#sub').next('.input-group-text').text($('#sub option:selected').val() as string);
+    $('#sub').next('.input-group-append').find('.input-group-text').text($('#sub option:selected').val() as string);
   });
 
   $('#signal').change(() => {
-    $('#signal').next('.input-group-text').text($('#signal option:selected').val() as string);
+    $('#signal').next('.input-group-append').find('.input-group-text').text($('#signal option:selected').val() as string);
   });
 }
 
@@ -169,17 +170,17 @@ function setCSS(proj, cat, sub, signal) {
   }
   if (cat) {
     $('#cat').val(cat);
-    $('#cat').next('.input-group-text').text(cat);
+    $('#cat').next('.input-group-append').find('.input-group-text').text(cat);
     updateSub(sysSub);
     updateSignal(sysSub);
   }
   if (signal) {
     $('#signal').val(signal);
-    $('#signal').next('.input-group-text').text(signal);
+    $('#signal').next('.input-group-append').find('.input-group-text').text(signal);
   }
   if (sub) {
     $('#sub').val(sub);
-    $('#sub').next('.input-group-text').text(sub);
+    $('#sub').next('.input-group-append').find('.input-group-text').text(sub);
   }
 }
 
@@ -200,18 +201,26 @@ $(async () => {
   $.validator.addMethod('wbs', function(value, element) {
     return this.optional(element) || /^[A-Z]\d{1,5}$/.test(value);
   }, 'Please check the WBS number, remove spaces and dots');
+
   const validator = $(requestForm).validate({
+    errorElement: 'span',
     errorClass: 'invalid-feedback',
-    highlight: (element) => {
-      $(element).addClass('is-invalid');
+    validClass: 'is-valid',
+    errorPlacement(error, element) {
+      error.appendTo($(element).closest('.input-group'));
     },
-    unhighlight: (element) => {
-      $(element).removeClass('is-invalid');
+    highlight(element) {
+      $(element).removeClass('valid').addClass('is-invalid');
+    },
+    unhighlight(element) {
+      $(element).removeClass('is-invalid').addClass('is-valid');
     },
     success(element) {
-      $(element).closest('.form-group').removeClass('is-invalid').addClass('is-valid');
-    },
+      $(element).closest('.form-group').addClass('is-valid');
+    }
   });
+
+  validator.form();
 
   const binder = new Binder.FormBinder(requestForm);
 
@@ -308,6 +317,7 @@ $(async () => {
       setCSS(proj, cat, sub, signal);
 
       $('form[name="request"]').fadeTo('slow', 1);
+      validator.form();
       initModel = _.cloneDeep(binder.serialize());
 
       // show action buttons

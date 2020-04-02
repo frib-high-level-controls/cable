@@ -82,6 +82,11 @@ interface Config {
     nameFilter?: {};
     objAttributes?: {};
     rawAttributes?: {};
+    reconnect: {};
+    timeout: {};
+    idleTimeout: {};
+    connectTimeout: {};
+    tlsOptions?: {};
   };
   cas: {
     cas_url?: {};
@@ -264,7 +269,10 @@ async function doStart(): Promise<express.Application> {
       },
     },
     ad: {
-      // no defaults
+      reconnect: true,
+      timeout: 15 * 1000,
+      idleTimeout: 10 * 1000,
+      connectTimeout: 10 * 1000,
     },
     cas: {
       // no defaults
@@ -375,12 +383,11 @@ async function doStart(): Promise<express.Application> {
     url: String(cfg.ad.url),
     bindDN: String(cfg.ad.adminDn),
     bindCredentials: String(cfg.ad.adminPassword),
-    // TODO: Move to external configuration //
-    reconnect: true,
-    timeout: 15 * 1000,
-    idleTimeout: 10 * 1000,
-    connectTimeout: 10 * 1000,
-    //////////////////////////////////////////
+    reconnect: Boolean(cfg.ad.reconnect),
+    timeout: Number(cfg.ad.timeout),
+    idleTimeout: Number(cfg.ad.idleTimeout),
+    connectTimeout: Number(cfg.ad.connectTimeout),
+    tlsOptions: cfg.ad.tlsOptions,
   });
   info('LDAP client connected: %s', cfg.ad.url);
   status.setComponentOk('LDAP Client', 'Connected');
