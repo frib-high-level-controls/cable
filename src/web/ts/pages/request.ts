@@ -312,7 +312,7 @@ $(async () => {
         signal = json.basic.signalClassification || null;
       }
 
-      const savedBinder = new Binder.FormBinder(requestForm, json);
+      const savedBinder = new Binder.FormBinder(requestForm, json, ['tt-hint']);
       savedBinder.deserialize();
       setCSS(proj, cat, sub, signal);
 
