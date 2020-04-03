@@ -94,6 +94,10 @@ interface Config {
     service_base_url?: {};
     version?: {};
   };
+  forgapi: {
+    url?: {};
+    agentOptions?: {};
+  };
   access_tokens: {};
   metadata: {
     syssubsystem_path?: {};
@@ -277,6 +281,9 @@ async function doStart(): Promise<express.Application> {
     cas: {
       // no defaults
     },
+    forgapi: {
+      // no defaults
+    },
     access_tokens: [
       // no tokens
     ],
@@ -377,6 +384,9 @@ async function doStart(): Promise<express.Application> {
     status.setComponentError('MongoDB', '%s', err);
     error('Mongoose connection error: %s', err);
   });
+
+  // Need the FORG base URL available to views
+  app.locals.forgurl = String(cfg.forgapi.url);
 
   // Authentication Configuration
   adClient = await ldapjs.Client.create({
