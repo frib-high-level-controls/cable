@@ -193,7 +193,7 @@ export const TypeRegistry: { [key: string]: TypeDefinition | undefined } = {
 };
 
 export class FormBinder {
-
+  public blacklist: string[];
   public form: HTMLFormElement;
   public accessor: PropertyAccessor;
   public type_regexp: RegExp;
@@ -202,7 +202,8 @@ export class FormBinder {
     return new FormBinder(form, obj);
   }
 
-  constructor(form: HTMLFormElement, accessor?: any) {
+  constructor(form: HTMLFormElement, accessor?: any, blacklist?: string[]) {
+    this.blacklist = blacklist;
     this.form = form;
     this.accessor = this._getAccessor(accessor);
     this.type_regexp = /type\[(.*)\]/;
@@ -308,10 +309,10 @@ export class FormBinder {
     for (let i = 0; i < this.form.elements.length; i++) {
       const e: Element = this.form.elements[i];
 
-      const classList = e.classList.value.split(' ');
+      const classList = Array.from(e.classList);
 
-      // skip hint fields
-      if(blacklist && classList.some((r) => blacklist.indexOf(r) >= 0)) {
+      // skip unecessary fields
+      if(this.blacklist && classList.some((r) => this.blacklist.indexOf(r) >= 0)) {
         continue;
       }
 
@@ -319,11 +320,13 @@ export class FormBinder {
     }
     return accessor.target;
   }
+
   public deserializeField(element: any, obj: any) {
     const accessor = this._getAccessor(obj);
+    if(element.name === null) return;
     let value = accessor.get(element.name);
     // do not deserialize undefined
-    if (typeof value !== 'undefined' && element.getAttribute('name') !== null) {
+    if (typeof value !== 'undefined') {
       value = this._format(element.name, value, element);
       if (element.type === 'radio' || element.type === 'checkbox') {
         element.checked = this._isSelected(element.value, value);
