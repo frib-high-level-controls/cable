@@ -208,7 +208,7 @@ export class FormBinder {
     this.accessor = this._getAccessor(accessor);
     this.type_regexp = /type\[(.*)\]/;
   }
-  public _isSelected(value: any, options: any[]) {
+  private _isSelected(value: any, options: any[]) {
     if (Util.isArray(options)) {
       for (let i = 0; i < options.length; ++i) {
         if (value === options[i]) {
@@ -221,7 +221,7 @@ export class FormBinder {
       return Boolean(options);
     }
   }
-  public _getType(element: HTMLElement): string {
+  private _getType(element: HTMLElement): string {
     if (element.className) {
       const m = element.className.match(this.type_regexp);
       if (m && m[1]) {
