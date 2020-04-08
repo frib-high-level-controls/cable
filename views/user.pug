@@ -40,7 +40,10 @@ block content
               input.form-check-input#manager(type='checkbox', value='manager')
               label.form-check-label(for='manager') manager
             .form-group.mr-2
-              input.form-check-input(type='checkbox', value='admin')
+              input.form-check-input#validator(type='checkbox', value='validator')
+              label.form-check-label(for='manager') validator
+            .form-group.mr-2
+              input.form-check-input#admin(type='checkbox', value='admin')
               label.form-check-label(for='admin') admin
             if (myRoles.indexOf('admin') !== -1)
               button.btn.btn-primary#modify(type='submit', hidden) Modify

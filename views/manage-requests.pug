@@ -66,10 +66,36 @@ block content
           .modal-footer
     .row.m-2
       .nav.flex-column.nav-pills.col-1#v-pills-tabs(role='tablist')
+        a.nav-link(href='#validating', data-toggle='pill' role='tab') Requests to Validate
         a.nav-link.active(href='#approving', data-toggle='pill' role='tab') Requests to Approve
         a.nav-link(href='#rejected', data-toggle='pill' role='tab') Rejected Requests
         a.nav-link(href='#approved', data-toggle='pill' role='tab') Approved Requests
       .tab-content.col#v-pills-tabContent(style='overflow-y: scroll;')
+        .tab-pane#validating
+          .btn-toolbar
+            .btn-group.mr-2
+              button.btn.btn-primary#validating-validate(type='button')
+                i.fa.fa-check-square.fa-lg
+                | &nbsp;Validate
+            .btn-group.mr-2
+              button.btn.btn-primary#validating-reject(type='button')
+                i.fa.fa-exclamation-circle.fa-lg
+                | &nbsp;Reject
+            .btn-group.mr-2
+              button.btn.btn-info#validating-select-all(type='button', data-toggle='tooltip', title='select all the items in the table no matter visiable or not')
+                i.fa.fa-list.fa-lg
+                | &nbsp;Select all
+            .btn-group.mr-2
+              button.btn.btn-info#validating-select-none(type='button')
+                i.fa.fa-square.fa-lg
+                | &nbsp;Clear selection
+            .btn-group.btn-group-toggle.mr-2(data-toggle='buttons-radio')
+              label.btn.btn-info.active Wrap
+                input#validating-wrap(type='radio', autocomplete='off', checked)
+              label.btn.btn-info Unwrap
+                input#validating-unwrap(type='radio', autocomplete='off')
+          .table-overflow
+            table.table.table-bordered.table-hover.table-condensed#validating-table
         .tab-pane.show.active#approving
           .btn-toolbar
             .btn-group.mr-2

@@ -55,6 +55,8 @@ import {
   submittedOnLongColumn,
   tabShownEvent,
   toColumns,
+  validatedByColumn,
+  validatedOnLongColumn,
 } from '../lib/table';
 
 type DTAPI = DataTables.Api;
@@ -115,8 +117,63 @@ function batchApprove(oTable: DTAPI, approvedTable: DTAPI, procuringTable?: DTAP
   }
 }
 
+function validateFromModal(requests: DTAPI[], validatingTable: DTAPI, approvingTable?: DTAPI) {
+  $('#approve').prop('disabled', true);
+  $('#modal .modal-body div').each(function(index) {
+    const that = this;
+    $.ajax({
+      url: basePath + '/requests/' + that.id + '/',
+      type: 'PUT',
+      contentType: 'application/json',
+      dataType: 'json',
+      data: JSON.stringify({
+        action: 'validate',
+      }),
+    }).done((result) => {
+      $(that).prepend('<i class="icon-check"></i>');
+      $(that).addClass('text-success');
+      // remove the request row
+      // Type definitions are missing the draw method!
+      (validatingTable.row(requests[index]).remove() as any).draw('full-hold');
+      // add the requests to the approved table
+      if (approvingTable) {
+        approvingTable.row.add(result.request).draw('full-hold');
+      }
+    }).fail((jqXHR) => {
+      $(that).prepend('<i class="icon-question"></i>');
+      $(that).append(' : ' + jqXHR.responseText);
+      $(that).addClass('text-error');
+    });
+  });
+}
 
-function rejectFromModal(requests: DTAPI[], approvingTable: DTAPI, rejectedTable: DTAPI) {
+
+function batchValidate(oTable: DTAPI, approvingTable?: DTAPI) {
+  const selected = fnGetSelected(oTable, 'row-selected');
+  const requests = [];
+  if (selected.length) {
+    $('#modalLabel').html('Validate the following ' + selected.length + ' requests? ');
+    $('#modal .modal-body').empty();
+    selected.forEach((row) => {
+      const data = oTable.row(row).data() as webapi.CableRequest;
+      // tslint:disable-next-line:max-line-length
+      $('#modal .modal-body').append('<div id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + '</div>');
+      requests.push(row);
+    });
+    $('#modal .modal-footer').html('<button id="approve" class="btn btn-primary">Confirm</button><button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal').modal('show');
+    $('#approve').click(() => {
+      validateFromModal(requests, oTable, approvingTable);
+    });
+  } else {
+    $('#modalLabel').html('Alert');
+    $('#modal .modal-body').html('No request has been selected!');
+    $('#modal .modal-footer').html('<button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal').modal('show');
+  }
+}
+
+function rejectFromModal(requests: DTAPI[], approvingTable: DTAPI, rejectedTable?: DTAPI) {
   $('#reject').prop('disabled', true);
   $('#modal .modal-body div').each(function(index) {
     const that = this;
@@ -135,7 +192,9 @@ function rejectFromModal(requests: DTAPI[], approvingTable: DTAPI, rejectedTable
       // Type definitions are missing draw method!
       (approvingTable.row(requests[index]).remove() as any).draw('full-hold');
       // add the new cables to the procuring table
-      rejectedTable.row.add(request).draw('full-hold');
+      if (rejectedTable) {
+        rejectedTable.row.add(request).draw('full-hold');
+      }
     }).fail((jqXHR) => {
       $(that).prepend('<i class="fas fa-question text-danger"></i>&nbsp;');
       $(that).append(' : ' + jqXHR.responseText);
@@ -144,7 +203,7 @@ function rejectFromModal(requests: DTAPI[], approvingTable: DTAPI, rejectedTable
   });
 }
 
-function batchReject(oTable: DTAPI, rejectedTable: DTAPI) {
+function batchReject(oTable: DTAPI, rejectedTable?: DTAPI) {
   const selected = fnGetSelected(oTable, 'row-selected');
   const requests: DTAPI[] = [];
   if (selected.length) {
@@ -177,14 +236,80 @@ $(() => {
 
   const readyTime = Date.now();
 
+  /*validating table starts*/
+  // tslint:disable-next-line:max-line-length
+  const validatingAoColumns = [selectColumn, editLinkColumn, submittedOnLongColumn, submittedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  let validatingTableWrapped = true;
+
+  const validatingTable = $('#validating-table').DataTable({
+    ajax: {
+      url: basePath + '/requests/statuses/1/json',
+      dataSrc: '',
+    },
+    autoWidth: false,
+    processing: true,
+    language: {
+      loadingRecords: 'Please wait - loading data from the server ...',
+    },
+    columns: validatingAoColumns,
+    order: [
+      [1, 'desc'],
+      [2, 'desc'],
+      [3, 'desc'],
+    ],
+    dom: sDom2InoF,
+    buttons: sButtons,
+    // sScrollY: '50vh',
+    // bScrollCollapse: true,
+    deferRender: true,
+    createdRow(row) {
+      if (!approvingTableWrapped) {
+        $(row).addClass('nowrap');
+      }
+    },
+  });
+  dtutil.addFilterHead('#validating-table', validatingAoColumns);
+
+  $('#validating-table').on('init.dt', () => {
+    // tslint:disable-next-line:no-console
+    console.log('Validating table initialized: ' + String((Date.now() - readyTime) / 1000) + 's' );
+  });
+
+  $('#validating-wrap').click(() => {
+    validatingTableWrapped = true;
+    fnWrap(validatingTable);
+  });
+
+  $('#validating-unwrap').click(() => {
+    validatingTableWrapped = false;
+    fnUnwrap(validatingTable);
+  });
+
+  $('#validating-select-none').click(() => {
+    fnDeselect(validatingTable, 'row-selected', 'select-row');
+  });
+
+  $('#validating-select-all').click(() => {
+    fnSelectAll(validatingTable, 'row-selected', 'select-row', true);
+  });
+
+  $('#validating-validate').click(() => {
+    batchValidate(validatingTable);
+  });
+
+  $('#validating-reject').click(() => {
+    batchReject(validatingTable);
+  });
+
+
   /*approving table starts*/
   // tslint:disable-next-line:max-line-length
-  const approvingAoCulumns = [selectColumn, editLinkColumn, submittedOnLongColumn, submittedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const approvingAoCulumns = [selectColumn, editLinkColumn, submittedOnLongColumn, submittedByColumn, validatedOnLongColumn, validatedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let approvingTableWrapped = true;
 
   const approvingTable = $('#approving-table').DataTable({
     ajax: {
-      url: basePath + '/requests/statuses/1/json',
+      url: basePath + '/requests/statuses/1.5/json',
       dataSrc: '',
     },
     autoWidth: false,
@@ -195,7 +320,7 @@ $(() => {
     columns: approvingAoCulumns,
     order: [
       [2, 'desc'],
-      [5, 'desc'],
+      [7, 'desc'],
     ],
     dom: sDom2InoF,
     buttons: sButtons,
@@ -352,6 +477,7 @@ $(() => {
   highlightedEvent();
 
   $('#reload').click(() => {
+    validatingTable.ajax.reload();
     approvingTable.ajax.reload();
     rejectedTable.ajax.reload();
     approvedTable.ajax.reload();

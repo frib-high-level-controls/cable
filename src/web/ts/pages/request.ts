@@ -330,6 +330,12 @@ $(async () => {
       if (json.status === 1) {
         $('#adjust').closest('.btn-group').removeAttr('hidden');
         $('#reject').closest('.btn-group').removeAttr('hidden');
+        $('#validate').closest('.btn-group').removeAttr('hidden');
+      }
+
+      if (json.status === 1.5) {
+        $('#adjust').closest('.btn-group').removeAttr('hidden');
+        $('#reject').closest('.btn-group').removeAttr('hidden');
         $('#approve').closest('.btn-group').removeAttr('hidden');
       }
 
@@ -391,7 +397,7 @@ $(async () => {
       }
     }
 
-    if (action === 'clone' || action === 'reject' || action === 'approve') {
+    if (action === 'clone' || action === 'reject' || action === 'validate' || action === 'approve') {
       sendRequest(data, initModel, binder);
     }
   });

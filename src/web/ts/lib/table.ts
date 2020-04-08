@@ -356,6 +356,10 @@ export const submittedOnColumn = dateColumn('Submitted', 'submittedOn');
 export const submittedOnLongColumn = dateColumn('Submitted', 'submittedOn', true);
 export const submittedByColumn = personColumn('Submitted by', 'submittedBy');
 
+export const validatedOnColumn = dateColumn('Validated', 'validatedOn');
+export const validatedOnLongColumn = dateColumn('Validated', 'validatedOn', true);
+export const validatedByColumn = personColumn('Validated by', 'validatedBy');
+
 export const approvedOnColumn = dateColumn('Approved', 'approvedOn');
 export const approvedOnLongColumn = dateColumn('Approved', 'approvedOn', true);
 export const approvedByColumn = personColumn('Approved by', 'approvedBy');
