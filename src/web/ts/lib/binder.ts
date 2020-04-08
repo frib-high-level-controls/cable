@@ -312,7 +312,7 @@ export class FormBinder {
       const classList = Array.from(e.classList);
 
       // skip unecessary fields
-      if(this.blacklist && classList.some((r) => this.blacklist.indexOf(r) >= 0)) {
+      if (this.blacklist && classList.some((r) => this.blacklist.indexOf(r) >= 0)) {
         continue;
       }
 
@@ -323,7 +323,9 @@ export class FormBinder {
 
   public deserializeField(element: any, obj: any) {
     const accessor = this._getAccessor(obj);
-    if(element.name === null) return;
+    if (element.name === null) {
+      return;
+    }
     let value = accessor.get(element.name);
     // do not deserialize undefined
     if (typeof value !== 'undefined') {

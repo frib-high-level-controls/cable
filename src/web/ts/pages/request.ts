@@ -1,12 +1,15 @@
-import './base';
 import 'jquery-validation';
-import * as $ from 'jquery';
-import * as Binder from '../lib/binder';
-import {ajax401, disableAjaxCache} from '../lib/ajaxhelper';
 import '../lib/util';
+import './base';
+
 import _ from 'lodash';
-import * as moment from 'moment';
 import Bloodhound from 'typeahead.js';
+
+import {ajax401, disableAjaxCache} from '../lib/ajaxhelper';
+
+import * as $ from 'jquery';
+import * as moment from 'moment';
+import * as Binder from '../lib/binder';
 
 let sysSub;
 function sendRequest(data, initModel, binder) {
@@ -62,7 +65,6 @@ function sendRequest(data, initModel, binder) {
       }
     }
   }).fail(() => {
-
     // TODO change to modal
     $('#message').append('<div class="alert alert-error"><button class="close" data-dismiss="alert">x</button>\
     The save request failed. You might need to try again or contact the admin.</div>');
@@ -81,7 +83,7 @@ function updateCat(json) {
     value: '',
   }).text('choose').prop('disabled', true));
   $.each(json, (k, v) => {
-    if (v && v.projects && ~v.projects.indexOf(proj)) {
+    if (v && v.projects && v.projects.indexOf(proj) >= 0) {
       $('#cat').append($('<option>', {
         value: k,
       }).text(v.name));
@@ -157,7 +159,10 @@ function css() {
   });
 
   $('#signal').change(() => {
-    $('#signal').next('.input-group-append').find('.input-group-text').text($('#signal option:selected').val() as string);
+    $('#signal').next('.input-group-append')
+    .find('.input-group-text')
+    .text($('#signal option:selected')
+    .val() as string);
   });
 }
 
@@ -185,7 +190,7 @@ function setCSS(proj, cat, sub, signal) {
 }
 
 $(async () => {
-  sysSub =  (window as any).sysSub
+  sysSub =  (window as any).sysSub;
   ajax401('');
   disableAjaxCache();
   $('.form-control').keypress((e) => {
@@ -217,7 +222,7 @@ $(async () => {
     },
     success(element) {
       $(element).closest('.form-group').addClass('is-valid');
-    }
+    },
   });
 
   validator.form();
@@ -392,8 +397,10 @@ $(async () => {
           $('#modal').modal('show');
           return;
         }
-      } catch(e) {
-        console.log(e)
+      } catch (e) {
+        /* tslint:disable */
+        console.log(e);
+        /* tslint:enable */
       }
     }
 
