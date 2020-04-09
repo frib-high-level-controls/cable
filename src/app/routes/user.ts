@@ -37,7 +37,7 @@ export function setLDAPClient(client: ldapjs.Client) {
 
 function addUser(req: express.Request, res: express.Response) {
   const nameFilter = ad.nameFilter.replace('_name', req.body.name);
-  const opts = {
+  const opts: ldapjs.LegacySearchOptions = {
     filter: nameFilter,
     attributes: ad.objAttributes,
     scope: 'sub',
@@ -95,7 +95,7 @@ function addUser(req: express.Request, res: express.Response) {
 
 function updateUserProfile(user: User, res: express.Response) {
   const searchFilter = ad.searchFilter.replace('_id', user.adid);
-  const opts = {
+  const opts: ldapjs.LegacySearchOptions = {
     filter: searchFilter,
     attributes: ad.objAttributes,
     scope: 'sub',
@@ -375,7 +375,7 @@ export function init(app: express.Application) {
   app.get('/adusers/:id/', auth.ensureAuthenticated, (req, res) => {
 
     const searchFilter = ad.searchFilter.replace('_id', req.params.id);
-    const opts = {
+    const opts: ldapjs.LegacySearchOptions = {
       filter: searchFilter,
       attributes: ad.objAttributes,
       scope: 'sub',
@@ -404,7 +404,7 @@ export function init(app: express.Application) {
   app.get('/adusers/:id/photo', auth.ensureAuthenticated, (req, res) => {
 
     const searchFilter = ad.searchFilter.replace('_id', req.params.id);
-    const opts = {
+    const opts: ldapjs.LegacySearchOptions = {
       filter: searchFilter,
       attributes: ad.rawAttributes,
       scope: 'sub',
@@ -432,7 +432,7 @@ export function init(app: express.Application) {
   app.get('/adusernames', auth.ensureAuthenticated, (req, res) => {
     const query = req.query.term;
     let nameFilter;
-    let opts;
+    let opts: ldapjs.LegacySearchOptions;
     if (query && query.length > 0) {
       nameFilter = ad.nameFilter.replace('_name', query + '*');
     } else {
