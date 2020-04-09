@@ -3,9 +3,3 @@
  */
 /* tslint:disable:no-reference */
 /// <reference path="../app/webapi.d.ts"/>
-
-declare var Bloodhound: any;
-interface JQuery<HTMLElement>
-{
-    typeahead: any;
-}
