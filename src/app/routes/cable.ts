@@ -8,6 +8,10 @@ import {
   warn,
 } from '../shared/logging';
 
+import {
+  HttpStatus,
+} from '../shared/handlers';
+
 import * as auth from '../lib/auth';
 
 import {
@@ -17,7 +21,6 @@ import {
   ICable,
   ICableRequest,
   IChange,
-  IMultiChange,
   MultiChange,
 } from '../model/request';
 
@@ -28,6 +31,8 @@ import {
 type Request = express.Request;
 type Response = express.Response;
 type NextFunction = express.NextFunction;
+
+const NOT_FOUND = HttpStatus.NOT_FOUND;
 
 // request status
 // 0: saved
@@ -1016,6 +1021,10 @@ export function init(app: express.Application) {
         error(err);
         return res.status(500).send(err.message);
       }
+      if (!cable) {
+        res.status(NOT_FOUND).send('cable not found');
+        return;
+      }
       // console.log(cable);
       if (!cable.hasOwnProperty('changeHistory')) {
         return res.json([]);
@@ -1036,7 +1045,7 @@ export function init(app: express.Application) {
           _id: {
             $in: cable.changeHistory,
           },
-        }).lean().exec(function multiChangesCB(err2, multiChanges: IMultiChange[]) {
+        }).lean().exec(function multiChangesCB(err2, multiChanges) {
           if (err2) {
             error(err2);
             return res.status(500).send(err2.message);

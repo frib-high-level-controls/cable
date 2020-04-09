@@ -18,14 +18,16 @@ import * as mongoose from 'mongoose';
 import * as morgan from 'morgan';
 import * as favicon from 'serve-favicon';
 
-import auth = require('./lib/auth');
-// import * as auth from './shared/auth';
+import * as auth from './shared/auth';
 import * as handlers from './shared/handlers';
 import * as logging from './shared/logging';
+import * as ppauth from './shared/passport-auth';
 import * as promises from './shared/promises';
 import * as status from './shared/status';
 import * as tasks from './shared/tasks';
 
+import * as legacyauth from './lib/auth';
+import * as ldapauth from './lib/ldap-auth';
 import * as ldapjs from './lib/ldapjs-client';
 
 import * as request from './model/request';
@@ -88,7 +90,13 @@ interface Config {
   };
   cas: {
     cas_url?: {};
+    service_url?: {},
     service_base_url?: {};
+    version?: {};
+  };
+  forgapi: {
+    url?: {};
+    agentOptions?: {};
   };
   access_tokens: {};
   metadata: {
@@ -273,6 +281,9 @@ async function doStart(): Promise<express.Application> {
     cas: {
       // no defaults
     },
+    forgapi: {
+      // no defaults
+    },
     access_tokens: [
       // no tokens
     ],
@@ -374,6 +385,9 @@ async function doStart(): Promise<express.Application> {
     error('Mongoose connection error: %s', err);
   });
 
+  // Need the FORG base URL available to views
+  app.locals.forgurl = String(cfg.forgapi.url);
+
   // Authentication Configuration
   adClient = await ldapjs.Client.create({
     url: String(cfg.ad.url),
@@ -409,19 +423,45 @@ async function doStart(): Promise<express.Application> {
     status.setComponentError('LDAP Client', '%s', err);
   });
 
-  auth.setADConfig({
-    objAttributes: Array.isArray(cfg.ad.objAttributes) ? cfg.ad.objAttributes.map(String) : [],
-    searchBase: String(cfg.ad.searchBase),
-    searchFilter: String(cfg.ad.searchFilter),
-  });
+  legacyauth.setAccessTokens(Array.isArray(cfg.access_tokens) ? cfg.access_tokens.map(String) : []);
 
-  auth.setAuthConfig({
-    cas: String(cfg.cas.cas_url),
-    service: String(cfg.cas.service_base_url),
-    tokens: Array.isArray(cfg.access_tokens) ? cfg.access_tokens.map(String) : [],
-  });
+  if (env === 'production' || process.env.RUNCHECK_AUTHC_DISABLED !== 'true') {
+    if (!cfg.cas.cas_url) {
+      throw new Error('CAS base URL not configured');
+    }
+    info('CAS base URL: %s', cfg.cas.cas_url);
 
-  auth.setLDAPClient(adClient);
+    if (!cfg.cas.service_base_url) {
+      throw new Error('CAS service base URL not configured');
+    }
+    info('CAS service base URL: %s (service URL: %s)', cfg.cas.service_base_url, cfg.cas.service_url);
+
+    auth.setProvider(new ldapauth.LdapCasProvider(adClient, {
+      cas: {
+        casUrl: String(cfg.cas.cas_url),
+        casServiceBaseUrl: String(cfg.cas.service_base_url),
+        casServiceUrl: cfg.cas.service_url ? String(cfg.cas.service_url) : undefined,
+        casVersion: cfg.cas.version ? String(cfg.cas.version) : undefined,
+      },
+      ldap: {
+        objAttributes: Array.isArray(cfg.ad.objAttributes) ? cfg.ad.objAttributes.map(String) : [],
+        searchBase: String(cfg.ad.searchBase),
+        searchFilter: String(cfg.ad.searchFilter),
+      },
+    }));
+    info('CAS authentication provider enabled');
+  } else {
+    // Use this provider for local development that DISABLES authentication!
+    auth.setProvider(new ldapauth.DevLdapBasicProvider(adClient, {
+      basic: {},
+      ldap: {
+        objAttributes: Array.isArray(cfg.ad.objAttributes) ? cfg.ad.objAttributes.map(String) : [],
+        searchBase: String(cfg.ad.searchBase),
+        searchFilter: String(cfg.ad.searchFilter),
+      },
+    }));
+    warn('Development authentication provider: Password verification DISABLED!');
+  }
 
   // Read metadata from data files
   if (!cfg.metadata.syssubsystem_path) {
@@ -587,13 +627,13 @@ async function doStart(): Promise<express.Application> {
   }));
 
   // Authentication handlers (must follow session middleware)
-  // app.use(auth.getProvider().initialize());
+  app.use(auth.getProvider().initialize());
 
   // Request logging configuration (must follow authc middleware)
-  // morgan.token('remote-user', (req) => {
-  //   const username = auth.getUsername(req);
-  //   return username || 'anonymous';
-  // });
+  morgan.token('remote-user', (req) => {
+    const username = auth.getUsername(req);
+    return username || 'anonymous';
+  });
 
   if (env === 'production') {
     app.use(morgan('short'));
@@ -619,25 +659,30 @@ async function doStart(): Promise<express.Application> {
     extended: false,
   }));
 
-  app.get('/login', auth.ensureAuthenticated, (req, res: any) => {
-    if (!req.session) {
-      res.status(500).send('session missing');
-      return;
-    }
-    if (req.session.landing && req.session.landing !== req.url) {
-      res.redirect(res.locals.basePath + req.session.landing);
+  app.get('/login', auth.getProvider().authenticate({ rememberParams: [ 'bounce' ]}), (req, res) => {
+    if (req.query.bounce) {
+      res.redirect(req.query.bounce);
       return;
     }
     res.redirect(res.locals.basePath || '/');
   });
 
-  routes.setAuthConfig({ cas: String(cfg.cas.cas_url) });
-  app.get('/logout', routes.logout);
+  app.get('/logout', (req, res) => {
+    auth.getProvider().logout(req);
+    const provider = auth.getProvider();
+    if (provider instanceof ppauth.CasPassportAbstractProvider) {
+      const redirectUrl = provider.getCasLogoutUrl(true);
+      info('Redirect to CAS logout: %s', redirectUrl);
+      res.redirect(redirectUrl);
+      return;
+    }
+    res.redirect(res.locals.basePath || '/');
+  });
 
   app.get('/about', about.index);
-  app.get('/', auth.ensureAuthenticated, routes.main);
+  app.get('/', legacyauth.ensureAuthenticated, routes.main);
 
-  app.get('/main', auth.ensureAuthenticated, routes.switch2normal);
+  app.get('/main', legacyauth.ensureAuthenticated, routes.switch2normal);
 
   user.setADConfig({
     objAttributes: Array.isArray(cfg.ad.objAttributes) ? cfg.ad.objAttributes.map(String) : [],

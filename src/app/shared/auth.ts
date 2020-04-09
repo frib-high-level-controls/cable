@@ -249,7 +249,8 @@ export function ensureAuthc(): RequestHandler {
   return (req, res, next) => {
     const username = getUsername(req);
     if (!username) {
-      const redirectUrl = '/login?bounce=' + encodeURIComponent(req.originalUrl);
+      const basePath = res.locals.basePath || '';
+      const redirectUrl = basePath + '/login?bounce=' + encodeURIComponent(basePath + req.originalUrl);
       debug('Request NOT authenticted: Redirect: %s', redirectUrl);
       res.redirect(redirectUrl);
       return;
