@@ -406,26 +406,13 @@ export function init(app: express.Application) {
       res.status(500).send('session missing');
       return;
     }
-    return res.format({
-      'text/html': () => {
-        if(req.session) {
-          res.render('request', {
-            traySects: traySects,
-            projects: projects,
-            sysSub: sysSub,
-            id: req.params.id,
-            roles: req.session.roles,
-          });
-        }
-      },
-      'application/json': () => {
-        if(req.session) {
-          res.json({
-            data: sysSub,
-          });
-        }
-      },
-    }) 
+    return res.render('request', {
+      traySects: traySects,
+      projects: projects,
+      sysSub: sysSub,
+      id: req.params.id,
+      roles: req.session.roles,
+    });
   });
 
   app.delete('/requests/:id/', auth.ensureAuthenticated, (req, res) => {
@@ -595,18 +582,6 @@ export function init(app: express.Application) {
     const request = req.body.request || {};
     request.updatedBy = req.session.userid;
     request.updatedOn = Date.now();
-
-    CableRequest.find({
-      _id: req.params.id,
-    }, (err, cableRequest) => {
-      if (err) {
-        error(err);
-      }
-      if (cableRequest) {
-        console.log(cableRequest)
-      }
-      error(req.params.id + ' gone');
-    })
 
     if (req.body.action === 'save') {
       CableRequest.findOneAndUpdate({
