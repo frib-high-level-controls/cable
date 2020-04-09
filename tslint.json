@@ -8,6 +8,7 @@
         "interface-name": [ false ],
         "object-literal-shorthand": false,
         "max-classes-per-file": false,
-        "no-object-literal-type-assertion": true
+        "no-object-literal-type-assertion": true,
+        "no-namespace": [ true, "allow-declarations" ]
     }
 }

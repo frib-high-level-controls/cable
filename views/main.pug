@@ -5,7 +5,7 @@ block head
   title FRIB Cable App
   meta(name='viewport', content='width=device-width, initial-scale=1.0')
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
-  script(type='text/javascript' src=basePath + '/dist/main.js')
+  script(type='text/javascript', src=basePath + '/dist/main.js')
 
 block content
   .container-fluid
@@ -24,7 +24,7 @@ block content
             i.fa.fa-copy.fa-lg
             | &nbsp;Clone
         .btn-group.mr-2.dropdown
-          button.btn.btn-secondary.dropdown-toggle#meta(data-toggle='dropdown')
+          button.btn.btn-secondary.dropdown-toggle#meta(type='button', data-toggle='dropdown')
             i.fa.fa-cogs.fa-lg
             | &nbsp;Meta
             span.caret

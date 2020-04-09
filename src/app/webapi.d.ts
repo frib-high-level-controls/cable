@@ -34,7 +34,7 @@ declare namespace webapi {
 
   // Application specific types defined below.
   export interface CableRequest {
-    _id: string
+    _id: string;
 
     basic: {
       project: string;
