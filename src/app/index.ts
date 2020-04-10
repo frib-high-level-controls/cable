@@ -660,7 +660,7 @@ async function doStart(): Promise<express.Application> {
   }));
 
   app.get('/login', auth.getProvider().authenticate({ rememberParams: [ 'bounce' ]}), (req, res) => {
-    if (req.query.bounce) {
+    if (req.query.bounce && typeof req.query.bounce === 'string') {
       res.redirect(req.query.bounce);
       return;
     }
