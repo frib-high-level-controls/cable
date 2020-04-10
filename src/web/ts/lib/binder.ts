@@ -230,7 +230,7 @@ export class FormBinder {
     }
     return 'string';
   }
-  private _format(path: string, value: any, element: any): string | string[] {
+  private _format(path: string, value: any, element: HTMLElement): string | string[] {
     const type = this._getType(element);
     const handler = TypeRegistry[type];
     if (type === 'stringArray' && handler) {
@@ -245,7 +245,7 @@ export class FormBinder {
     }
     return handler ? handler.format(value) : String(value);
   }
-  private _parse(path: string, value: any, element: any): string | string[] {
+  private _parse(path: string, value: any, element: HTMLElement): string | string[] {
     const type = this._getType(element);
     const handler = TypeRegistry[type];
     if (Util.isArray(value) && handler) {
@@ -304,19 +304,15 @@ export class FormBinder {
       accessor.set(element.name, value);
     }
   }
-  public deserialize(obj?: any, blacklist?: string[]) {
+  public deserialize(obj?: any) {
     const accessor = this._getAccessor(obj);
     for (let i = 0; i < this.form.elements.length; i++) {
       const e: Element = this.form.elements[i];
-
-      const classList = Array.from(e.classList);
-
-      // skip unecessary fields
-      if (this.blacklist && classList.some((r) => this.blacklist.indexOf(r) >= 0)) {
+      // skip fields with blacklisted classes
+      if (this.blacklist && this.blacklist.some((cls) => e.classList.contains(cls))) {
         continue;
       }
-
-      this.deserializeField(this.form.elements[i], accessor);
+      this.deserializeField(e, accessor);
     }
     return accessor.target;
   }
