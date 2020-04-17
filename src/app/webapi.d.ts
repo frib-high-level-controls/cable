@@ -229,21 +229,4 @@ declare namespace webapi {
     updatedBy?: string;
     updatedOn?: string;
   }
-
-  export interface CableTypeRow {
-    name: string;
-    service?: string;
-    conductorNumber: number;
-    conductorSize: string;
-    fribType: string;
-    pairing?: string;
-    shielding?: string;
-    outerDiameter?: string;
-    voltageRating?: string;
-    raceway?: string;
-    tunnelHotcell?: boolean;
-    otherRequirements?: string;
-    manufacturer?: string;
-    partNumber?: string;
-  }
 }

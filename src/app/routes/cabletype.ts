@@ -14,6 +14,23 @@ import {
   RequestError,
 } from '../shared/handlers';
 
+export interface CableTypeRow {
+  name: string;
+  service?: string;
+  conductorNumber: number;
+  conductorSize: string;
+  fribType: string;
+  pairing?: string;
+  shielding?: string;
+  outerDiameter?: string;
+  voltageRating?: string;
+  raceway?: string;
+  tunnelHotcell?: boolean;
+  otherRequirements?: string;
+  manufacturer?: string;
+  partNumber?: string;
+}
+
 export function init(app: express.Application) {
   app.get('/cabletypes/', auth.ensureAuthenticated, (req, res) => {
     res.render('cabletype', {
@@ -44,7 +61,7 @@ export function init(app: express.Application) {
     });
   });
 
-  app.get('/cabletypes/excel', auth.ensureAuthenticated, catchAll(async (req, res) => {
+  app.get('/cabletypes/excel', catchAll(async (req, res) => {
     let cableTypes: CableType[] | null;
 
     cableTypes = await CableType.find();
@@ -53,12 +70,12 @@ export function init(app: express.Application) {
       throw new RequestError('Device not found', HttpStatus.NOT_FOUND);
     }
   
-    const rows: webapi.CableTypeRow[] =  [];
+    const rows: CableTypeRow[] =  [];
     for (let cableType of cableTypes) {
       if (!cableType.id) {
         continue;
       }
-      const row: webapi.CableTypeRow = {
+      const row: CableTypeRow = {
         name: cableType.name,
         service: cableType.service,
         conductorNumber: cableType.conductorNumber,
