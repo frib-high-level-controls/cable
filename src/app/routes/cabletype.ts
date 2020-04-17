@@ -6,13 +6,14 @@ import { CableType } from '../model/meta';
 import auth = require('../lib/auth');
 
 import util = require('../lib/util');
-import * as XLSX from 'xlsx';
 
 import {
   catchAll,
   HttpStatus,
   RequestError,
 } from '../shared/handlers';
+
+import * as XLSX from 'xlsx';
 
 export interface CableTypeRow {
   name: string;
@@ -65,13 +66,13 @@ export function init(app: express.Application) {
     let cableTypes: CableType[] | null;
 
     cableTypes = await CableType.find();
-  
+
     if (!cableTypes) {
       throw new RequestError('Device not found', HttpStatus.NOT_FOUND);
     }
-  
+
     const rows: CableTypeRow[] =  [];
-    for (let cableType of cableTypes) {
+    for (const cableType of cableTypes) {
       if (!cableType.id) {
         continue;
       }
@@ -94,16 +95,21 @@ export function init(app: express.Application) {
       rows.push(row);
     }
 
-    rows.sort((a, b) => (a.conductorNumber > b.conductorNumber) ? 1 : -1)
+    rows.sort((a, b) => (a.conductorNumber > b.conductorNumber) ? 1 : -1);
 
     const ws = XLSX.utils.json_to_sheet(rows);
-    ws['!cols'] = [{ width: 30}, { width: 30}, { width: 20}, { width: 20}, { width: 20}, { width: 20}, { width: 30}, { width: 20}, { width: 20}, { width: 25}, { width: 20}, { width: 25}, { width: 40}, { width: 50}]
+    ws['!cols'] = [
+      { width: 30}, { width: 30}, { width: 20}, { width: 20},
+      { width: 20}, { width: 20}, { width: 30}, { width: 20},
+      { width: 20}, { width: 25}, { width: 20}, { width: 25},
+      { width: 40}, { width: 50},
+    ];
 
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'cabletypes');
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.status(200).send(XLSX.write(wb, {type:'buffer', bookType: 'xlsx'}));
+    res.status(200).send(XLSX.write(wb, {type: 'buffer', bookType: 'xlsx'}));
   }));
 
   // tslint:disable:max-line-length
