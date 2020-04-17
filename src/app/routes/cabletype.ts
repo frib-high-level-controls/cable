@@ -8,6 +8,12 @@ import auth = require('../lib/auth');
 import util = require('../lib/util');
 import * as XLSX from 'xlsx';
 
+import {
+  catchAll,
+  HttpStatus,
+  RequestError,
+} from '../shared/handlers';
+
 export function init(app: express.Application) {
   app.get('/cabletypes/', auth.ensureAuthenticated, (req, res) => {
     res.render('cabletype', {
@@ -38,48 +44,50 @@ export function init(app: express.Application) {
     });
   });
 
-  app.get('/cabletypes/excel', auth.ensureAuthenticated, (req, res) => {
-    CableType.find((err, docs) => {
-      if (err) {
-        return res.status(500).send(err.message);
+  app.get('/cabletypes/excel', auth.ensureAuthenticated, catchAll(async (req, res) => {
+    let cableTypes: CableType[] | null;
+
+    cableTypes = await CableType.find();
+  
+    if (!cableTypes) {
+      throw new RequestError('Device not found', HttpStatus.NOT_FOUND);
+    }
+  
+    const rows: webapi.CableTypeRow[] =  [];
+    for (let cableType of cableTypes) {
+      if (!cableType.id) {
+        continue;
       }
+      const row: webapi.CableTypeRow = {
+        name: cableType.name,
+        service: cableType.service,
+        conductorNumber: cableType.conductorNumber,
+        conductorSize: cableType.conductorSize,
+        fribType: cableType.fribType,
+        pairing: cableType.pairing,
+        shielding: cableType.shielding,
+        outerDiameter: cableType.outerDiameter,
+        voltageRating: cableType.voltageRating,
+        raceway: cableType.raceway,
+        tunnelHotcell: cableType.tunnelHotcell,
+        manufacturer: cableType.manufacturer,
+        partNumber: cableType.partNumber,
+        otherRequirements: cableType.otherRequirements,
+      };
+      rows.push(row);
+    }
 
-      const rows: webapi.CableTypeRow[] =  [];
-      for (let cableType of docs) {
-        if (!cableType.id) {
-          continue;
-        }
-        const row: webapi.CableTypeRow = {
-          name: cableType.name,
-          service: cableType.service,
-          conductorNumber: cableType.conductorNumber,
-          conductorSize: cableType.conductorSize,
-          fribType: cableType.fribType,
-          pairing: cableType.pairing,
-          shielding: cableType.shielding,
-          outerDiameter: cableType.outerDiameter,
-          voltageRating: cableType.voltageRating,
-          raceway: cableType.raceway,
-          tunnelHotcell: cableType.tunnelHotcell,
-          manufacturer: cableType.manufacturer,
-          partNumber: cableType.partNumber,
-          otherRequirements: cableType.otherRequirements,
-        };
-        rows.push(row);
-      }
+    rows.sort((a, b) => (a.conductorNumber > b.conductorNumber) ? 1 : -1)
 
-      rows.sort((a, b) => (a.conductorNumber > b.conductorNumber) ? 1 : -1)
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws['!cols'] = [{ width: 30}, { width: 30}, { width: 20}, { width: 20}, { width: 20}, { width: 20}, { width: 30}, { width: 20}, { width: 20}, { width: 25}, { width: 20}, { width: 25}, { width: 40}, { width: 50}]
 
-      const ws = XLSX.utils.json_to_sheet(rows);
-      ws['!cols'] = [{ width: 30}, { width: 30}, { width: 20}, { width: 20}, { width: 20}, { width: 20}, { width: 30}, { width: 20}, { width: 20}, { width: 25}, { width: 20}, { width: 25}, { width: 40}, { width: 50}]
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'cabletypes');
 
-      const wb: XLSX.WorkBook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'cabletypes');
-
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.status(200).send(XLSX.write(wb, {type:'buffer', bookType: 'xlsx'}));
-    });   
-  });
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.status(200).send(XLSX.write(wb, {type:'buffer', bookType: 'xlsx'}));
+  }));
 
   // tslint:disable:max-line-length
   app.post('/cabletypes/', auth.ensureAuthenticated, util.filterBody(['conductorNumber', 'conductorSize', 'fribType', 'typeNumber', 'newName', 'service', 'pairing', 'shielding', 'outerDiameter', 'voltageRating', 'raceway', 'tunnelHotcell', 'otherRequirements', 'manufacturer', 'partNumber']), (req, res) => {
