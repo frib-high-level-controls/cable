@@ -62,14 +62,10 @@ export function init(app: express.Application) {
     });
   });
 
-  app.get('/cabletypes/excel', catchAll(async (req, res) => {
-    let cableTypes: CableType[] | null;
+  app.get('/cabletypes/xlsx', catchAll(async (req, res) => {
+    let cableTypes: CableType[];
 
     cableTypes = await CableType.find();
-
-    if (!cableTypes) {
-      throw new RequestError('Device not found', HttpStatus.NOT_FOUND);
-    }
 
     const rows: CableTypeRow[] =  [];
     for (const cableType of cableTypes) {
@@ -109,7 +105,7 @@ export function init(app: express.Application) {
     XLSX.utils.book_append_sheet(wb, ws, 'cabletypes');
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.status(200).send(XLSX.write(wb, {type: 'buffer', bookType: 'xlsx'}));
+    res.status(HttpStatus.OK).send(XLSX.write(wb, {type: 'buffer', bookType: 'xlsx'}));
   }));
 
   // tslint:disable:max-line-length
