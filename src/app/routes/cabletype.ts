@@ -10,7 +10,6 @@ import util = require('../lib/util');
 import {
   catchAll,
   HttpStatus,
-  RequestError,
 } from '../shared/handlers';
 
 import * as XLSX from 'xlsx';
@@ -63,9 +62,7 @@ export function init(app: express.Application) {
   });
 
   app.get('/cabletypes/xlsx', catchAll(async (req, res) => {
-    let cableTypes: CableType[];
-
-    cableTypes = await CableType.find();
+    const cableTypes: CableType[] = await CableType.find();
 
     const rows: CableTypeRow[] =  [];
     for (const cableType of cableTypes) {
