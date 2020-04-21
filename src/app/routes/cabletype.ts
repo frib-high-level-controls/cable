@@ -15,20 +15,20 @@ import {
 import * as XLSX from 'xlsx';
 
 export interface CableTypeRow {
-  name: string;
-  service?: string;
-  conductorNumber: number;
-  conductorSize: string;
-  fribType: string;
-  pairing?: string;
-  shielding?: string;
-  outerDiameter?: string;
-  voltageRating?: string;
-  raceway?: string;
-  tunnelHotcell?: boolean;
-  otherRequirements?: string;
-  manufacturer?: string;
-  partNumber?: string;
+  'Name': string;
+  'Service'?: string;
+  'Conductor Number': number;
+  'Conductor Size': string;
+  'Frib Type': string;
+  'Pairing'?: string;
+  'Shielding'?: string;
+  'Outer Diameter'?: string;
+  'Voltage Rating'?: string;
+  'Raceway'?: string;
+  'Tunnel Hotcell'?: boolean;
+  'Other Requirements'?: string;
+  'Manufacturer'?: string;
+  'Part Number'?: string;
 }
 
 export function init(app: express.Application) {
@@ -70,25 +70,25 @@ export function init(app: express.Application) {
         continue;
       }
       const row: CableTypeRow = {
-        name: cableType.name,
-        service: cableType.service,
-        conductorNumber: cableType.conductorNumber,
-        conductorSize: cableType.conductorSize,
-        fribType: cableType.fribType,
-        pairing: cableType.pairing,
-        shielding: cableType.shielding,
-        outerDiameter: cableType.outerDiameter,
-        voltageRating: cableType.voltageRating,
-        raceway: cableType.raceway,
-        tunnelHotcell: cableType.tunnelHotcell,
-        manufacturer: cableType.manufacturer,
-        partNumber: cableType.partNumber,
-        otherRequirements: cableType.otherRequirements,
+        'Name': cableType.name,
+        'Service': cableType.service,
+        'Conductor Number': cableType.conductorNumber,
+        'Conductor Size': cableType.conductorSize,
+        'Frib Type': cableType.fribType,
+        'Pairing': cableType.pairing,
+        'Shielding': cableType.shielding,
+        'Outer Diameter': cableType.outerDiameter,
+        'Voltage Rating': cableType.voltageRating,
+        'Raceway': cableType.raceway,
+        'Tunnel Hotcell': cableType.tunnelHotcell,
+        'Manufacturer': cableType.manufacturer,
+        'Part Number': cableType.partNumber,
+        'Other Requirements': cableType.otherRequirements,
       };
       rows.push(row);
     }
 
-    rows.sort((a, b) => (a.conductorNumber > b.conductorNumber) ? 1 : -1);
+    rows.sort((a, b) => (a['Conductor Number'] > b['Conductor Number']) ? 1 : -1);
 
     const ws = XLSX.utils.json_to_sheet(rows);
     ws['!cols'] = [
