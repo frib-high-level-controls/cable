@@ -45,7 +45,7 @@ export function init(app: express.Application) {
   });
 
   app.get('/cabletypes/xlsx', catchAll(async (req, res) => {
-    const cableTypes = await CableType.find().sort({ name: 1, conductorNumber: 1 });
+    const cableTypes = await CableType.find().sort({ conductorNumber: 1, name: 1 });
 
     const data: unknown[][] = [
       [ 'FRIB Cable Types' ],
