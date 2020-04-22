@@ -16,6 +16,7 @@ import * as express from 'express';
 import * as session from 'express-session';
 import * as mongoose from 'mongoose';
 import * as morgan from 'morgan';
+import fswatch from 'node-watch';
 import * as favicon from 'serve-favicon';
 
 import * as auth from './shared/auth';
@@ -148,8 +149,8 @@ const fileWatchers: fs.FSWatcher[] = [];
 
 async function watchJSON(filepath: string, cb: (err: any, data: any) => void): Promise<void> {
   cb(null, await readJSON(filepath));
-  fileWatchers.push(fs.watch(filepath, (eventType) => {
-    if (eventType === 'change') {
+  fileWatchers.push(fswatch(filepath, (eventType, filename) => {
+    if (eventType === 'update') {
       readJSON(filepath).then((d) => cb(null, d), (err) => cb(err, null));
     }
   }));
