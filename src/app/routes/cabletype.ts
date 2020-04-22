@@ -14,23 +14,6 @@ import {
 
 import * as XLSX from 'xlsx';
 
-export interface CableTypeRow {
-  'Name': string;
-  'Service'?: string;
-  'Conductor Number': number;
-  'Conductor Size': string;
-  'Frib Type': string;
-  'Pairing'?: string;
-  'Shielding'?: string;
-  'Outer Diameter'?: string;
-  'Voltage Rating'?: string;
-  'Raceway'?: string;
-  'Tunnel Hotcell'?: boolean;
-  'Other Requirements'?: string;
-  'Manufacturer'?: string;
-  'Part Number'?: string;
-}
-
 export function init(app: express.Application) {
   app.get('/cabletypes/', auth.ensureAuthenticated, (req, res) => {
     res.render('cabletype', {
@@ -62,35 +45,37 @@ export function init(app: express.Application) {
   });
 
   app.get('/cabletypes/xlsx', catchAll(async (req, res) => {
-    const cableTypes: CableType[] = await CableType.find();
+    const cableTypes = await CableType.find().sort({ name: 1, conductorNumber: 1 });
 
-    const rows: CableTypeRow[] =  [];
+    const data: unknown[][] = [
+      [ 'FRIB Cable Types' ],
+      [
+        'Name', 'Service', 'Conductor number', 'Conductor size', 'Type', 'Pairing',
+        'Shielding', 'Outer Diameter', 'Voltage Rating', 'Raceway', 'Tunnel/Hotcell',
+        'Manufacturer', 'Part number', 'Other Requirements',
+      ],
+    ];
+
     for (const cableType of cableTypes) {
-      if (!cableType.id) {
-        continue;
-      }
-      const row: CableTypeRow = {
-        'Name': cableType.name,
-        'Service': cableType.service,
-        'Conductor Number': cableType.conductorNumber,
-        'Conductor Size': cableType.conductorSize,
-        'Frib Type': cableType.fribType,
-        'Pairing': cableType.pairing,
-        'Shielding': cableType.shielding,
-        'Outer Diameter': cableType.outerDiameter,
-        'Voltage Rating': cableType.voltageRating,
-        'Raceway': cableType.raceway,
-        'Tunnel Hotcell': cableType.tunnelHotcell,
-        'Manufacturer': cableType.manufacturer,
-        'Part Number': cableType.partNumber,
-        'Other Requirements': cableType.otherRequirements,
-      };
-      rows.push(row);
+      data.push([
+        cableType.name,
+        cableType.service,
+        cableType.conductorNumber,
+        cableType.conductorSize,
+        cableType.fribType,
+        cableType.pairing,
+        cableType.shielding,
+        cableType.outerDiameter,
+        cableType.voltageRating,
+        cableType.raceway,
+        cableType.tunnelHotcell,
+        cableType.manufacturer,
+        cableType.partNumber,
+        cableType.otherRequirements,
+      ]);
     }
 
-    rows.sort((a, b) => (a['Conductor Number'] > b['Conductor Number']) ? 1 : -1);
-
-    const ws = XLSX.utils.json_to_sheet(rows);
+    const ws = XLSX.utils.json_to_sheet(data, {skipHeader: true});
     ws['!cols'] = [
       { width: 30}, { width: 30}, { width: 20}, { width: 20},
       { width: 20}, { width: 20}, { width: 30}, { width: 20},
