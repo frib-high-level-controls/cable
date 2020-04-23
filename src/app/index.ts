@@ -756,11 +756,12 @@ async function doStop(): Promise<void> {
   // Unbind AD Client
   if (adClient) {
     try {
-      await adClient.unbind();
-      adClient.destroy();
-      info('LDAP client connection destroyed');
+      await adClient.unbind(100); // wait 100ms
     } catch (err) {
       warn('LDAP client connection unbind failure: %s', err);
+    } finally {
+      adClient.destroy(new Error('Application is stopping'));
+      info('LDAP client connection destroyed');
     }
   }
 

@@ -222,16 +222,29 @@ export class Client implements IClient {
     });
   }
 
-  public unbind(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.client.unbind((err) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve();
-      });
-    });
+  // The 'unbind' command does not have a response, as such the result
+  // is normally a TimeoutException unless an error occurs immediately.
+  // (As documented in the type definition [@types/ldapjs])
+  public unbind(wait?: number): Promise<void> {
+    const p = [
+      new Promise<void>((resolve, reject) => {
+        this.client.unbind((err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        });
+      }),
+    ];
+
+    if (wait !== undefined && wait >= 0) {
+      p.push(new Promise<void>((resolve) => {
+        setTimeout(() => resolve(), wait);
+      }));
+    }
+
+    return Promise.race(p);
   }
 
   public destroy(err?: any): void {
