@@ -14,7 +14,11 @@ block content
     if (roles && roles.indexOf('admin') !== -1)
       .btn-toolbar
         .btn-group
-          a.btn.btn-primary#manage(href=basePath + '/cabletypes/manage')
+          a.btn.btn-primary.mx-1#manage(href=basePath + '/cabletypes/manage')
             i.fa.fa-edit.fa-lg
             | &nbsp;Manage Cable Types
+
+          a.mx-1#xlsx(href=basePath + '/cabletypes/xlsx', target='_blank')
+            i.fa.fa-file-excel.fa-lg
+            | &nbsp;XLSX Data Download
     table.table.table-bordered.table-hover#cable-type

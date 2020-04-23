@@ -32,7 +32,8 @@
     "request": "^2.88.2",
     "serve-favicon": "^2.5.0",
     "uri-js": "^4.2.2",
-    "validator": "^12.2.0"
+    "validator": "^12.2.0",
+    "xlsx": "^0.15.6"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
