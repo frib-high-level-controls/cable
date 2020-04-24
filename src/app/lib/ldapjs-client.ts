@@ -223,9 +223,9 @@ export class Client implements IClient {
   }
 
   // The 'unbind' command does not have a response, as such the result
-  // is normally a TimeoutException unless an error occurs immediately.
+  // is a TimeoutError unless another error occurs before the timeout.
   // (As documented in the type definition [@types/ldapjs])
-  public unbind(wait?: number): Promise<void> {
+  public unbind(waitForError?: number): Promise<void> {
     const p = [
       new Promise<void>((resolve, reject) => {
         this.client.unbind((err) => {
@@ -238,9 +238,9 @@ export class Client implements IClient {
       }),
     ];
 
-    if (wait !== undefined && wait >= 0) {
+    if (waitForError !== undefined) {
       p.push(new Promise<void>((resolve) => {
-        setTimeout(() => resolve(), wait);
+        setTimeout(() => resolve(), waitForError);
       }));
     }
 
