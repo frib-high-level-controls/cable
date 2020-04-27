@@ -68,14 +68,14 @@ export function init(app: express.Application) {
         cableType.outerDiameter,
         cableType.voltageRating,
         cableType.raceway,
-        cableType.tunnelHotcell ? cableType.tunnelHotcell.toString() : 'false',
+        cableType.tunnelHotcell ? 'true' : 'false',
         cableType.manufacturer,
         cableType.partNumber,
         cableType.otherRequirements,
       ]);
     }
 
-    const ws = XLSX.utils.json_to_sheet(data, {skipHeader: true});
+    const ws = XLSX.utils.aoa_to_sheet(data);
     ws['!cols'] = [
       { width: 30}, { width: 30}, { width: 20}, { width: 20},
       { width: 20}, { width: 20}, { width: 30}, { width: 20},
