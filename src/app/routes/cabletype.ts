@@ -68,7 +68,7 @@ export function init(app: express.Application) {
         cableType.outerDiameter,
         cableType.voltageRating,
         cableType.raceway,
-        cableType.tunnelHotcell,
+        cableType.tunnelHotcell ? cableType.tunnelHotcell.toString() : 'false',
         cableType.manufacturer,
         cableType.partNumber,
         cableType.otherRequirements,
