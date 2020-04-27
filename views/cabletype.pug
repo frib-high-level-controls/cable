@@ -17,8 +17,8 @@ block content
           a.btn.btn-primary.mx-1#manage(href=basePath + '/cabletypes/manage')
             i.fa.fa-edit.fa-lg
             | &nbsp;Manage Cable Types
-
-          a.mx-1#xlsx(href=basePath + '/cabletypes/xlsx', target='_blank')
+        .btn-group
+          a.btn.btn-link.mx-1#xlsx(href=basePath + '/cabletypes/xlsx', target='_blank')
             i.fa.fa-file-excel.fa-lg
             | &nbsp;XLSX Data Download
     table.table.table-bordered.table-hover#cable-type
