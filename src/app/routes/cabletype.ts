@@ -86,6 +86,7 @@ export function init(app: express.Application) {
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'cabletypes');
 
+    res.setHeader('Content-Disposition', 'attachment; filename="FRIB Cable types.xlsx"');
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.status(HttpStatus.OK).send(XLSX.write(wb, {type: 'buffer', bookType: 'xlsx'}));
   }));
