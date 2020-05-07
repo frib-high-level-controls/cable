@@ -554,8 +554,14 @@ export function init(app: express.Application) {
     if (!req.body.action) {
       return res.status(400).send('no action found.');
     }
-    if (action === 'adjust' || action === 'approve' || action === 'reject') {
+    if (action === 'approve') {
       if (roles.length === 0 || roles.indexOf('manager') === -1) {
+        return res.status(404).send('You are not authorized to modify this resource. ');
+      }
+      // assume no way to guess the request id
+      next();
+    } else if (action === 'adjust' || action === 'reject') {
+      if (roles.length === 0 || (roles.indexOf('manager') === -1 && roles.indexOf('validator') === -1)) {
         return res.status(404).send('You are not authorized to modify this resource. ');
       }
       // assume no way to guess the request id
@@ -881,7 +887,7 @@ export function init(app: express.Application) {
 
   // status: 1 for procuring, 2 for installing, 3 for installed
 
-  app.get('/cables/statuses/:s/json', auth.ensureAuthenticated, compression(), auth.verifyRoles(['manager', 'admin']), (req, res) => {
+  app.get('/cables/statuses/:s/json', auth.ensureAuthenticated, compression(), auth.verifyRoles(['validator', 'manager', 'admin']), (req, res) => {
     if (!req.session) {
       res.status(500).send('session missing');
       return;

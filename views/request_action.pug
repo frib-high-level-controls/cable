@@ -5,10 +5,10 @@
     button.btn.btn-primary#submit(type='submit') Submit
   .btn-group.mx-1(hidden)
     button.btn.btn-warning#reset(type='button') Reset
-  if (locals.roles && roles.length && roles.indexOf('manager') !== -1)
+  if (locals.roles && roles.length && (roles.indexOf('manager') !== -1 || roles.indexOf('validator') !== -1))
     .btn-group.mx-1(hidden)
       button.btn.btn-info#adjust(type='button') Save adjustment
-  if (locals.roles && roles.length && roles.indexOf('manager') !== -1)
+  if (locals.roles && roles.length && (roles.indexOf('manager') !== -1 || roles.indexOf('validator') !== -1))
     .btn-group.mx-1(hidden)
       button.btn.btn-warning#reject(type='button') Reject
   if (locals.roles && roles.length && roles.indexOf('validator') !== -1)
