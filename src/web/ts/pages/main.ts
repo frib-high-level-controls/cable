@@ -275,7 +275,6 @@ function batchClone(table: DTAPI, savedTable: DTAPI): void {
       const data = table.row(row).data() as webapi.CableRequest;
       $('#modal .modal-body').append('<div class="request" id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + ' <input type="text" placeholder="quantity" value="1" class="type[number] input-mini" min=1 max=20></div>');
       requests[data._id] = {
-        _id: data._id,
         basic: data.basic,
         ownerProvided: data.ownerProvided,
         from: data.from,
