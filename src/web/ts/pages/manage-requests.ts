@@ -160,7 +160,7 @@ function batchValidate(oTable: DTAPI, approvingTable?: DTAPI) {
       $('#modal .modal-body').append('<div id="' + data._id + '">' + moment(data.createdOn).format('YYYY-MM-DD HH:mm:ss') + '||' + data.basic.originCategory + data.basic.originSubcategory + data.basic.signalClassification + '||' + data.basic.wbs + '</div>');
       requests.push(row);
     });
-    $('#modal .modal-footer').html('<button id="approve" class="btn btn-primary">Confirm</button><button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    $('#modal .modal-footer').html('<button id="approve" class="btn btn-primary">Confirm</button><button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
     $('#approve').click(() => {
       validateFromModal(requests, oTable, approvingTable);
@@ -168,7 +168,8 @@ function batchValidate(oTable: DTAPI, approvingTable?: DTAPI) {
   } else {
     $('#modalLabel').html('Alert');
     $('#modal .modal-body').html('No request has been selected!');
-    $('#modal .modal-footer').html('<button data-dismiss="modal" aria-hidden="true" class="btn">Return</button>');
+    // tslint:disable-next-line:max-line-length
+    $('#modal .modal-footer').html('<button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
   }
 }

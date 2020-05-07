@@ -220,7 +220,8 @@ function batchSubmit(savedTable: DTAPI, submittedTable: DTAPI): void {
   } else {
     $('#modalLabel').html('Alert');
     $('#modal .modal-body').html('No request has been selected!');
-    $('#modal .modal-footer').html('<button type="button" data-dismiss="modal" class="btn btn-secondary">Return</button>');
+    // tslint:disable-next-line:max-line-length
+    $('#modal .modal-footer').html('<button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
   }
 }
