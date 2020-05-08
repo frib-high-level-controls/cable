@@ -189,6 +189,7 @@ $(() => {
         data: JSON.stringify({
           name: name,
           manager: $('#manager').prop('checked'),
+          validator: $('#validator').prop('checked'),
           admin: $('#admin').prop('checked'),
         }),
         success: (data, status, jqXHR) => {
@@ -238,7 +239,7 @@ $(() => {
     if (selected.length) {
       $('#modalLabel').html('Modify the following ' + selected.length + ' users\' role? ');
       $('#modal .modal-body').empty();
-      $('#modal .modal-body').append('<form id="modal-roles" class="form-inline"><div class="form-group mr-2"><label class="form-check-label"><input id="modal-manager" type="checkbox" class="form-check-input" value="manager">manager</label></div><div class="form-group mr-2"><label class="form-check-label"><input id="modal-admin" type="checkbox" class="form-check-input" value="admin">admin</label></div></form><div class="user-modify-list mt-2"/>');
+      $('#modal .modal-body').append('<form id="modal-roles" class="form-inline"><div class="form-group mr-2"><label class="form-check-label"><input id="modal-manager" type="checkbox" class="form-check-input" value="manager">manager</label></div><div class="form-group mr-2"><label class="form-check-label"><input id="modal-validator" type="checkbox" class="form-check-input" value="validator">validator</label></div><div class="form-group mr-2"><label class="form-check-label"><input id="modal-admin" type="checkbox" class="form-check-input" value="admin">admin</label></div></form><div class="user-modify-list mt-2"/>');
       selected.forEach((row) => {
         const data = userTable.row(row).data(); // userTable.fnGetData(row);
         $('#modal .modal-body .user-modify-list').append('<div id="' + (data as any).adid + '">' + (data as any).name + '</div>');
