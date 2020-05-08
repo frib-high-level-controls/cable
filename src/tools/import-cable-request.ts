@@ -409,7 +409,7 @@ parser.on('error', (err: any) => {
   console.log(err.message);
 });
 
-parser.on('finish', () => {
+parser.on('end', () => {
   createRequest(0);
 });
 
