@@ -61,6 +61,9 @@ function addUser(req: express.Request, res: express.Response) {
     if (req.body.manager) {
       roles.push('manager');
     }
+    if (req.body.validator) {
+      roles.push('validator');
+    }
     if (req.body.admin) {
       roles.push('admin');
     }
@@ -85,7 +88,7 @@ function addUser(req: express.Request, res: express.Response) {
         return res.status(500).send('cannot save the new user in db.');
       }
 
-      const url = req.protocol + '://' + req.get('host') + '/users/' + newUser.adid;
+      const url = './users/' + newUser.adid;
       res.set('Location', url);
       res.status(201).send('The new user is at <a href="' + url + '">here</a>');
     });

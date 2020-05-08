@@ -149,6 +149,7 @@ $(function () {
         data: JSON.stringify({
           name: name,
           manager: $('#manager').prop('checked'),
+          validator: $('#validator').prop('checked'),
           admin: $('#admin').prop('checked')
         }),
         success: function (data, status, jqXHR) {
@@ -198,7 +199,7 @@ $(function () {
     if (selected.length) {
       $('#modalLabel').html('Modify the following ' + selected.length + ' users\' role? ');
       $('#modal .modal-body').empty();
-      $('#modal .modal-body').append('<form id="modal-roles" class="form-inline"><label class="checkbox"><input id="modal-manager" type="checkbox" value="manager">manager</label> <label class="checkbox"><input id="modal-admin" type="checkbox" value="admin">admin</label> </form>');
+      $('#modal .modal-body').append('<form id="modal-roles" class="form-inline"><label class="checkbox"><input id="modal-manager" type="checkbox" value="manager">manager</label><label class="checkbox"><input id="modal-validator" type="checkbox" value="validator">validator</label><label class="checkbox"><input id="modal-admin" type="checkbox" value="admin">admin</label> </form>');
       selected.forEach(function (row) {
         var data = userTable.fnGetData(row);
         $('#modal .modal-body').append('<div id="' + data.adid + '">' + data.name + '</div>');
