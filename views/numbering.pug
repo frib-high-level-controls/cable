@@ -4,9 +4,8 @@ block head
   meta(charset='utf-8')
   title FRIB Cable Numbering
   meta(name='viewport', content='width=device-width, initial-scale=1.0')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+  script(type='text/javascript', src=basePath + '/dist/base.js')
 
   style
     |  table.specification {
@@ -16,18 +15,20 @@ block head
     |    border-collapse: separate;
     |  }
     |  table.specification th {
-    |    padding:40px 10px;
+    |    padding:5px 10px;
     |    font-size:80px;
     |  }
-    |  table.specification td {
+    |  table.specification tr {
     |    text-align: center;
-    |    padding:10px 20px;
+    |  }
+    |  table.specification td {
+    |    padding:5px 20px;
     |    font-size: x-large;
     |  }
     |  a.target {
     |    display: block;
     |    position: relative;
-    |    top: -40px;
+    |    top: -60px;
     |    visibility: hidden;'
     |  }
     |  .category-background {
@@ -37,19 +38,19 @@ block head
     |    background-color:#febd47;
     |  }
     |  .signal-background {
-    |  background-color:#68bd68;
+    |    background-color:#68bd68;
     |  }
     |  .serial-background {
     |    background-color:#7ab8fe;
     |  }
     |  .category-border-left {
-    |    border-left:1px solid #ff4848 !important;
+    |    border-left:2px solid #ff4848 !important;
     |  }
     |  .subcategory-border-left {
-    |    border-left:1px solid #febd47 !important;
+    |    border-left:2px solid #febd47 !important;
     |  }
     |  .signal-border-left {
-    |    border-left:1px solid #68bd68 !important;
+    |    border-left:2px solid #68bd68 !important;
     |  }
 
 block content
@@ -57,8 +58,8 @@ block content
     #message
     div(style='text-align:center;')
       h2 Cable Number Specification
-    .row
-      .span8.offset2
+    .row.justify-content-center
+      .col-8
         table.specification
           thead
             tr
@@ -74,8 +75,8 @@ block content
               td.serial-background      Serial Number
 
     .container
-      .row
-        .span8.offset2
+      .row.justify-content-center
+        .col-8
           table.table.table-bordered
             thead
               tr
@@ -83,7 +84,8 @@ block content
               tr
                 td
                   for cat, catkey in sysSub
-                    a(href='#category' + catkey) #{catkey}&nbsp;&nbsp;
+                    a(href='#category' + catkey) #{catkey}
+                    span &nbsp;&nbsp;
 
           table.table.table-bordered.table-striped
             thead
@@ -108,6 +110,3 @@ block content
                       div
                         span(style='font-weight:bold;') #{key}:&nbsp;
                         span= sig.name
-
-block js
-  script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')

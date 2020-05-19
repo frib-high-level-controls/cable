@@ -16,16 +16,19 @@ import * as express from 'express';
 import * as session from 'express-session';
 import * as mongoose from 'mongoose';
 import * as morgan from 'morgan';
+import fswatch from 'node-watch';
 import * as favicon from 'serve-favicon';
 
-import auth = require('./lib/auth');
-// import * as auth from './shared/auth';
+import * as auth from './shared/auth';
 import * as handlers from './shared/handlers';
 import * as logging from './shared/logging';
+import * as ppauth from './shared/passport-auth';
 import * as promises from './shared/promises';
 import * as status from './shared/status';
 import * as tasks from './shared/tasks';
 
+import * as legacyauth from './lib/auth';
+import * as ldapauth from './lib/ldap-auth';
 import * as ldapjs from './lib/ldapjs-client';
 
 import * as request from './model/request';
@@ -80,10 +83,21 @@ interface Config {
     nameFilter?: {};
     objAttributes?: {};
     rawAttributes?: {};
+    reconnect: {};
+    timeout: {};
+    idleTimeout: {};
+    connectTimeout: {};
+    tlsOptions?: {};
   };
   cas: {
     cas_url?: {};
+    service_url?: {},
     service_base_url?: {};
+    version?: {};
+  };
+  forgapi: {
+    url?: {};
+    agentOptions?: {};
   };
   access_tokens: {};
   metadata: {
@@ -135,8 +149,8 @@ const fileWatchers: fs.FSWatcher[] = [];
 
 async function watchJSON(filepath: string, cb: (err: any, data: any) => void): Promise<void> {
   cb(null, await readJSON(filepath));
-  fileWatchers.push(fs.watch(filepath, (eventType) => {
-    if (eventType === 'change') {
+  fileWatchers.push(fswatch(filepath, (eventType, filename) => {
+    if (eventType === 'update') {
       readJSON(filepath).then((d) => cb(null, d), (err) => cb(err, null));
     }
   }));
@@ -260,9 +274,15 @@ async function doStart(): Promise<express.Application> {
       },
     },
     ad: {
-      // no defaults
+      reconnect: true,
+      timeout: 15 * 1000,
+      idleTimeout: 10 * 1000,
+      connectTimeout: 10 * 1000,
     },
     cas: {
+      // no defaults
+    },
+    forgapi: {
       // no defaults
     },
     access_tokens: [
@@ -282,6 +302,7 @@ async function doStart(): Promise<express.Application> {
     }
   }
 
+  // Configure the server bind address and port
   app.set('port', String(cfg.app.port));
   app.set('addr', String(cfg.app.addr));
 
@@ -365,17 +386,19 @@ async function doStart(): Promise<express.Application> {
     error('Mongoose connection error: %s', err);
   });
 
+  // Need the FORG base URL available to views
+  app.locals.forgurl = String(cfg.forgapi.url);
+
   // Authentication Configuration
   adClient = await ldapjs.Client.create({
     url: String(cfg.ad.url),
     bindDN: String(cfg.ad.adminDn),
     bindCredentials: String(cfg.ad.adminPassword),
-    // TODO: Move to external configuration //
-    reconnect: true,
-    timeout: 15 * 1000,
-    idleTimeout: 10 * 1000,
-    connectTimeout: 10 * 1000,
-    //////////////////////////////////////////
+    reconnect: Boolean(cfg.ad.reconnect),
+    timeout: Number(cfg.ad.timeout),
+    idleTimeout: Number(cfg.ad.idleTimeout),
+    connectTimeout: Number(cfg.ad.connectTimeout),
+    tlsOptions: cfg.ad.tlsOptions,
   });
   info('LDAP client connected: %s', cfg.ad.url);
   status.setComponentOk('LDAP Client', 'Connected');
@@ -401,19 +424,45 @@ async function doStart(): Promise<express.Application> {
     status.setComponentError('LDAP Client', '%s', err);
   });
 
-  auth.setADConfig({
-    objAttributes: Array.isArray(cfg.ad.objAttributes) ? cfg.ad.objAttributes.map(String) : [],
-    searchBase: String(cfg.ad.searchBase),
-    searchFilter: String(cfg.ad.searchFilter),
-  });
+  legacyauth.setAccessTokens(Array.isArray(cfg.access_tokens) ? cfg.access_tokens.map(String) : []);
 
-  auth.setAuthConfig({
-    cas: String(cfg.cas.cas_url),
-    service: String(cfg.cas.service_base_url),
-    tokens: Array.isArray(cfg.access_tokens) ? cfg.access_tokens.map(String) : [],
-  });
+  if (env === 'production' || process.env.RUNCHECK_AUTHC_DISABLED !== 'true') {
+    if (!cfg.cas.cas_url) {
+      throw new Error('CAS base URL not configured');
+    }
+    info('CAS base URL: %s', cfg.cas.cas_url);
 
-  auth.setLDAPClient(adClient);
+    if (!cfg.cas.service_base_url) {
+      throw new Error('CAS service base URL not configured');
+    }
+    info('CAS service base URL: %s (service URL: %s)', cfg.cas.service_base_url, cfg.cas.service_url);
+
+    auth.setProvider(new ldapauth.LdapCasProvider(adClient, {
+      cas: {
+        casUrl: String(cfg.cas.cas_url),
+        casServiceBaseUrl: String(cfg.cas.service_base_url),
+        casServiceUrl: cfg.cas.service_url ? String(cfg.cas.service_url) : undefined,
+        casVersion: cfg.cas.version ? String(cfg.cas.version) : undefined,
+      },
+      ldap: {
+        objAttributes: Array.isArray(cfg.ad.objAttributes) ? cfg.ad.objAttributes.map(String) : [],
+        searchBase: String(cfg.ad.searchBase),
+        searchFilter: String(cfg.ad.searchFilter),
+      },
+    }));
+    info('CAS authentication provider enabled');
+  } else {
+    // Use this provider for local development that DISABLES authentication!
+    auth.setProvider(new ldapauth.DevLdapBasicProvider(adClient, {
+      basic: {},
+      ldap: {
+        objAttributes: Array.isArray(cfg.ad.objAttributes) ? cfg.ad.objAttributes.map(String) : [],
+        searchBase: String(cfg.ad.searchBase),
+        searchFilter: String(cfg.ad.searchFilter),
+      },
+    }));
+    warn('Development authentication provider: Password verification DISABLED!');
+  }
 
   // Read metadata from data files
   if (!cfg.metadata.syssubsystem_path) {
@@ -559,15 +608,11 @@ async function doStart(): Promise<express.Application> {
   app.set('view engine', 'pug');
   app.set('view cache', (env === 'production') ? true : false);
 
-  // add 'webenv' property to response locals for use in view
+  // Configure 'webenv' property and add to response locals
+  const webenv = cfg.app.web_env || process.env.WEB_ENV || 'development';
+  app.set('webenv', webenv);
   app.use((req, res, next) => {
-    res.locals.webenv = 'development';
-    if (process.env.WEB_ENV) {
-      res.locals.webenv = process.env.WEB_ENV;
-    }
-    if (cfg.app.web_env) {
-      res.locals.webenv = String(cfg.app.web_env);
-    }
+    res.locals.webenv = webenv;
     next();
   });
 
@@ -583,13 +628,13 @@ async function doStart(): Promise<express.Application> {
   }));
 
   // Authentication handlers (must follow session middleware)
-  // app.use(auth.getProvider().initialize());
+  app.use(auth.getProvider().initialize());
 
   // Request logging configuration (must follow authc middleware)
-  // morgan.token('remote-user', (req) => {
-  //   const username = auth.getUsername(req);
-  //   return username || 'anonymous';
-  // });
+  morgan.token('remote-user', (req) => {
+    const username = auth.getUsername(req);
+    return username || 'anonymous';
+  });
 
   if (env === 'production') {
     app.use(morgan('short'));
@@ -615,25 +660,30 @@ async function doStart(): Promise<express.Application> {
     extended: false,
   }));
 
-  app.get('/login', auth.ensureAuthenticated, (req, res: any) => {
-    if (!req.session) {
-      res.status(500).send('session missing');
-      return;
-    }
-    if (req.session.landing && req.session.landing !== req.url) {
-      res.redirect(res.locals.basePath + req.session.landing);
+  app.get('/login', auth.getProvider().authenticate({ rememberParams: [ 'bounce' ]}), (req, res) => {
+    if (req.query.bounce && typeof req.query.bounce === 'string') {
+      res.redirect(req.query.bounce);
       return;
     }
     res.redirect(res.locals.basePath || '/');
   });
 
-  routes.setAuthConfig({ cas: String(cfg.cas.cas_url) });
-  app.get('/logout', routes.logout);
+  app.get('/logout', (req, res) => {
+    auth.getProvider().logout(req);
+    const provider = auth.getProvider();
+    if (provider instanceof ppauth.CasPassportAbstractProvider) {
+      const redirectUrl = provider.getCasLogoutUrl(true);
+      info('Redirect to CAS logout: %s', redirectUrl);
+      res.redirect(redirectUrl);
+      return;
+    }
+    res.redirect(res.locals.basePath || '/');
+  });
 
   app.get('/about', about.index);
-  app.get('/', auth.ensureAuthenticated, routes.main);
+  app.get('/', legacyauth.ensureAuthenticated, routes.main);
 
-  app.get('/main', auth.ensureAuthenticated, routes.switch2normal);
+  app.get('/main', legacyauth.ensureAuthenticated, routes.switch2normal);
 
   user.setADConfig({
     objAttributes: Array.isArray(cfg.ad.objAttributes) ? cfg.ad.objAttributes.map(String) : [],
@@ -706,11 +756,12 @@ async function doStop(): Promise<void> {
   // Unbind AD Client
   if (adClient) {
     try {
-      await adClient.unbind();
-      adClient.destroy();
-      info('LDAP client connection destroyed');
+      await adClient.unbind(100); // wait 100ms
     } catch (err) {
       warn('LDAP client connection unbind failure: %s', err);
+    } finally {
+      adClient.destroy(new Error('Application is stopping'));
+      info('LDAP client connection destroyed');
     }
   }
 

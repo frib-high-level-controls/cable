@@ -4,10 +4,8 @@ block head
   meta(charset='utf-8')
   title FRIB Cable :: user profile
   meta(name='viewport', content='width=device-width, initial-scale=1.0')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
-  link(rel='stylesheet', href=basePath + '/font-awesome-4.2.0/css/font-awesome.css')
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+  script(type='text/javascript', src=basePath + '/dist/user.js')
 
 block content
   script.
@@ -18,57 +16,50 @@ block content
       wbs = !{JSON.stringify(user.wbs)};
   .container(style='margin-top: 10px')
     #message
-    .well#profile
-      img(src=basePath + '/adusers/' + user.adid + '/photo', alt=user.adid)
-      dl
-        dt Name
-        dd #{user.name}
-        dt Email
-        dd #{user.email}
-        dt Office
-        dd #{user.office}
-        dt Office phone
-        dd #{user.phone}
-        dt Mobile phone
-        dd #{user.mobile}
-        dt Last visited on
-        dd #{user.lastVisitedOn}
-        dt Notice subscribed
-        dd #{user.subscribe}
-        dt Priviledges
-        dd#roles
-          label.checkbox.inline
-            input(type='checkbox', value='manager')
-            | manager
-          label.checkbox.inline
-            input(type='checkbox', value='validator')
-            | validator
-          label.checkbox.inline
-            input(type='checkbox', value='admin')
-            | admin
-          = ' '
-
-          if (myRoles.indexOf('admin') !== -1)
-            button.hide.btn.btn-small.btn-primary#modify(type='submit') Modify
-            = ' '
-        dt WBS responsibility
-        dd
-          ul#wbs
-            if (user.wbs)
-              each n in user.wbs
-                li
-                  span.wbs #{n}
-                  if (myRoles.indexOf('admin') !== -1)
-                    = ' '
-                    button.btn.btn-small.btn-warning.remove-wbs
-                      i.fa.fa-trash-o.fa-lg
-          if (myRoles.indexOf('admin') !== -1)
-            .btn-group
-              button.btn.btn-small.btn-primary#add Add WBS
-      button.btn#cacel(type='button', onclick='window.open("", "_self", "");window.close(); return false;') Close window
-
-block js
-  script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
-  script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
-  script(type='text/javascript', src=basePath + '/dependencies/moment.js')
-  script(type='text/javascript', src=basePath + '/javascripts/user.js')
+    .card.bg-light#profile
+      .card-body
+        img(src=basePath + '/adusers/' + user.adid + '/photo', alt=user.adid)
+        dl
+          dt Name
+          dd.ml-2 #{user.name}
+          dt Email
+          dd.ml-2 #{user.email}
+          dt Office
+          dd.ml-2 #{user.office}
+          dt Office phone
+          dd.ml-2 #{user.phone}
+          dt Mobile phone
+          dd.ml-2 #{user.mobile}
+          dt Last visited on
+          dd.ml-2 #{user.lastVisitedOn}
+          dt Notice subscribed
+          dd.ml-2 #{user.subscribe}
+          dt Priviledges
+          dd.form.form-inline.ml-2#roles
+            .form-group.mr-2
+              input.form-check-input#manager(type='checkbox', value='manager')
+              label.form-check-label(for='manager') manager
+            .form-group.mr-2
+              input.form-check-input#validator(type='checkbox', value='validator')
+              label.form-check-label(for='manager') validator
+            .form-group.mr-2
+              input.form-check-input#admin(type='checkbox', value='admin')
+              label.form-check-label(for='admin') admin
+            if (myRoles.indexOf('admin') !== -1)
+              button.btn.btn-primary#modify(type='submit', hidden) Modify
+          dt WBS responsibility
+          dd.ml-2
+            ul#wbs
+              if (user.wbs)
+                each n in user.wbs
+                  li.m-1
+                    span.wbs #{n}
+                    if (myRoles.indexOf('admin') !== -1)
+                      = ' '
+                      button.btn.btn-warning.remove-wbs
+                        i.fa.fa-trash
+            if (myRoles.indexOf('admin') !== -1)
+              .btn-group
+                button.btn.btn-small.btn-primary#add Add WBS
+      .card-footer.text-center
+        button.btn.btn-secondary#cacel(type='button', onclick='window.open("", "_self", "");window.close(); return false;') Close window

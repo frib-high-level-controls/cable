@@ -209,9 +209,9 @@ const signalClassificationValues: string[] = [];
 const traySectionValues: string[] = [];
 
 export function setSysSubData(sysSub: any) {
-  const cats = new Set();
-  const subs = new Set();
-  const sigs = new Set();
+  const cats = new Set<string>();
+  const subs = new Set<string>();
+  const sigs = new Set<string>();
   for (const cat of  Object.keys(sysSub)) {
     cats.add(cat);
     for (const sub of Object.keys(sysSub[cat].subcategory)) {

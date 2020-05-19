@@ -4,55 +4,44 @@ block head
   meta(charset='utf-8')
   title FRIB Cables
   meta(name='viewport', content='width=device-width, initial-scale=1.0')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap.css')
-  link(rel='stylesheet', href=basePath + '/bootstrap/css/bootstrap-responsive.css')
-  link(rel='stylesheet', href=basePath + '/datatables/css/dataTables.bootstrap.css')
-  link(rel='stylesheet', href=basePath + '/font-awesome-4.2.0/css/font-awesome.css')
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+  script(type='text/javascript', src=basePath + '/dist/all-cables.js')
 
 block content
   .container-fluid(style='margin-top: 10px')
     #message
     .modal.hide.fade#modal(tabindex='-1', role='dialog', data-backdrop='static', aria-labelledby='modalLabel', aria-hidden='true')
-      .modal-header
-        h3#modalLabel
-      .modal-body
-      .modal-footer
-    .btn-toolbar
-      .btn-group
-        button.btn.btn-primary#reload(type='button')
-          i.fa.fa-refresh.fa-lg
-          | &nbsp;Reload
-      .btn-group
-        button.btn.btn-primary#bar(type='button')
-          i.fa.fa-bar-chart.fa-lg
-          | &nbsp;Bar chart
-      .btn-group(data-toggle='buttons-radio')
-        button.btn.btn-info.active#all-wrap(type='button') Wrap
-        button.btn.btn-info#all-unwrap(type='button') Unwrap
-      .btn-group
-        a.btn.btn-info#gotobottom(href='#gototop')
-          i.fa.fa-arrow-down.fa-lg
-          | &nbsp;Jump to bottom
-    table.table.table-bordered.table-hover#all-cable
-    .btn-toolbar
-      .btn-group
-        a.btn.btn-info#gototop(href='#gotobottom')
-          i.fa.fa-arrow-up.fa-lg
-          | &nbsp;Jump to top
-
-
-block js
-  script(type='text/javascript', src=basePath + '/jquery/jquery-1.9.1.js')
-  script(type='text/javascript', src=basePath + '/datatables/js/jquery.dataTables.js')
-  script(type='text/javascript', src=basePath + '/bootstrap/js/bootstrap.js')
-  script(type='text/javascript', src=basePath + '/datatables/js/ZeroClipboard.js')
-  script(type='text/javascript', src=basePath + '/datatables/js/TableTools.js')
-  script(type='text/javascript', src=basePath + '/datatables/js/dataTables.bootstrap.js')
-  script(type='text/javascript', src=basePath + '/dependencies/lodash.js')
-  script(type='text/javascript', src=basePath + '/dependencies/moment.js')
-  script(type='text/javascript', src=basePath + '/javascripts/table.js')
-  script(type='text/javascript', src=basePath + '/dependencies/Chart.js')
-  script(type='text/javascript', src=basePath + '/javascripts/barchart.js')
-  script(type='text/javascript', src=basePath + '/javascripts/ajaxhelper.js')
-  script(type='text/javascript', src=basePath + '/javascripts/all-cable.js')
+      .modal-dialog
+        .modal-content
+          .modal-header
+            h3#modalLabel
+          .modal-body
+          .modal-footer
+    .row.m-2
+      .btn-toolbar
+        .btn-group.mr-2
+          button.btn.btn-primary#reload(type='button')
+            i.fa.fa-sync.fa-lg
+            | &nbsp;Reload
+        .btn-group.mr-2
+          button.btn.btn-primary#bar(type='button')
+            i.fa.fa-chart-bar.fa-lg
+            | &nbsp;Bar Chart
+        .btn-group.btn-group-toggle.mr-2(data-toggle='buttons')
+          label.btn.btn-info.active Wrap
+            input#all-wrap(type='radio', autocomplete='off', checked)
+          label.btn.btn-info Unwrap
+            input#all-unwrap(type='radio', autocomplete='off')
+        .btn-group.mr-2
+          a.btn.btn-info#gotobottom(href='#gototop')
+            i.fa.fa-arrow-down.fa-lg
+            | &nbsp;Jump to Bottom
+    .row.m-2
+      .col
+        table.table.table-bordered.table-hover#all-cable
+    .row.m-2
+      .btn-toolbar
+        .btn-group.mr-2
+          a.btn.btn-info#gototop(href='#gotobottom')
+            i.fa.fa-arrow-up.fa-lg
+            | &nbsp;Jump to Top

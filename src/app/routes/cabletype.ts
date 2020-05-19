@@ -7,6 +7,13 @@ import auth = require('../lib/auth');
 
 import util = require('../lib/util');
 
+import {
+  catchAll,
+  HttpStatus,
+} from '../shared/handlers';
+
+import * as XLSX from 'xlsx';
+
 export function init(app: express.Application) {
   app.get('/cabletypes/', auth.ensureAuthenticated, (req, res) => {
     res.render('cabletype', {
@@ -36,6 +43,53 @@ export function init(app: express.Application) {
       res.json(docs);
     });
   });
+
+  app.get('/cabletypes/xlsx', catchAll(async (req, res) => {
+    const cableTypes = await CableType.find().sort({ conductorNumber: 1, name: 1 });
+
+    const data: unknown[][] = [
+      [ 'FRIB Cable Types' ],
+      [
+        'Name', 'Service', 'Conductor number', 'Conductor size', 'Type', 'Pairing',
+        'Shielding', 'Outer Diameter', 'Voltage Rating', 'Raceway', 'Tunnel/Hotcell',
+        'Manufacturer', 'Part number', 'Other Requirements',
+      ],
+    ];
+
+    for (const cableType of cableTypes) {
+      data.push([
+        cableType.name,
+        cableType.service,
+        cableType.conductorNumber,
+        cableType.conductorSize,
+        cableType.fribType,
+        cableType.pairing,
+        cableType.shielding,
+        cableType.outerDiameter,
+        cableType.voltageRating,
+        cableType.raceway,
+        cableType.tunnelHotcell ? 'true' : 'false',
+        cableType.manufacturer,
+        cableType.partNumber,
+        cableType.otherRequirements,
+      ]);
+    }
+
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    ws['!cols'] = [
+      { width: 30}, { width: 30}, { width: 20}, { width: 20},
+      { width: 20}, { width: 20}, { width: 30}, { width: 20},
+      { width: 20}, { width: 25}, { width: 20}, { width: 25},
+      { width: 40}, { width: 50},
+    ];
+
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'cabletypes');
+
+    res.setHeader('Content-Disposition', 'attachment; filename="FRIB Cable types.xlsx"');
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.status(HttpStatus.OK).send(XLSX.write(wb, {type: 'buffer', bookType: 'xlsx'}));
+  }));
 
   // tslint:disable:max-line-length
   app.post('/cabletypes/', auth.ensureAuthenticated, util.filterBody(['conductorNumber', 'conductorSize', 'fribType', 'typeNumber', 'newName', 'service', 'pairing', 'shielding', 'outerDiameter', 'voltageRating', 'raceway', 'tunnelHotcell', 'otherRequirements', 'manufacturer', 'partNumber']), (req, res) => {

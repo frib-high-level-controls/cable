@@ -1,22 +1,22 @@
 .form-actions
-  .btn-group.hide
+  .btn-group.mx-1(hidden)
     button.btn.btn-info#save(type='button') Save changes
-  .btn-group.hide
+  .btn-group.mx-1(hidden)
     button.btn.btn-primary#submit(type='submit') Submit
-  .btn-group.hide
+  .btn-group.mx-1(hidden)
     button.btn.btn-warning#reset(type='button') Reset
-  if (locals.roles && roles.length && roles.indexOf('manager') !== -1)
-    .btn-group.hide
+  if (locals.roles && roles.length && (roles.indexOf('manager') !== -1 || roles.indexOf('validator') !== -1))
+    .btn-group.mx-1(hidden)
       button.btn.btn-info#adjust(type='button') Save adjustment
-  if (locals.roles && roles.length && roles.indexOf('manager') !== -1)
-    .btn-group.hide
+  if (locals.roles && roles.length && (roles.indexOf('manager') !== -1 || roles.indexOf('validator') !== -1))
+    .btn-group.mx-1(hidden)
       button.btn.btn-warning#reject(type='button') Reject
   if (locals.roles && roles.length && roles.indexOf('validator') !== -1)
-    .btn-group.hide
+    .btn-group.mx-1(hidden)
       button.btn.btn-primary#validate(type='submit') Validate
   if (locals.roles && roles.length && roles.indexOf('manager') !== -1)
-    .btn-group.hide
+    .btn-group.mx-1(hidden)
       button.btn.btn-primary#approve(type='submit') Approve
   if (!(locals.id === undefined))
-    .btn-group
+    .btn-group.mx-1
       button.btn.btn-primary#clone(type='button') Clone

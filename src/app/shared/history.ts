@@ -299,9 +299,16 @@ export function historyPlugin<T extends Document<T>>(schema: Schema, options?: H
    * Find document and its history by ID. This method does both concurrently!
    */
   schema.static('findByIdWithHistory', function(this: Model<T>, id: string | number | ObjectId): Promise<T | null> {
+    // Consider including this check in models.ObjectId()
+    let rid: ObjectId;
+    if (typeof id === 'string' || typeof id === 'number') {
+      rid = models.ObjectId(id);
+    } else {
+      rid = id;
+    }
     return Promise.all([
       this.findById(id).exec(),
-      Update.find({ ref: this.modelName, rid: id }).exec(),
+      Update.find({ ref: this.modelName, rid: rid }).exec(),
     ])
     .then(([doc, updates]) => {
       if (doc && doc.history && doc.history.updateIds && updates) {

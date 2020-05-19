@@ -1,10 +1,12 @@
 /*
  * Abstract class for a Passport based auth provider.
  */
-import * as ppcas from '@jcu/passport-cas';
+import { URL } from 'url';
+
 import * as dbg from 'debug';
 import * as express from 'express';
 import * as passport from 'passport';
+import * as ppcas from 'passport-apereo-cas';
 import * as pphttp from 'passport-http';
 
 import * as auth from './auth';
@@ -26,6 +28,7 @@ export interface CasProviderOptions {
   casUrl: string;
   casServiceUrl?: string;
   casServiceBaseUrl: string;
+  casValidateUrl?: string;
   casVersion?: string;
 }
 
@@ -68,7 +71,7 @@ export abstract class PassportAbstractProvider<S extends Strategy, AO extends Au
   }
 
   public getUser(req: Request): auth.IUser | undefined {
-    return req.user;
+    return req.user ? req.user as auth.IUser : undefined;
   }
 
   protected abstract getStrategy(): S;
@@ -119,14 +122,10 @@ export abstract class BasicPassportAbstractProvider<AO extends AuthenticateOptio
 export abstract class CasPassportAbstractProvider<AO extends CasAuthenticateOptions>
     extends PassportAbstractProvider<ppcas.Strategy, AO> {
 
-  protected options: CasProviderOptions;
-
   protected strategy: ppcas.Strategy;
 
   constructor(options: CasProviderOptions) {
     super();
-
-    this.options = options;
 
     if (!options.casUrl) {
       throw new Error('CAS base URL is required');
@@ -136,22 +135,22 @@ export abstract class CasPassportAbstractProvider<AO extends CasAuthenticateOpti
       throw new Error('CAS application service base URL is required');
     }
 
-    // The passport-cas library does not directly support version 'CAS2.0',
-    // but it can be used as 'CAS3.0' with special configuration.
-
-    let version: 'CAS1.0' | 'CAS3.0';
-    if (options.casVersion === 'CAS2.0' || options.casVersion === 'CAS3.0') {
-      version = 'CAS3.0';
-    } else {
-      options.casVersion = 'CAS1.0';
-      version = 'CAS1.0';
+    let version: ppcas.VersionOptions | undefined;
+    switch (options.casVersion) {
+      case 'CAS1.0':
+      case 'CAS2.0':
+      case 'CAS3.0':
+        version = options.casVersion;
+        break;
+      default:
+        throw new Error(`CAS version not supported: ${options.casVersion}`);
     }
 
-    const strategyOptions: ppcas.StrategyOptions = {
-      ssoBaseURL: options.casUrl,
+    const strategyOptions: ppcas.StrategyOptions<false> = {
+      casBaseURL: options.casUrl,
       serviceURL: options.casServiceUrl,
-      serverBaseURL: options.casServiceBaseUrl,
-      validateURL: options.casVersion === 'CAS2.0' ? '/serviceValidate' : undefined,
+      serviceBaseURL: options.casServiceBaseUrl,
+      validateURL: options.casValidateUrl,
       version: version,
     };
     if (debug.enabled) {
@@ -221,18 +220,23 @@ export abstract class CasPassportAbstractProvider<AO extends CasAuthenticateOpti
       if (typeof service === 'string') {
         serviceURL = service;
       } else {
-        serviceURL = this.options.casServiceBaseUrl;
+        serviceURL = this.strategy.serviceBaseURL;
       }
     }
-    let logoutUrl = this.options.casUrl + '/logout';
+    const logoutUrl = new URL('./logout', this.strategy.casBaseURL); //   this.options.casUrl + '/logout';
     if (serviceURL) {
-      if (this.options.casVersion === 'CAS3.0') {
-        logoutUrl += '?service=' + encodeURIComponent(serviceURL);
-      } else if (this.options.casVersion === 'CAS2.0') {
-        logoutUrl += '?url=' + encodeURIComponent(serviceURL);
+      switch (this.strategy.version) {
+        case 'CAS3.0':
+          logoutUrl.searchParams.append('service', serviceURL);
+          break;
+        case 'CAS2.0':
+          logoutUrl.searchParams.append('url', serviceURL);
+          break;
+        case 'CAS1.0':
+          break;
       }
     }
-    return logoutUrl;
+    return logoutUrl.toString();
   }
 
   protected getStrategy(): ppcas.Strategy {

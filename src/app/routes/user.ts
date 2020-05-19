@@ -37,7 +37,7 @@ export function setLDAPClient(client: ldapjs.Client) {
 
 function addUser(req: express.Request, res: express.Response) {
   const nameFilter = ad.nameFilter.replace('_name', req.body.name);
-  const opts = {
+  const opts: ldapjs.LegacySearchOptions = {
     filter: nameFilter,
     attributes: ad.objAttributes,
     scope: 'sub',
@@ -60,6 +60,9 @@ function addUser(req: express.Request, res: express.Response) {
     const roles = [];
     if (req.body.manager) {
       roles.push('manager');
+    }
+    if (req.body.validator) {
+      roles.push('validator');
     }
     if (req.body.admin) {
       roles.push('admin');
@@ -85,7 +88,7 @@ function addUser(req: express.Request, res: express.Response) {
         return res.status(500).send('cannot save the new user in db.');
       }
 
-      const url = req.protocol + '://' + req.get('host') + '/users/' + newUser.adid;
+      const url = './users/' + newUser.adid;
       res.set('Location', url);
       res.status(201).send('The new user is at <a href="' + url + '">here</a>');
     });
@@ -95,7 +98,7 @@ function addUser(req: express.Request, res: express.Response) {
 
 function updateUserProfile(user: User, res: express.Response) {
   const searchFilter = ad.searchFilter.replace('_id', user.adid);
-  const opts = {
+  const opts: ldapjs.LegacySearchOptions = {
     filter: searchFilter,
     attributes: ad.objAttributes,
     scope: 'sub',
@@ -375,7 +378,7 @@ export function init(app: express.Application) {
   app.get('/adusers/:id/', auth.ensureAuthenticated, (req, res) => {
 
     const searchFilter = ad.searchFilter.replace('_id', req.params.id);
-    const opts = {
+    const opts: ldapjs.LegacySearchOptions = {
       filter: searchFilter,
       attributes: ad.objAttributes,
       scope: 'sub',
@@ -404,7 +407,7 @@ export function init(app: express.Application) {
   app.get('/adusers/:id/photo', auth.ensureAuthenticated, (req, res) => {
 
     const searchFilter = ad.searchFilter.replace('_id', req.params.id);
-    const opts = {
+    const opts: ldapjs.LegacySearchOptions = {
       filter: searchFilter,
       attributes: ad.rawAttributes,
       scope: 'sub',
@@ -432,7 +435,7 @@ export function init(app: express.Application) {
   app.get('/adusernames', auth.ensureAuthenticated, (req, res) => {
     const query = req.query.term;
     let nameFilter;
-    let opts;
+    let opts: ldapjs.LegacySearchOptions;
     if (query && query.length > 0) {
       nameFilter = ad.nameFilter.replace('_name', query + '*');
     } else {

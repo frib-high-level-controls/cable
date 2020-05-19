@@ -1,3 +1,4 @@
+import * as compression from 'compression';
 import * as express from 'express';
 import * as mongoose from 'mongoose';
 
@@ -6,6 +7,10 @@ import {
   info,
   warn,
 } from '../shared/logging';
+
+import {
+  HttpStatus,
+} from '../shared/handlers';
 
 import * as auth from '../lib/auth';
 
@@ -16,7 +21,6 @@ import {
   ICable,
   ICableRequest,
   IChange,
-  IMultiChange,
   MultiChange,
 } from '../model/request';
 
@@ -27,6 +31,8 @@ import {
 type Request = express.Request;
 type Response = express.Response;
 type NextFunction = express.NextFunction;
+
+const NOT_FOUND = HttpStatus.NOT_FOUND;
 
 // request status
 // 0: saved
@@ -548,8 +554,14 @@ export function init(app: express.Application) {
     if (!req.body.action) {
       return res.status(400).send('no action found.');
     }
-    if (action === 'adjust' || action === 'approve' || action === 'reject') {
+    if (action === 'approve') {
       if (roles.length === 0 || roles.indexOf('manager') === -1) {
+        return res.status(404).send('You are not authorized to modify this resource. ');
+      }
+      // assume no way to guess the request id
+      next();
+    } else if (action === 'adjust' || action === 'reject') {
+      if (roles.length === 0 || (roles.indexOf('manager') === -1 && roles.indexOf('validator') === -1)) {
         return res.status(404).send('You are not authorized to modify this resource. ');
       }
       // assume no way to guess the request id
@@ -805,7 +817,7 @@ export function init(app: express.Application) {
 
 
   // get all the cables
-  app.get('/allcables/json', auth.ensureAuthWithToken, (req, res) => {
+  app.get('/allcables/json', auth.ensureAuthWithToken, compression(), (req, res) => {
     const low = 100;
     const up = 499;
     Cable.where('status').gte(low).lte(up).lean().exec((err, docs: ICable[]) => {
@@ -875,7 +887,7 @@ export function init(app: express.Application) {
 
   // status: 1 for procuring, 2 for installing, 3 for installed
 
-  app.get('/cables/statuses/:s/json', auth.ensureAuthenticated, auth.verifyRoles(['manager', 'admin']), (req, res) => {
+  app.get('/cables/statuses/:s/json', auth.ensureAuthenticated, compression(), auth.verifyRoles(['validator', 'manager', 'admin']), (req, res) => {
     if (!req.session) {
       res.status(500).send('session missing');
       return;
@@ -990,6 +1002,10 @@ export function init(app: express.Application) {
         error(err);
         return res.status(500).send(err.message);
       }
+      if (!cable) {
+        res.status(NOT_FOUND).send('cable not found');
+        return;
+      }
       // console.log(cable);
       if (!cable.hasOwnProperty('changeHistory')) {
         return res.json([]);
@@ -1010,7 +1026,7 @@ export function init(app: express.Application) {
           _id: {
             $in: cable.changeHistory,
           },
-        }).lean().exec(function multiChangesCB(err2, multiChanges: IMultiChange[]) {
+        }).lean().exec(function multiChangesCB(err2, multiChanges) {
           if (err2) {
             error(err2);
             return res.status(500).send(err2.message);

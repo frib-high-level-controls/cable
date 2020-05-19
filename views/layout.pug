@@ -2,27 +2,37 @@ doctype html
 html
   head
     meta(http-equiv='X-UA-Compatible', content='IE=Edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
     link(rel='icon', href=basePath + '/favicon.ico?v=1')
     script(type='text/javascript') var basePath = '#{basePath}';
     block head
   body
-    .navbar.navbar-inverse.navbar-fixed-top
-      .navbar-inner
-        .container-fluid
-          button.btn.btn-navbar(type='button', data-toggle='collapse', data-target='.nav-collapse')
-            span.icon-bar
-            span.icon-bar
-            span.icon-bar
-          if webenv !== 'production'
-            p.nav.navbar-text.pull-right(style='background-color:red;color:black;') &nbsp;TEST&nbsp;
-          .nav-collapse.collapse
-            ul.nav
-              li.active
-                a(href=basePath + '/') Cable
-              li
-                a(href='https://controls.frib.msu.edu/', target='_blank') Controls
-              li
-                a(href=basePath + '/logout') Logout
-    block content
+    nav.navbar.navbar-dark.bg-dark.navbar-expand-sm.fixed-top
+      a.navbar-brand(href=basePath + '/') Cable
+      button.navbar-toggler(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+        span.sr-only Toggle navigation
+        span.navbar-toggler-icon
+      .navbar-collapse.collapse
+        ul.navbar-nav.mr-auto
+        ul.navbar-nav
+          if (auth && auth.username)
+            li.nav-item
+              img.img-fluid(style='height: 40px;', src=forgurl + '/api/v1/users/' + auth.username + '/photo', title=auth.username, alt=auth.username)
+            li.nav-item.dropdown
+              a.nav-link.dropdown-toggle(href='#', data-toggle='dropdown') #{auth.user.fullname ? auth.user.fullname : auth.username}
+                b.caret
+              .dropdown-menu.dropdown-menu-right
+                //-  a(href=forgurl + '/users/' + auth.username, target='_blank') Profile
+                a.dropdown-item(href=basePath + '/logout') Log out
+          else
+            li.nav-item
+              i.fa.fa-user.fa-2x
+            li.nav-item
+              a.nav-link(href=basePath + '/login', onclick='try { window.location.href = this.href + "?bounce=" + encodeURIComponent(window.location); return false; } catch (err) { return true; }') Log in
+      if webenv !== 'production'
+        .navbar-text.float-right.ml-3(style='background-color:red;color:black;') &nbsp;TEST&nbsp;
+
+    #page
+      block content
 
     block js

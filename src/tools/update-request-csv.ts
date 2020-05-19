@@ -295,7 +295,7 @@ parser.on('error', (err) => {
   process.exit(1);
 });
 
-parser.on('finish', () => {
+parser.on('end', () => {
   console.log('Finished parsing the csv file at ' + Date.now());
   console.log('Starting to apply changes.');
   changes.forEach((change, index) => {

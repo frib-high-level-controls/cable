@@ -68,9 +68,10 @@ function updateCat(json) {
     value: ''
   }).text('choose').prop('disabled', true));
   $.each(json, function (k, v) {
-    if (v && v.projects && ~v.projects.indexOf(proj)) {
+    console.log('k:' + k, 'v:' + v)
+    if (v && v.projects && ~v.projects.indexOf(proj)) { //eslint-disable-line no-bitwise
       $('#cat').append($('<option>', {
-        value: k
+        value: k,
       }).text(v.name));
     }
   });
@@ -314,12 +315,6 @@ $(function () {
       if (json.status === 1) {
         $('#adjust').closest('.btn-group').removeClass('hide');
         $('#reject').closest('.btn-group').removeClass('hide');
-        $('#validate').closest('.btn-group').removeClass('hide');
-      }
-
-      if (json.status === 1.5) {
-        $('#adjust').closest('.btn-group').removeClass('hide');
-        $('#reject').closest('.btn-group').removeClass('hide');
         $('#approve').closest('.btn-group').removeClass('hide');
       }
 
@@ -374,7 +369,7 @@ $(function () {
       }
     }
 
-    if (action === 'clone' || action === 'reject' || action === 'validate' || action === 'approve') {
+    if (action === 'clone' || action === 'reject' || action === 'approve') {
       sendRequest(data, initModel, binder);
     }
 

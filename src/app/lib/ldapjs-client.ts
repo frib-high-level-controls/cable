@@ -20,6 +20,11 @@ export interface SearchOptions extends ldap.SearchOptions {
   base: string;
 }
 
+export interface LegacySearchOptions extends ldap.SearchOptions {
+  scope?: 'base' | 'one' | 'sub'; // Refine definition from string
+  raw?: boolean;
+}
+
 export type SearchEntryRaw = ldap.SearchEntryRaw;
 
 export type SearchEntryObject = ldap.SearchEntryObject;
@@ -217,16 +222,29 @@ export class Client implements IClient {
     });
   }
 
-  public unbind(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.client.unbind((err) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve();
-      });
-    });
+  // The 'unbind' command does not have a response, as such the result
+  // is a TimeoutError unless another error occurs before the timeout.
+  // (As documented in the type definition [@types/ldapjs])
+  public unbind(waitForError?: number): Promise<void> {
+    const p = [
+      new Promise<void>((resolve, reject) => {
+        this.client.unbind((err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        });
+      }),
+    ];
+
+    if (waitForError !== undefined) {
+      p.push(new Promise<void>((resolve) => {
+        setTimeout(() => resolve(), waitForError);
+      }));
+    }
+
+    return Promise.race(p);
   }
 
   public destroy(err?: any): void {
@@ -254,7 +272,7 @@ export class Client implements IClient {
   }
 
   // Maintained to support legacy callback-based code! //
-  public legacySearch(base: string, opts: ldap.SearchOptions, raw: boolean, cb: (err: any, entry?: any[]) => void) {
+  public legacySearch(base: string, opts: LegacySearchOptions, raw: boolean, cb: (err: any, entry?: any[]) => void) {
     this.client.search(base, opts, (err, result) => {
       if (err) {
         debug(JSON.stringify(err));
