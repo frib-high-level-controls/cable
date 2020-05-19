@@ -62,7 +62,7 @@ block content
         .modal-content
           .modal-header
             h3#modalLabel
-          .modal-body
+          .modal-body.overflow-auto
           .modal-footer
     .row.m-2
       .nav.flex-column.nav-pills.col-1#v-pills-tabs(role='tablist')
@@ -84,11 +84,11 @@ block content
             .btn-group.mr-2
               button.btn.btn-info#validating-select-all(type='button', data-toggle='tooltip', title='select all the items in the table no matter visiable or not')
                 i.fa.fa-list.fa-lg
-                | &nbsp;Select all
+                | &nbsp;Select All
             .btn-group.mr-2
               button.btn.btn-info#validating-select-none(type='button')
                 i.fa.fa-square.fa-lg
-                | &nbsp;Clear selection
+                | &nbsp;Clear Selection
             .btn-group.btn-group-toggle.mr-2(data-toggle='buttons-radio')
               label.btn.btn-info.active Wrap
                 input#validating-wrap(type='radio', autocomplete='off', checked)
