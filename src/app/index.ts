@@ -55,6 +55,7 @@ interface Config {
   // these properties are provided by the 'rc' library
   // and contain config file paths that have been read
   // (see https://www.npmjs.com/package/rc)
+  rc?: boolean;
   config?: string;
   configs?: string[];
   app: {
@@ -300,6 +301,11 @@ async function doStart(): Promise<express.Application> {
         info('Load configuration: %s', file);
       }
     }
+  }
+
+  if (cfg.rc) {
+    JSON.stringify(cfg, null, 2).split('\n').forEach((l) => info(l));
+    throw new Error('Read configuration and stop');
   }
 
   // Configure the server bind address and port
