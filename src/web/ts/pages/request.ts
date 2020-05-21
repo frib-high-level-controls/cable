@@ -364,6 +364,17 @@ $(async () => {
   $('#reset').click((e) => {
     e.preventDefault();
     binder.deserialize(initModel);
+    $('#adjust').prop('disabled', true);
+    $('#reject').prop('disabled', false);
+    $('#approve').prop('disabled', false);
+    $('#validate').prop('disabled', false);
+  });
+
+  $('form :input').change((evt) => {
+    $('#adjust').prop('disabled', false);
+    $('#reject').prop('disabled', true);
+    $('#approve').prop('disabled', true);
+    $('#validate').prop('disabled', true);
   });
 
   $('.form-actions button').not('#reset').click((e) => {

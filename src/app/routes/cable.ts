@@ -692,13 +692,17 @@ export function init(app: express.Application) {
     }
 
     if (req.body.action === 'reject') {
-      request.rejectedBy = req.session.userid;
-      request.rejectedOn = Date.now();
-      request.status = 3;
+      const reject = {
+        updatedBy: req.session.userid,
+        updatedOn: new Date(),
+        rejectedBy: req.session.userid,
+        rejectedOn: new Date(),
+        status: 3,
+      };
       CableRequest.findOneAndUpdate({
         _id: req.params.id,
         status: { $in: [ 1, 1.5 ] },
-      }, request, {
+      }, reject, {
         new: true,
       }, (err, cableRequest) => {
         if (err) {
@@ -718,13 +722,17 @@ export function init(app: express.Application) {
     }
 
     if (req.body.action === 'approve') {
-      request.approvedBy = req.session.userid;
-      request.approvedOn = Date.now();
-      request.status = 2;
+      const approve = {
+        updatedBy: req.session.userid,
+        updatedOn: new Date(),
+        approvedBy: req.session.userid,
+        approvedOn: new Date(),
+        status: 2,
+      };
       CableRequest.findOneAndUpdate({
         _id: req.params.id,
         status: 1.5,
-      }, request, {
+      }, approve, {
         new: true,
       }).exec(
         (err, cableRequest) => {
@@ -747,13 +755,17 @@ export function init(app: express.Application) {
     }
 
     if (req.body.action === 'validate') {
-      request.validatedBy = req.session.userid;
-      request.validatedOn = Date.now();
-      request.status = 1.5;
+      const validate = {
+        updatedBy: req.session.userid,
+        updatedOn: new Date(),
+        validatedBy: req.session.userid,
+        validatedOn: new Date(),
+        status: 1.5,
+      };
       CableRequest.findOneAndUpdate({
         _id: req.params.id,
         status: 1,
-      }, request, {
+      }, validate, {
         new: true,
       }).exec(
         (err, cableRequest) => {
