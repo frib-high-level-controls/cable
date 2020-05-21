@@ -9,6 +9,7 @@ import {
 } from '../shared/logging';
 
 import {
+  findQueryParam,
   HttpStatus,
 } from '../shared/handlers';
 
@@ -497,28 +498,32 @@ export function init(app: express.Application) {
       res.status(500).send('session missing');
       return;
     }
-    const status = parseFloat(req.params.s);
-    if (status < 0 || status > 4) {
-      return res.status(400).send('the status ' + status + ' is invalid.');
+    const status = [ parseInt(req.params.s, 10) ];
+    if (isNaN(status[0]) || status[0] < 0 || status[0] >= 4) {
+      return res.status(400).send('the status ' + status[0] + ' is invalid.');
+    }
+    const disp = findQueryParam(req, 'disp')?.toLowerCase();
+    if (status[0] === 1) {
+      if (disp !== 'validating') {
+        status.push(1.5);
+      }
+      if (disp !== 'approving') {
+        status.push(1.75);
+      }
     }
     let query;
     // admin see all
     if (req.session.roles.indexOf('admin') !== -1) {
       query = {
-        status: status,
+        status: { $in: status },
       };
       findRequest(query, res);
-    } else if (status === 1) {
-      if (req.session.roles.indexOf('validator') !== -1) {
-        // validators see all submitted requests
+    } else if (req.session.roles.indexOf('validator') !== -1
+                  && status[0] === 1 && disp === 'validating') {
         query = {
-          status: status,
+          status: { $in: status },
         };
         findRequest(query, res);
-      } else {
-        // other users see none
-        res.status(200).json([]);
-      }
     } else {
       // manager see his own wbs
       User.findOne({
@@ -538,7 +543,7 @@ export function init(app: express.Application) {
           'basic.wbs': {
             $in: user.wbs,
           },
-          'status': status,
+          'status': { $in: status },
         };
         findRequest(query, res);
       });

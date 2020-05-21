@@ -73,14 +73,15 @@ block content
       .tab-content.col#v-pills-tabContent(style='overflow-y: scroll;')
         .tab-pane#validating
           .btn-toolbar
-            .btn-group.mr-2
-              button.btn.btn-primary#validating-validate(type='button')
-                i.fa.fa-check-square.fa-lg
-                | &nbsp;Validate
-            .btn-group.mr-2
-              button.btn.btn-primary#validating-reject(type='button')
-                i.fa.fa-exclamation-circle.fa-lg
-                | &nbsp;Reject
+            if (roles.indexOf('validator') !== -1)
+              .btn-group.mr-2
+                button.btn.btn-primary#validating-validate(type='button')
+                  i.fa.fa-check-square.fa-lg
+                  | &nbsp;Validate
+              .btn-group.mr-2
+                button.btn.btn-primary#validating-reject(type='button')
+                  i.fa.fa-exclamation-circle.fa-lg
+                  | &nbsp;Reject
             .btn-group.mr-2
               button.btn.btn-info#validating-select-all(type='button', data-toggle='tooltip', title='select all the items in the table no matter visiable or not')
                 i.fa.fa-list.fa-lg

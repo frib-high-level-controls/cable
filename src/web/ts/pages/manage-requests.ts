@@ -62,7 +62,7 @@ import {
 type DTAPI = DataTables.Api;
 
 
-function approveFromModal(requests: DTAPI[], approvingTable: DTAPI, approvedTable: DTAPI, other?: DTAPI) {
+function approveFromModal(requests: DTAPI[], approvingTable: DTAPI, approvedTable?: DTAPI) {
   $('#approve').prop('disabled', true);
   $('#modal .modal-body div').each(function(index) {
     const that = this;
@@ -81,7 +81,9 @@ function approveFromModal(requests: DTAPI[], approvingTable: DTAPI, approvedTabl
       // Type definitions are missing the draw method!
       (approvingTable.row(requests[index]).remove() as any).draw('full-hold');
       // add the requests to the approved table
-      approvedTable.row.add(result.request).draw('full-hold');
+      if (approvedTable) {
+        approvedTable.row.add(result.request).draw('full-hold');
+      }
     }).fail((jqXHR) => {
       $(that).prepend('<i class="fas fa-question text-danger"></i>&nbsp;');
       $(that).append(' : ' + jqXHR.responseText);
@@ -91,7 +93,7 @@ function approveFromModal(requests: DTAPI[], approvingTable: DTAPI, approvedTabl
 }
 
 
-function batchApprove(oTable: DTAPI, approvedTable: DTAPI, procuringTable?: DTAPI) {
+function batchApprove(oTable: DTAPI, approvedTable?: DTAPI) {
   const selected = fnGetSelected(oTable, 'row-selected');
   const requests: DTAPI[] = [];
   if (selected.length) {
@@ -106,7 +108,7 @@ function batchApprove(oTable: DTAPI, approvedTable: DTAPI, procuringTable?: DTAP
     $('#modal .modal-footer').html('<button id="approve" type="button" class="btn btn-primary">Confirm</button><button type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>');
     $('#modal').modal('show');
     $('#approve').click(() => {
-      approveFromModal(requests, oTable, approvedTable, procuringTable);
+      approveFromModal(requests, oTable, approvedTable);
     });
   } else {
     $('#modalLabel').html('Alert');
@@ -230,6 +232,24 @@ function batchReject(oTable: DTAPI, rejectedTable?: DTAPI) {
   }
 }
 
+export const statusColumn: dtutil.ColumnSettings = {
+  title: 'Status',
+  data: 'status',
+  render: (status) => {
+    switch (status) {
+      case 0: return 'Saved';
+      case 1: return 'Submitted';
+      case 1.5: return 'Validated';
+      case 1.75: return 'Approved';
+      case 2: return 'Validated & Approved';
+      case 3: return 'Rejected';
+      default: return 'Unknown';
+    }
+  },
+  searching: true,
+};
+
+
 $(() => {
 
   ajax401('');
@@ -239,12 +259,12 @@ $(() => {
 
   /*validating table starts*/
   // tslint:disable-next-line:max-line-length
-  const validatingAoColumns = [selectColumn, editLinkColumn, submittedOnLongColumn, submittedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const validatingAoColumns = [selectColumn, editLinkColumn, submittedOnLongColumn, submittedByColumn, statusColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let validatingTableWrapped = true;
 
   const validatingTable = $('#validating-table').DataTable({
     ajax: {
-      url: basePath + '/requests/statuses/1/json',
+      url: basePath + '/requests/statuses/1/json?disp=validating',
       dataSrc: '',
     },
     autoWidth: false,
@@ -305,12 +325,12 @@ $(() => {
 
   /*approving table starts*/
   // tslint:disable-next-line:max-line-length
-  const approvingAoCulumns = [selectColumn, editLinkColumn, submittedOnLongColumn, submittedByColumn, validatedOnLongColumn, validatedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const approvingAoCulumns = [selectColumn, editLinkColumn, submittedOnLongColumn, submittedByColumn, statusColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let approvingTableWrapped = true;
 
   const approvingTable = $('#approving-table').DataTable({
     ajax: {
-      url: basePath + '/requests/statuses/1.5/json',
+      url: basePath + '/requests/statuses/1/json?disp=approving',
       dataSrc: '',
     },
     autoWidth: false,
@@ -321,7 +341,7 @@ $(() => {
     columns: approvingAoCulumns,
     order: [
       [2, 'desc'],
-      [7, 'desc'],
+      [6, 'desc'],
     ],
     dom: sDom2InoF,
     buttons: sButtons,
@@ -360,11 +380,11 @@ $(() => {
   });
 
   $('#approving-approve').click(() => {
-    batchApprove(approvingTable, approvedTable);
+    batchApprove(approvingTable);
   });
 
   $('#approving-reject').click(() => {
-    batchReject(approvingTable, rejectedTable);
+    batchReject(approvingTable);
   });
 
   /*approving tab ends*/
