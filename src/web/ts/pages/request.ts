@@ -44,6 +44,10 @@ function sendRequest(data, initModel, binder) {
         // move the focus to the message
         $(window).scrollTop($('#message div:last-child').offset().top - 40);
         initModel = _.cloneDeep(binder.serialize());
+        $('#adjust').prop('disabled', true);
+        $('#reject').prop('disabled', false);
+        $('#approve').prop('disabled', false);
+        $('#validate').prop('disabled', false);
       } else if (data.action === 'clone') {
         $('#message').append(
           '<div class="alert alert-success"><button class="close" data-dismiss="alert">x</button>\
