@@ -449,14 +449,34 @@ export function init(app: express.Application) {
   });
 
   app.get('/requests/:id/json', auth.ensureAuthenticated, (req, res) => {
-    CableRequest.findById(req.params.id).lean().exec((err, cableRequest: ICableRequest) => {
-      if (err) {
-        error(err);
-        return res.status(500).json({
-          error: err.message,
-        });
+    const session = req.session;
+    if (!session) {
+      res.status(500).send('session missing');
+      return;
+    }
+    Promise.all([
+      User.findOne({ adid: session.userid }).lean().exec(),
+      CableRequest.findById(req.params.id).lean().exec(),
+    ])
+    .then(([user, cableRequest]) => {
+      if (!cableRequest) {
+        res.status(404).send('not found');
+        return;
+      }
+      if (session?.roles.indexOf('validator') !== -1) {
+        (cableRequest as any).canValidate = true;
+      }
+      if (session?.roles.indexOf('manager') !== -1
+          && user?.wbs.some((v) => (v === cableRequest.basic.wbs))) {
+        (cableRequest as any).canApprove = true;
       }
       res.json(cableRequest);
+    })
+    .catch((err) => {
+      error(err);
+      res.status(500).json({
+        error: err.message,
+      });
     });
   });
 

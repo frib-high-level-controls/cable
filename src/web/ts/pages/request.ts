@@ -331,28 +331,28 @@ $(async () => {
 
       // show action buttons
       if (json.status === 0) {
-        $('#save').closest('.btn-group').removeAttr('hidden');
-        $('#submit').closest('.btn-group').removeAttr('hidden');
-        $('#reset').closest('.btn-group').removeAttr('hidden');
+        $('#save').closest('.btn-group').prop('hidden', false);
+        $('#submit').closest('.btn-group').prop('hidden', false);
+        $('#reset').closest('.btn-group').prop('hidden', false);
       }
 
       if (json.status === 1) {
-        $('#adjust').closest('.btn-group').removeAttr('hidden');
-        $('#reject').closest('.btn-group').removeAttr('hidden');
-        $('#approve').closest('.btn-group').removeAttr('hidden');
-        $('#validate').closest('.btn-group').removeAttr('hidden');
+        $('#adjust').closest('.btn-group').prop('hidden', false);
+        $('#reject').closest('.btn-group').prop('hidden', false);
+        $('#approve').closest('.btn-group').prop('hidden', !json.canApprove);
+        $('#validate').closest('.btn-group').prop('hidden', !json.canValidate);
       }
 
       if (json.status === 1.5) {
-        $('#adjust').closest('.btn-group').removeAttr('hidden');
-        $('#reject').closest('.btn-group').removeAttr('hidden');
-        $('#approve').closest('.btn-group').removeAttr('hidden');
+        $('#adjust').closest('.btn-group').prop('hidden', false);
+        $('#reject').closest('.btn-group').prop('hidden', false);
+        $('#approve').closest('.btn-group').prop('hidden', !json.canApprove);
       }
 
       if (json.status === 1.75) {
-        $('#adjust').closest('.btn-group').removeAttr('hidden');
-        $('#reject').closest('.btn-group').removeAttr('hidden');
-        $('#validate').closest('.btn-group').removeAttr('hidden');
+        $('#adjust').closest('.btn-group').prop('hidden', false);
+        $('#reject').closest('.btn-group').prop('hidden', false);
+        $('#validate').closest('.btn-group').prop('hidden', !json.canValidate);
       }
 
       if (json.status === 2 || json.status === 3) {
@@ -367,9 +367,9 @@ $(async () => {
     validator.form();
     initModel = _.cloneDeep(binder.serialize());
 
-    $('#save').closest('.btn-group').removeAttr('hidden');
-    $('#submit').closest('.btn-group').removeAttr('hidden');
-    $('#reset').closest('.btn-group').removeAttr('hidden');
+    $('#save').closest('.btn-group').prop('hidden', false);
+    $('#submit').closest('.btn-group').prop('hidden', false);
+    $('#reset').closest('.btn-group').prop('hidden', false);
   }
 
   $('#reset').click((e) => {
