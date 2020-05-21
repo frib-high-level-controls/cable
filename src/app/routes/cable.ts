@@ -37,8 +37,9 @@ const NOT_FOUND = HttpStatus.NOT_FOUND;
 // request status
 // 0: saved
 // 1: submitted
-// 1.5: verified
-// 2: approved
+// 1.5: validated
+// 1.75 approved
+// 2: validated & approved
 // 3: rejected
 
 // cable status
@@ -648,7 +649,7 @@ export function init(app: express.Application) {
       error(request);
       CableRequest.findOneAndUpdate({
         _id: req.params.id,
-        status: { $in: [1, 1.5] },
+        status: { $in: [1, 1.5, 1.75] },
       }, request, {
         new: true,
       }, (err, cableRequest) => {
@@ -669,9 +670,11 @@ export function init(app: express.Application) {
     }
 
     if (req.body.action === 'adjust') {
+      // reset validation or approval
+      request.status = 1;
       CableRequest.findOneAndUpdate({
         _id: req.params.id,
-        status: { $in: [ 1, 1.5 ] },
+        status: { $in: [ 1, 1.5, 1.75 ] },
       }, request, {
         new: true,
       }, (err, cableRequest) => {
@@ -701,7 +704,7 @@ export function init(app: express.Application) {
       };
       CableRequest.findOneAndUpdate({
         _id: req.params.id,
-        status: { $in: [ 1, 1.5 ] },
+        status: { $in: [ 1, 1.5, 1.75 ] },
       }, reject, {
         new: true,
       }, (err, cableRequest) => {
@@ -727,31 +730,45 @@ export function init(app: express.Application) {
         updatedOn: new Date(),
         approvedBy: req.session.userid,
         approvedOn: new Date(),
-        status: 2,
+        status: 1.75,
       };
       CableRequest.findOneAndUpdate({
         _id: req.params.id,
-        status: 1.5,
+        status: 1,
       }, approve, {
         new: true,
-      }).exec(
-        (err, cableRequest) => {
-          if (err) {
-            error(err);
-            return res.status(500).json({
-              error: err.message,
-            });
-          }
-          if (cableRequest) {
+      }).exec().then((cableRequest) => {
+        if (cableRequest) {
+          return cableRequest;
+        }
+        approve.status = 2;
+        return CableRequest.findOneAndUpdate({
+          _id: req.params.id,
+          status: 1.5,
+        }, approve, {
+          new: true,
+        }).exec();
+      })
+      .then((cableRequest) => {
+        if (cableRequest) {
+          if (cableRequest.status === 2) {
             createCable(cableRequest.toJSON(), req, res, cableRequest.basic.quantity, []);
           } else {
-            error(req.params.id + ' gone');
-            return res.status(410).json({
-              error: req.params.id + ' gone',
-            });
+            res.status(200).json(cableRequest.toJSON());
           }
-        },
-      );
+        } else {
+          error(req.params.id + ' gone');
+          res.status(410).json({
+            error: req.params.id + ' gone',
+          });
+        }
+      })
+      .catch((err) => {
+        error(err);
+        res.status(500).json({
+          error: err.message,
+        });
+      });
     }
 
     if (req.body.action === 'validate') {
@@ -767,24 +784,38 @@ export function init(app: express.Application) {
         status: 1,
       }, validate, {
         new: true,
-      }).exec(
-        (err, cableRequest) => {
-          if (err) {
-            error(err);
-            return res.status(500).json({
-              error: err.message,
-            });
-          }
-          if (cableRequest) {
-            return res.status(200).json(cableRequest.toJSON());
+      }).exec().then((cableRequest) => {
+        if (cableRequest) {
+          return cableRequest;
+        }
+        validate.status = 2;
+        return CableRequest.findOneAndUpdate({
+          _id: req.params.id,
+          status: 1.75,
+        }, validate, {
+          new: true,
+        }).exec();
+      })
+      .then((cableRequest) => {
+        if (cableRequest) {
+          if (cableRequest.status === 2) {
+            createCable(cableRequest.toJSON(), req, res, cableRequest.basic.quantity, []);
           } else {
-            error(req.params.id + ' gone');
-            return res.status(410).json({
-              error: req.params.id + ' gone',
-            });
+            res.status(200).json(cableRequest.toJSON());
           }
-        },
-      );
+        } else {
+          error(req.params.id + ' gone');
+          res.status(410).json({
+            error: req.params.id + ' gone',
+          });
+        }
+      })
+      .catch((err) => {
+        error(err);
+        res.status(500).json({
+          error: err.message,
+        });
+      });
     }
 
   });

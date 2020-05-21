@@ -335,6 +335,7 @@ $(async () => {
       if (json.status === 1) {
         $('#adjust').closest('.btn-group').removeAttr('hidden');
         $('#reject').closest('.btn-group').removeAttr('hidden');
+        $('#approve').closest('.btn-group').removeAttr('hidden');
         $('#validate').closest('.btn-group').removeAttr('hidden');
       }
 
@@ -342,6 +343,12 @@ $(async () => {
         $('#adjust').closest('.btn-group').removeAttr('hidden');
         $('#reject').closest('.btn-group').removeAttr('hidden');
         $('#approve').closest('.btn-group').removeAttr('hidden');
+      }
+
+      if (json.status === 1.75) {
+        $('#adjust').closest('.btn-group').removeAttr('hidden');
+        $('#reject').closest('.btn-group').removeAttr('hidden');
+        $('#validate').closest('.btn-group').removeAttr('hidden');
       }
 
       if (json.status === 2 || json.status === 3) {
