@@ -38,16 +38,18 @@ function sendRequest(data, initModel, binder) {
     } else {
       const timestamp = formRequest.getResponseHeader('Date');
       const dateObj = moment(timestamp);
-      if (data.action === 'save' || data.action === 'adjust') {
+      if (data.action === 'save') {
         $('#message').append('<div class="alert alert-success"><button class="close" data-dismiss="alert">x</button>\
         The changes were saved at ' + dateObj.format('HH:mm:ss') + '.</div>');
         // move the focus to the message
         $(window).scrollTop($('#message div:last-child').offset().top - 40);
         initModel = _.cloneDeep(binder.serialize());
+      } else if (data.action === 'adjust') {
         $('#adjust').prop('disabled', true);
         $('#reject').prop('disabled', false);
         $('#approve').prop('disabled', false);
         $('#validate').prop('disabled', false);
+        window.location.reload();
       } else if (data.action === 'clone') {
         $('#message').append(
           '<div class="alert alert-success"><button class="close" data-dismiss="alert">x</button>\
