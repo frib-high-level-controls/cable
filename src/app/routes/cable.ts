@@ -531,20 +531,19 @@ export function init(app: express.Application) {
                    [[1.75], [1, 1.5], [1, 1.5, 1.75]] ]; //   undefined
       status = tt[v ? (v === 'true' ? 0 : 1) : 2][a ? (a === 'true' ? 0 : 1) : 2];
     }
-    let query;
     // admin see all
     if (req.session.roles.indexOf('admin') !== -1) {
-      query = {
+      const query = {
         status: { $in: status },
       };
       findRequest(query, res);
     } else if (req.session.roles.indexOf('validator') !== -1
                 // validators can see all requests when queried with validated=false
                 && (status.length === 2 && status[0] === 1 && status[1] === 1.75)) {
-        query = {
-          status: { $in: status },
-        };
-        findRequest(query, res);
+      const query = {
+        status: { $in: status },
+      };
+      findRequest(query, res);
     } else {
       // manager see his own wbs
       User.findOne({
@@ -560,7 +559,7 @@ export function init(app: express.Application) {
         if (user.wbs === undefined || user.wbs.length === 0) {
           return res.json([]);
         }
-        query = {
+        const query = {
           'basic.wbs': {
             $in: user.wbs,
           },
