@@ -518,18 +518,18 @@ export function init(app: express.Application) {
       res.status(500).send('session missing');
       return;
     }
-    const status = [ parseInt(req.params.s, 10) ];
+    let status = [ parseInt(req.params.s, 10) ];
     if (isNaN(status[0]) || status[0] < 0 || status[0] >= 4) {
       return res.status(400).send('the status ' + status[0] + ' is invalid.');
     }
-    const disp = findQueryParam(req, 'disp')?.toLowerCase();
     if (status[0] === 1) {
-      if (disp !== 'validating') {
-        status.push(1.5);
-      }
-      if (disp !== 'approving') {
-        status.push(1.75);
-      }
+      const v = findQueryParam(req, 'validated')?.toLowerCase();
+      const a = findQueryParam(req, 'approved')?.toLowerCase();
+      // approved:  true    false     undefined          // validated:
+      const tt = [ [[],     [1.5],    [1.5]         ],   //   true
+                   [[1.75], [1],      [1, 1.75]     ],   //   false
+                   [[1.75], [1, 1.5], [1, 1.5, 1.75]] ]; //   undefined
+      status = tt[v ? (v === 'true' ? 0 : 1) : 2][a ? (a === 'true' ? 0 : 1) : 2];
     }
     let query;
     // admin see all
@@ -539,7 +539,8 @@ export function init(app: express.Application) {
       };
       findRequest(query, res);
     } else if (req.session.roles.indexOf('validator') !== -1
-                  && status[0] === 1 && disp === 'validating') {
+                // validators can see all requests when queried with validated=false
+                && (status.length === 2 && status[0] === 1 && status[1] === 1.75)) {
         query = {
           status: { $in: status },
         };

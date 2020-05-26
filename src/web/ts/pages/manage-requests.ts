@@ -264,7 +264,7 @@ $(() => {
 
   const validatingTable = $('#validating-table').DataTable({
     ajax: {
-      url: basePath + '/requests/statuses/1/json?disp=validating',
+      url: basePath + '/requests/statuses/1/json?validated=false',
       dataSrc: '',
     },
     autoWidth: false,
@@ -330,7 +330,7 @@ $(() => {
 
   const approvingTable = $('#approving-table').DataTable({
     ajax: {
-      url: basePath + '/requests/statuses/1/json?disp=approving',
+      url: basePath + '/requests/statuses/1/json?approved=false',
       dataSrc: '',
     },
     autoWidth: false,
