@@ -330,7 +330,7 @@ $(() => {
 
   const approvingTable = $('#approving-table').DataTable({
     ajax: {
-      url: basePath + '/requests/statuses/1/json?approved=false',
+      url: basePath + '/requests/statuses/1/json?approved=false&disp=manager',
       dataSrc: '',
     },
     autoWidth: false,

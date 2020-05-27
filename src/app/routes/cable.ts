@@ -522,6 +522,7 @@ export function init(app: express.Application) {
     if (isNaN(status[0]) || status[0] < 0 || status[0] >= 4) {
       return res.status(400).send('the status ' + status[0] + ' is invalid.');
     }
+    const disp = findQueryParam(req, 'disp')?.trim()?.toLowerCase();
     if (status[0] === 1) {
       const v = findQueryParam(req, 'validated')?.toLowerCase();
       const a = findQueryParam(req, 'approved')?.toLowerCase();
@@ -537,9 +538,7 @@ export function init(app: express.Application) {
         status: { $in: status },
       };
       findRequest(query, res);
-    } else if (req.session.roles.indexOf('validator') !== -1
-                // validators can see all requests when queried with validated=false
-                && (status.length === 2 && status[0] === 1 && status[1] === 1.75)) {
+    } else if (req.session.roles.indexOf('validator') !== -1 && (!disp || disp === 'validator')) {
       const query = {
         status: { $in: status },
       };
