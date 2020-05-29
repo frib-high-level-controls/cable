@@ -15,6 +15,11 @@ block content
           a.btn.btn-primary#new(href='./requests/new', target='_blank')
             i.fa.fa-file.fa-lg
             | &nbsp;New Request
+          button.btn.btn-primary.dropdown-toggle.dropdown-toggle-split(type='button', data-toggle='dropdown')
+            span.caret
+          ul.dropdown-menu
+            li#import
+              a.dropdown-item(href='./requests/import', target='_blank') Import New Requests
         .btn-group.mr-2
           button.btn.btn-primary#reload(type='button')
             i.fa.fa-sync.fa-lg
