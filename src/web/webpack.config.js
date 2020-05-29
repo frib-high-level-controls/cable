@@ -6,7 +6,7 @@ const webpack = require('webpack')
 module.exports = {
   mode: 'development',
   entry: {
-    main: './src/web/ts/pages/main.ts',
+    'main': './src/web/ts/pages/main.ts',
     'all-cables': './src/web/ts/pages/all-cables.ts',
     'base': './src/web/ts/pages/base.ts',
     'cable': './src/web/ts/pages/cable.ts',
@@ -19,6 +19,7 @@ module.exports = {
     'newcabletype': './src/web/ts/pages/newcabletype.ts',
     'profile': './src/web/ts/pages/profile.ts',
     'request': './src/web/ts/pages/request.ts',
+    'request-import': './src/web/ts/entrypoints/request-import.ts',
     'request-details': './src/web/ts/pages/request-details.ts',
     'user': './src/web/ts/pages/user.ts',
     'users': './src/web/ts/pages/users.ts',

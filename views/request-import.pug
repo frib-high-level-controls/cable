@@ -1,0 +1,21 @@
+extends layout.pug
+
+block head
+  meta(charset='utf-8')
+  title Import Requests :: Cable
+  meta(name='viewport', content='width=device-width, initial-scale=1.0')
+  link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+  script(type='text/javascript', src=basePath + '/dist/request-import.js')
+block content
+  .container
+    #message
+    .modal.hide.fade#modal(tabindex='-1', role='dialog', data-backdrop='static', aria-labelledby='modalLabel', aria-hidden='true')
+      .modal-dialog
+        .modal-content
+          .modal-header
+            h3#modalLabel
+          .modal-body
+          .modal-footer
+            button.btn.btn-primary(type='button', data-dismiss='modal', aria-hidden='true') Return to edit
+    .row
+      .col-12 Import Requests

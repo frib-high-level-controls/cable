@@ -40,6 +40,7 @@ import * as cable from './routes/cable';
 import * as cabletype from './routes/cabletype';
 import * as numbering from './routes/numbering';
 import * as profile from './routes/profile';
+import * as requests from './routes/requests';
 import * as room from './routes/room';
 import * as user from './routes/user';
 import * as wbs from './routes/wbs';
@@ -704,6 +705,8 @@ async function doStart(): Promise<express.Application> {
   wbs.init(app);
 
   room.init(app);
+
+  app.use(requests.getRouter());
 
   cable.init(app);
 
