@@ -1,10 +1,17 @@
 /*
  * Shared Express request handlers.
  */
+import * as fs from 'fs';
+import * as util from 'util';
+
 import * as express from 'express';
+import * as formidable from 'formidable';
 
 import {
+  buildCheckFunction,
+  buildSanitizeFunction,
   ErrorFormatter as VErrorFormatter,
+  Location,
   Result as VResult,
   SanitizationChain,
   ValidationChain,
@@ -27,14 +34,16 @@ type C = ValidationChain | SanitizationChain;
 
 export {
   body as check,
-} from 'express-validator';
-
-export {
+  Location,
+  SanitizationChain,
   sanitizeBody as sanitize,
+  ValidationChain,
 } from 'express-validator';
 
 export const HttpStatus = HttpStatusCodes;
 
+const exists = util.promisify(fs.exists);
+const unlink = util.promisify(fs.unlink);
 
 export interface HttpStatusError extends Error {
   status: number;
@@ -313,13 +322,7 @@ export function basePathHandler(): RequestHandler {
 export function validate(req: Request, chains: C[]): Promise<void> {
   let p = Promise.resolve();
   for (const chain of chains) {
-    p = p.then(() => {
-      return new Promise<void>((resolve, reject) => {
-        // Response is not required to process chain,
-        // but need cast to work around type checks.
-        chain(req, null as any, resolve);
-      });
-    });
+    p = p.then(() => chain.run(req)).then((context) => undefined);
   }
   return p;
 }
@@ -388,4 +391,119 @@ export function validateAndThrow(req: Request, msg?: string | C[], code?: number
       throw new RequestError(perror.message, perror.code, perror);
     }
   });
+}
+
+export type Validator<T = string> = (fields?: T | T[], msg?: string) => ValidationChain;
+
+export type Sanitizer<T = string> = (fields?: T | T[]) => SanitizationChain;
+
+/**
+ *  Build a validator function for the specified locations.
+ *  If none are provided then 'body' is the default location.
+ */
+export function buildValidator(locations: Location | Location[], prefix?: string): Validator {
+  const locs = ([] as Location[]).concat(locations);
+  if (locs.length === 0) {
+    // provide default
+    locs.push('body');
+  }
+  const check = buildCheckFunction(locs);
+  if (prefix) {
+    return (path: string, msg: string) => check(prefix + '.' + path, msg);
+  }
+  return check;
+}
+
+/**
+ *  Build a sanitizer function for the specified locations.
+ *  If none are provided then 'body' is the default location.
+ */
+export function buildSanitizer(locations: Location | Location[], prefix?: string): Sanitizer {
+  const locs = ([] as Location[]).concat(locations);
+  if (locs.length === 0) {
+    // provide default
+    locs.push('body');
+  }
+  const sanitize = buildSanitizeFunction(locs);
+  if (prefix) {
+    return (path: string) => sanitize(prefix + '.' + path);
+  }
+  return sanitize;
+}
+
+/**
+ *  The typings definition does not provide an options definition, derived from source:
+ *  https://github.com/node-formidable/formidable/blob/v1.2.1/lib/incoming_form.js#L26
+ */
+export interface ParseFormOptions {
+  encoding?: string;
+  uploadDir?: string;
+  keepExtensions?: boolean;
+  maxFileSize?: number;
+  maxFieldsSize?: number;
+  maxFields?: number;
+  hash: boolean;
+  // multiples: boolean; // Do not support for this wrapper function!
+}
+
+export interface FormFields {
+  [key: string]: string | undefined;
+}
+
+export interface FormFiles {
+  [key: string]: FormFile | undefined;
+}
+
+export type FormFile = formidable.File;
+
+type ParseFormDataResult = Promise<{ fields: FormFields; files: FormFiles }>;
+
+export function parseFormData(req: Request, opts?: ParseFormOptions): ParseFormDataResult {
+  // TODO
+  const form = new (formidable.IncomingForm as any)(opts);
+  return new Promise((resolve, reject) => {
+    form.parse(req, (err: any, fields: FormFields, files: FormFiles) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve({ fields, files });
+    });
+  });
+}
+
+
+
+
+export async function deleteFormFiles(files: FormFiles): Promise<void> {
+  const ps: Array<Promise<void>> = [];
+  for (const key of Object.keys(files)) {
+    const file = files[key];
+    if (file) {
+      ps.push(Promise.resolve().then(() => {
+        return exists(file.path);
+      })
+      .then((found) => {
+        if (found) {
+          return unlink(file.path);
+        }
+      }));
+    }
+  }
+  // Simplifed using Promise.allSettled(),
+  // but only available in Node v12.
+  let e: any;
+  for (const p of ps) {
+    try {
+      await p;
+    } catch (err) {
+      if (!e) {
+        e = err;
+      }
+    }
+  }
+  if (e) {
+    throw e;
+  }
+  return;
 }

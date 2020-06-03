@@ -23,10 +23,10 @@ block content
           h3 Import Cable Requests
           .form-group
             //- label(for='request-import-file') Data File
-            input.form-control-file#request-import-file(type='file', accept='.xlsx')
+            input.form-control-file#request-import-file(type='file', name='data', accept='.xlsx')
           if auth && auth.hasAnyRole('validator')
             .form-group.form-check
-              input.form-check-input#request-import-validated(type='checkbox')
+              input.form-check-input#request-import-validated(type='checkbox', name='validated')
               label.form-check-label(for='request-import-validated') Validated
           .btn-toolbar
             button.btn.btn-primary.mr-2(type='submit') Submit

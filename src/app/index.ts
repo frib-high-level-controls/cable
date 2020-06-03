@@ -482,6 +482,7 @@ async function doStart(): Promise<express.Application> {
     }
     cable.setSysSubData(data);
     request.setSysSubData(data);
+    requests.setSysSubData(data);
     numbering.setSysSubData(data);
     info('System-Subsytem data file read: %s', cfg.metadata.syssubsystem_path);
   });
@@ -580,6 +581,7 @@ async function doStart(): Promise<express.Application> {
     }
     cable.setProjects(data);
     request.setProjects(data);
+    requests.setProjects(data);
     info('Projects data file read: %s', cfg.metadata.projects_path);
   });
 
@@ -593,6 +595,7 @@ async function doStart(): Promise<express.Application> {
     }
     cable.setTraySections(data);
     request.setTraySections(data);
+    requests.setTraySections(data);
     info('Tray Sections data file read: %s', cfg.metadata.tray_sections_path);
   });
 
