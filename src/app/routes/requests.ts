@@ -6,6 +6,7 @@ import * as util from 'util';
 
 import * as Debug from 'debug';
 import * as express from 'express';
+import * as lodash from 'lodash';
 import * as xlsx from 'xlsx';
 
 
@@ -27,8 +28,12 @@ import {
 } from '../shared/handlers';
 
 import {
-  CableRequest,
-} from '../model/request';
+  User,
+} from '../model/user';
+
+// import {
+//   CableRequest,
+// } from '../model/request';
 
 import {
   CableType,
@@ -88,10 +93,10 @@ export function setProjects(data: CableProject[]) {
   projects = data;
 }
 
-// let traySects: CableTraySection[];
+let traySects: CableTraySection[];
 
 export function setTraySections(data: CableTraySection[]) {
-  // traySects = data;
+  traySects = data;
 }
 
 const router = express.Router();
@@ -266,71 +271,100 @@ function rowToRawCableRequest(row: any): any {
   return body;
 }
 
-async function reqToWebCableRequest(req: express.Request): Promise<CableRequest> {
-  const request: webapi.CableRequest | undefined = req.body.request;
+async function validateWebCableRequest(req: express.Request, prefix?: string): Promise<void> {
+  prefix = prefix ?? 'request';
 
-  if (!request || !request?.basic || !request?.to || !request?.from) {
-    throw new RequestError('Bad Request', HttpStatus.BAD_REQUEST);
-  }
+  // Cache data needed for validation
+  const [ users, cableTypes ] = await Promise.all([
+    User.find().exec(),
+    CableType.find().exec(),
+  ]);
 
-  const checkBasic: Validator<keyof webapi.CableRequest['basic']> = buildValidator('body', 'request.basic');
-  const checkFrom: Validator<keyof webapi.CableRequest['from']> = buildValidator('body', 'request.from');
-  const checkTo: Validator<keyof webapi.CableRequest['to']> = buildValidator('body', 'request.to');
-  const check: Validator<keyof webapi.CableRequest> = buildValidator('body', 'request');
-
-  // validate cable type
-  if (!request?.basic?.cableType || !(await CableType.findOne({name: request.basic.cableType}))) {
-    throw new RequestError('Invalid Cable Type', HttpStatus.BAD_REQUEST);
-  }
+  const checkBasic: Validator<keyof webapi.CableRequest['basic']> = buildValidator('body', `${prefix}.basic`);
+  const checkFrom: Validator<keyof webapi.CableRequest['from']> = buildValidator('body', `${prefix}.from`);
+  const checkTo: Validator<keyof webapi.CableRequest['to']> = buildValidator('body', `${prefix}.to`);
+  const check: Validator<keyof webapi.CableRequest> = buildValidator('body', prefix);
 
   await validateAndThrow(req, [
-    checkBasic('project').notEmpty().trim().custom((value) => {
-      return projects.some((v: {value: string, title: string}) => (v.value === value));
+    checkBasic('project').trim().custom((value) => {
+      if (!projects.some((p) => (p.value === value))) {
+        throw new Error(`Project is invalid: ${value}`);
+      }
+      return true;
     }),
-    checkBasic('wbs').optional().trim().custom((value) => {
-      return /^[A-Z]\d{1,5}$/.test(value);
+    checkBasic('wbs').trim().custom((value) => {
+      if (!/^[A-Z]\d{1,5}$/.test(value)) {
+        throw new Error(`WBS is must match /[A-Z]\d{1,5}/: '${value}'`);
+      }
+      return true;
     }),
-    checkBasic('engineer').notEmpty().trim().isString(),
-    checkBasic('originCategory').notEmpty().trim().custom((value) => {
-      return Object.keys(sysSub).includes(value);
+    checkBasic('engineer').trim().custom((value) => {
+      for (const user of users) {
+        if (user.name === value) {
+          return true;
+        }
+      }
+      throw new Error(`Engineer is invalid: '${value}'`);
     }),
-    checkBasic('originSubcategory').notEmpty().trim().custom((value) => {
-      const originCat = req.body.request.basic.originCategory;
-      const subcategories = sysSub[originCat]?.subcategory ?? {};
-      return Object.keys(subcategories).includes(value);
-      // if (subcategories) {
-      //   return Object.keys(subcategor).includes(value);
-      // }
+    checkBasic('originCategory').trim().custom((value) => {
+      if (!Object.keys(sysSub).includes(value)) {
+        throw new Error(`Origin Category is invalid: '$'{value}'`);
+      }
+      return true;
     }),
-    checkBasic('signalClassification').notEmpty().trim().custom((value) => {
-      const originCat = req.body.request.basic.originCategory;
-      const signals = sysSub[originCat]?.signal ?? {};
-      return Object.keys(signals).includes(value);
-      // return Object.keys(sysSub[originCat].signal).includes(value);
+    checkBasic('originSubcategory').trim().custom((value, { path }) => {
+      const category = lodash.get(req.body, path.replace('originSubcategory', 'originCategory'));
+      const subcategories = sysSub[category]?.subcategory ?? {};
+      if (!Object.keys(subcategories).includes(value)) {
+        throw new Error(`Origin Subcategory is invalid: '${value}'`);
+      }
+      return true;
     }),
-    checkBasic('traySection').notEmpty().trim().isString(),
+    checkBasic('signalClassification').trim().custom((value, { path }) => {
+      const category = lodash.get(req.body, path.replace('originSubcategory', 'originCategory'));
+      const signals = sysSub[category]?.signal ?? {};
+      if (!Object.keys(signals).includes(value)) {
+        throw new Error(`Signal Classification is invalid: '${value}'`);
+      }
+      return true;
+    }),
+    checkBasic('traySection').trim().custom((value) => {
+      if (!traySects.some((s) => (s.value === value))) {
+        throw new Error(`Tray Section is invalid: '${value}'`);
+      }
+      return true;
+    }),
+    checkBasic('cableType').trim().custom((value) => {
+      for (const cableType of cableTypes) {
+        if (cableType.name === value) {
+          if (cableType.obsolete === true) {
+            throw new Error(`Cable Type is obsolete: '${value}'`);
+          }
+          return true;
+        }
+      }
+      throw new Error(`Cable Type is invalid: '${value}'`);
+    }),
     checkBasic('service').optional().trim().isString(),
     checkBasic('tags').optional().trim().isString(),
-    checkBasic('quantity').notEmpty().trim().isFloat().isNumeric(),
-    check('ownerProvided').notEmpty().trim().toBoolean().isBoolean(),
+    checkBasic('quantity').trim().isNumeric().toInt(),
+    check('ownerProvided').trim().isBoolean().toBoolean(),
     // from
-    checkFrom('rack').notEmpty().trim().isString(),
+    checkFrom('rack').optional().trim().isString(),
     checkFrom('terminationDevice').optional().trim().isString(),
     checkFrom('terminationType').optional().trim().isString(),
     checkFrom('wiringDrawing').optional().trim().isString(),
     // to
-    checkTo('rack').notEmpty().trim().isString(),
+    checkTo('rack').optional().trim().isString(),
     checkTo('terminationDevice').optional().trim().isString(),
     checkTo('terminationType').optional().trim().isString(),
     checkTo('wiringDrawing').optional().trim().isString(),
     // routing
-    check('length').optional({checkFalsy: true}).trim().isFloat().isNumeric(),
+    check('length').optional({checkFalsy: true}).trim().isDecimal().toFloat(),
     check('conduit').optional().trim().isString(),
     // other
     check('comments').optional().trim().isString(),
   ]);
-
-  return req.body.request || {};
 }
 
 
@@ -395,21 +429,10 @@ router.post('/requests/import', ensureAuthc(), ensureAccepts('json'), catchAll(a
 
   const requests = req.body.requests;
   if (!Array.isArray(requests)) {
-    throw new RequestError('test');
+    throw new RequestError('Cable Request data is required', BAD_REQUEST);
   }
 
-  // const results: any[] = [];
-  // for (const request of requests) {
-  for (let idx = 0; idx < requests.length; idx++) {
-    // const request = requests[idx];
-    req.body = { request: requests[idx] };
-    try {
-      requests[idx] = await reqToWebCableRequest(req);
-    } catch (err) {
-      // results.push(request);
-      console.log(err);
-    }
-  }
+  await validateWebCableRequest(req, 'requests.*');
 
   // dryrun?
 
