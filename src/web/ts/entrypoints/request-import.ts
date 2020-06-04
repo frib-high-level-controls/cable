@@ -46,6 +46,7 @@ $(() => {
       url: window.location.pathname,
       method: 'POST',
       data: formData,
+      dataType: 'json',
       processData: false,
       contentType: false,
     });
