@@ -111,6 +111,7 @@ enum RequestColumn {
   CABLE_TYPE = 'CABLE TYPE',
   OWNER_PROVIDED = 'OWNER PROVIDED',
   FUNCTION = 'FUNCTION',
+  TAGS = 'TAGS',
   QUANTITY = 'QUANTITY',
   FROM_RACK = 'FROM LOCATION',
   FROM_TERM_DEV = 'FROM TERMINATION DEVICE',
@@ -141,17 +142,19 @@ function rowToRawCableRequest(row: any): any {
   }
 
   const body: any = {
-    project: prop(RequestColumn.PROJECT),
-    wbs: prop(RequestColumn.WBS),
-    engineer: prop(RequestColumn.ENGINEER),
-    originCategory: prop(RequestColumn.CATEGORY),
-    originSubcategory: prop(RequestColumn.SUBCATEGORY),
-    signalClassification: prop(RequestColumn.SIGNAL),
-    traySection: prop(RequestColumn.TRAY_SECTION),
-    cableType: prop(RequestColumn.CABLE_TYPE),
-    ownerProvided: prop(RequestColumn.OWNER_PROVIDED),
-    service: prop(RequestColumn.FUNCTION),
-    quantity: prop(RequestColumn.QUANTITY),
+    basic: {
+      project: prop(RequestColumn.PROJECT),
+      wbs: prop(RequestColumn.WBS),
+      engineer: prop(RequestColumn.ENGINEER),
+      originCategory: prop(RequestColumn.CATEGORY),
+      originSubcategory: prop(RequestColumn.SUBCATEGORY),
+      signalClassification: prop(RequestColumn.SIGNAL),
+      traySection: prop(RequestColumn.TRAY_SECTION),
+      cableType: prop(RequestColumn.CABLE_TYPE),
+      service: prop(RequestColumn.FUNCTION),
+      tags: prop(RequestColumn.TAGS),
+      quantity: prop(RequestColumn.QUANTITY),
+    },
     from: {
       rack: prop(RequestColumn.FROM_RACK),
       terminationDevice: prop(RequestColumn.FROM_TERM_DEV),
@@ -166,96 +169,97 @@ function rowToRawCableRequest(row: any): any {
       terminationPort: prop(RequestColumn.TO_TERM_PORT),
       wiringDrawing: prop(RequestColumn.TO_WIRING),
     },
+    ownerProvided: prop(RequestColumn.OWNER_PROVIDED),
     conduit: prop(RequestColumn.CONDUIT),
     length: prop(RequestColumn.LENGTH),
     comments: prop(RequestColumn.COMMENTS),
   };
 
   // validate and convert project title to value
-  if (!body.project) {
+  if (!body.basic.project) {
     throw new RequestError('Project is required');
   }
 
   {
     let found = false;
-    const title = String(body.project).trim().toUpperCase();
+    const title = String(body.basic.project).trim().toUpperCase();
     for (const project of projects) {
       if (title === project.title.toUpperCase()) {
-        body.project = project.value;
+        body.basic.project = project.value;
         found = true;
         break;
       }
     }
     if (!found) {
-      throw new RequestError(`Project is invalid: '${body.project}'`);
+      throw new RequestError(`Project is invalid: '${body.basic.project}'`);
     }
   }
 
   // validate and convert origin category name to value
-  if (body.originCategory === undefined) {
+  if (body.basic.originCategory === undefined) {
     throw new RequestError('Origin Category is required');
   }
 
   {
     let found = false;
-    const name = String(body.originCategory).trim().toUpperCase();
+    const name = String(body.basic.originCategory).trim().toUpperCase();
     for (const category of Object.keys(sysSub)) {
-      if (sysSub[category]?.projects.includes(body.project)) {
+      if (sysSub[category]?.projects.includes(body.basic.project)) {
         if (name === sysSub[category]?.name.toUpperCase()) {
-          body.originCategory = category;
+          body.basic.originCategory = category;
           found = true;
           break;
         }
       }
     }
     if (!found) {
-      throw new RequestError(`Origin Category is invalid: '${body.originCategory}'`);
+      throw new RequestError(`Origin Category is invalid: '${body.basic.originCategory}'`);
     }
   }
 
   // validate and convert origin subcategory name to value
-  if (body.originSubcategory === undefined) {
+  if (body.basic.originSubcategory === undefined) {
     throw new RequestError('Origin Subcategory is required');
   }
 
   {
     let found = false;
-    const name = String(body.originSubcategory).trim().toUpperCase();
-    const subcategories = sysSub[body.originCategory]?.subcategory;
+    const name = String(body.basic.originSubcategory).trim().toUpperCase();
+    const subcategories = sysSub[body.basic.originCategory]?.subcategory;
     if (subcategories) {
       for (const subcategory of Object.keys(subcategories)) {
         if (name === subcategories[subcategory]?.toUpperCase()) {
-          body.originSubcategory = subcategory;
+          body.basic.originSubcategory = subcategory;
           found = true;
           break;
         }
       }
     }
     if (!found) {
-      throw new RequestError(`Origin Subcategory is invalid: '${body.originSubcategory}'`);
+      throw new RequestError(`Origin Subcategory is invalid: '${body.basic.originSubcategory}'`);
     }
   }
 
   // validate and convert signal classification name to value
-  if (body.signalClassification === undefined) {
+  if (body.basic.signalClassification === undefined) {
     throw new RequestError('Signal Classification is required');
   }
 
   {
     let found = false;
-    const name = String(body.signalClassification).trim().toUpperCase();
-    const signals = sysSub[body.originCategory]?.signal;
+    const name = String(body.basic.signalClassification).trim().toUpperCase();
+    const signals = sysSub[body.basic.originCategory]?.signal;
     if (signals) {
       for (const signal of Object.keys(signals)) {
         if (name === signals[signal]?.name.toUpperCase()) {
-          body.signalClassification = signal;
+          body.basic.signalClassification = signal;
           found = true;
           break;
         }
       }
     }
     if (!found) {
-      throw new RequestError(`Signal Classification is invalid: '${body.signalClassification}'`);
+      throw new RequestError(`Signal Classification is invalid: '${body.basic.signalClassification}'`);
     }
   }
 
