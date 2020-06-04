@@ -9,6 +9,9 @@ import * as express from 'express';
 import * as lodash from 'lodash';
 import * as xlsx from 'xlsx';
 
+import {
+  warn,
+} from '../shared/logging';
 
 import {
   ensureAuthc,
@@ -146,7 +149,7 @@ function rowToRawCableRequest(row: any): any {
     }
   }
 
-  const body: any = {
+  const data: any = {
     basic: {
       project: prop(RequestColumn.PROJECT),
       wbs: prop(RequestColumn.WBS),
@@ -180,95 +183,106 @@ function rowToRawCableRequest(row: any): any {
     comments: prop(RequestColumn.COMMENTS),
   };
 
-  // validate and convert project title to value
-  if (!body.basic.project) {
-    throw new RequestError('Project is required');
-  }
+  return data;
+}
 
-  {
-    let found = false;
-    const title = String(body.basic.project).trim().toUpperCase();
-    for (const project of projects) {
-      if (title === project.title.toUpperCase()) {
-        body.basic.project = project.value;
-        found = true;
-        break;
+async function sanitizeRawCableRequest(req: express.Request, prefix?: string): Promise<void> {
+  prefix = prefix ?? 'request';
+
+  const validatedProjects = new Map<string, string>();
+  const validatedCategories = new Map<string, string>();
+  const validatedSubcategories = new Map<string, string>();
+  const validatedSignals = new Map<string, string>();
+
+  const checkBasic: Validator<keyof webapi.CableRequest['basic']> = buildValidator('body', `${prefix}.basic`);
+
+  await validateAndThrow(req, [
+    // validate and convert project title to value
+    checkBasic('project').custom((value, { path }): true => {
+      if (!value) {
+        throw new Error('Project is required');
       }
-    }
-    if (!found) {
-      throw new RequestError(`Project is invalid: '${body.basic.project}'`);
-    }
-  }
-
-  // validate and convert origin category name to value
-  if (body.basic.originCategory === undefined) {
-    throw new RequestError('Origin Category is required');
-  }
-
-  {
-    let found = false;
-    const name = String(body.basic.originCategory).trim().toUpperCase();
-    for (const category of Object.keys(sysSub)) {
-      if (sysSub[category]?.projects.includes(body.basic.project)) {
-        if (name === sysSub[category]?.name.toUpperCase()) {
-          body.basic.originCategory = category;
-          found = true;
-          break;
+      const title = String(value).trim().toUpperCase();
+      for (const project of projects) {
+        if (title === project.title.toUpperCase()) {
+          validatedProjects.set(path, project.value);
+          return true;
         }
       }
-    }
-    if (!found) {
-      throw new RequestError(`Origin Category is invalid: '${body.basic.originCategory}'`);
-    }
-  }
-
-  // validate and convert origin subcategory name to value
-  if (body.basic.originSubcategory === undefined) {
-    throw new RequestError('Origin Subcategory is required');
-  }
-
-  {
-    let found = false;
-    const name = String(body.basic.originSubcategory).trim().toUpperCase();
-    const subcategories = sysSub[body.basic.originCategory]?.subcategory;
-    if (subcategories) {
-      for (const subcategory of Object.keys(subcategories)) {
-        if (name === subcategories[subcategory]?.toUpperCase()) {
-          body.basic.originSubcategory = subcategory;
-          found = true;
-          break;
+      throw new Error(`Project is invalid: '${value}'`);
+    })
+    .customSanitizer((value, { path }): string => {
+      return validatedProjects.get(path) ?? value;
+    }),
+    // validate and sanitize origin category name to value
+    checkBasic('originCategory').custom((value, { path }): true => {
+      if (!value) {
+        throw new Error('Origin Category is required');
+      }
+      const project = validatedProjects.get(path.replace('originCategory', 'project'));
+      if (project) {
+        const name = value.toUpperCase();
+        for (const category of Object.keys(sysSub)) {
+          if (sysSub[category]?.projects.includes(project)) {
+            if (name === sysSub[category]?.name.toUpperCase()) {
+              validatedCategories.set(path, category);
+              return true;
+            }
+          }
         }
       }
-    }
-    if (!found) {
-      throw new RequestError(`Origin Subcategory is invalid: '${body.basic.originSubcategory}'`);
-    }
-  }
-
-  // validate and convert signal classification name to value
-  if (body.basic.signalClassification === undefined) {
-    throw new RequestError('Signal Classification is required');
-  }
-
-  {
-    let found = false;
-    const name = String(body.basic.signalClassification).trim().toUpperCase();
-    const signals = sysSub[body.basic.originCategory]?.signal;
-    if (signals) {
-      for (const signal of Object.keys(signals)) {
-        if (name === signals[signal]?.name.toUpperCase()) {
-          body.basic.signalClassification = signal;
-          found = true;
-          break;
+      throw new Error(`Origin Category is invalid: '${value}'`);
+    })
+    .customSanitizer((value, { path }): string => {
+      return validatedCategories.get(path) ?? value;
+    }),
+    // validate and convert origin subcategory name to value
+    checkBasic('originSubcategory').custom((value, { path }): true => {
+      if (!value) {
+        throw new Error('Origin Subcategory is required');
+      }
+      const category = validatedCategories.get(path.replace('originSubcategory', 'originCategory'));
+      if (category) {
+        const subcategories = sysSub[category]?.subcategory;
+        if (subcategories) {
+          const name = String(value).trim().toUpperCase();
+          for (const subcategory of Object.keys(subcategories)) {
+            if (name === subcategories[subcategory]?.toUpperCase()) {
+              validatedSubcategories.set(path, subcategory);
+              return true;
+            }
+          }
         }
       }
-    }
-    if (!found) {
-      throw new RequestError(`Signal Classification is invalid: '${body.basic.signalClassification}'`);
-    }
-  }
-
-  return body;
+      throw new Error(`Origin Subcategory is invalid: '${value}'`);
+    })
+    .customSanitizer((value, { path }) => {
+      return validatedSubcategories.get(path) ?? value;
+    }),
+    // validate and convert signal classification name to value
+    checkBasic('signalClassification').custom((value, { path }): true => {
+      if (!value) {
+        throw new Error('Signal Classification is required');
+      }
+      const category = validatedCategories.get(path.replace('signalClassification', 'originCategory'));
+      if (category) {
+        const signals = sysSub[category]?.signal;
+        if (signals) {
+          const name = String(value).trim().toUpperCase();
+          for (const signal of Object.keys(signals)) {
+            if (name === signals[signal]?.name.toUpperCase()) {
+              validatedSignals.set(path, signal);
+              return true;
+            }
+          }
+        }
+      }
+      throw new Error(`Signal Classification is invalid: '${value}'`);
+    })
+    .customSanitizer((value, { path }) => {
+      return validatedSignals.get(path) ?? value;
+    }),
+  ]);
 }
 
 async function validateWebCableRequest(req: express.Request, prefix?: string): Promise<void> {
@@ -394,7 +408,7 @@ router.post('/requests/import', ensureAuthc(), ensureAccepts('json'), catchAll(a
       try {
         await deleteFormFiles(files);
       } catch (err) {
-        console.log(err);
+        warn('Error deleting form files: %s', err);
       }
     }
 
@@ -417,18 +431,15 @@ router.post('/requests/import', ensureAuthc(), ensureAccepts('json'), catchAll(a
 
     const rows = xlsx.utils.sheet_to_json(sheet);
     for (const row of rows) {
-      try {
-        req.body.requests.push(rowToRawCableRequest(row));
-      } catch (err) {
-        console.log(err);
-      }
+      req.body.requests.push(rowToRawCableRequest(row));
     }
+
+    await sanitizeRawCableRequest(req, 'requests.*');
   }
 
   // const valdiated  = (req.body.valdiated === true);
 
-  const requests = req.body.requests;
-  if (!Array.isArray(requests)) {
+  if (!Array.isArray(req.body.requests)) {
     throw new RequestError('Cable Request data is required', BAD_REQUEST);
   }
 
