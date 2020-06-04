@@ -104,9 +104,9 @@ enum RequestColumn {
   PROJECT = 'PROJECT',
   WBS = 'WBS',
   ENGINEER = 'ENGINEER',
-  CATEGORY = 'CATEGORY',
-  SUBCATEGORY = 'SUBCATEGORY',
-  SIGNAL = 'SIGNAL',
+  CATEGORY = 'ORIGIN CATEGORY',
+  SUBCATEGORY = 'ORIGIN SUBCATEGORY',
+  SIGNAL = 'SIGNAL CLASSIFICATION',
   TRAY_SECTION = 'TRAY SECTION',
   CABLE_TYPE = 'CABLE TYPE',
   OWNER_PROVIDED = 'OWNER PROVIDED',
@@ -127,7 +127,7 @@ enum RequestColumn {
   COMMENTS = 'COMMENTS',
 }
 
-function rowToWebCableRequests(row: any): Promise<webapi.CableRequest | null> {
+function rowToRawCableRequest(row: any): any {
 
   function prop(name: RequestColumn) {
     if (row[name] !== undefined) {
@@ -171,13 +171,14 @@ function rowToWebCableRequests(row: any): Promise<webapi.CableRequest | null> {
     comments: prop(RequestColumn.COMMENTS),
   };
 
-  if (typeof body.project !== 'string') {
-    throw new RequestError('ValidationError');
+  // validate and convert project title to value
+  if (!body.project) {
+    throw new RequestError('Project is required');
   }
 
   {
     let found = false;
-    const title = body.project.trim().toUpperCase();
+    const title = String(body.project).trim().toUpperCase();
     for (const project of projects) {
       if (title === project.title.toUpperCase()) {
         body.project = project.value;
@@ -186,19 +187,21 @@ function rowToWebCableRequests(row: any): Promise<webapi.CableRequest | null> {
       }
     }
     if (!found) {
-      throw new RequestError('Validation Error');
+      throw new RequestError(`Project is invalid: '${body.project}'`);
     }
   }
 
-  if (typeof body.originCategory !== 'string') {
-    throw new RequestError('ValidationError');
+  // validate and convert origin category name to value
+  if (body.originCategory === undefined) {
+    throw new RequestError('Origin Category is required');
   }
+
   {
     let found = false;
-    const name = body.originCategory.trim().toUpperCase();
+    const name = String(body.originCategory).trim().toUpperCase();
     for (const category of Object.keys(sysSub)) {
       if (sysSub[category]?.projects.includes(body.project)) {
-        if (name === sysSub[category]?.name) {
+        if (name === sysSub[category]?.name.toUpperCase()) {
           body.originCategory = category;
           found = true;
           break;
@@ -206,20 +209,22 @@ function rowToWebCableRequests(row: any): Promise<webapi.CableRequest | null> {
       }
     }
     if (!found) {
-      throw new RequestError('ValidationError');
+      throw new RequestError(`Origin Category is invalid: '${body.originCategory}'`);
     }
   }
 
-  if (typeof body.originSubcategory !== 'string') {
-    throw new RequestError('ValidationError');
+  // validate and convert origin subcategory name to value
+  if (body.originSubcategory === undefined) {
+    throw new RequestError('Origin Subcategory is required');
   }
+
   {
     let found = false;
-    const name = body.originSubcategory.trim().toUpperCase();
+    const name = String(body.originSubcategory).trim().toUpperCase();
     const subcategories = sysSub[body.originCategory]?.subcategory;
     if (subcategories) {
       for (const subcategory of Object.keys(subcategories)) {
-        if (name === subcategories[subcategory]) {
+        if (name === subcategories[subcategory]?.toUpperCase()) {
           body.originSubcategory = subcategory;
           found = true;
           break;
@@ -227,20 +232,22 @@ function rowToWebCableRequests(row: any): Promise<webapi.CableRequest | null> {
       }
     }
     if (!found) {
-      throw new RequestError('ValidationError');
+      throw new RequestError(`Origin Subcategory is invalid: '${body.originSubcategory}'`);
     }
   }
 
-  if (typeof body.signalClassification !== 'string') {
-    throw new RequestError('ValidationError');
+  // validate and convert signal classification name to value
+  if (body.signalClassification === undefined) {
+    throw new RequestError('Signal Classification is required');
   }
+
   {
     let found = false;
-    const name = body.signalClassification.trim().toUpperCase();
+    const name = String(body.signalClassification).trim().toUpperCase();
     const signals = sysSub[body.originCategory]?.signal;
     if (signals) {
       for (const signal of Object.keys(signals)) {
-        if (name === signals[signal]?.name) {
+        if (name === signals[signal]?.name.toUpperCase()) {
           body.signalClassification = signal;
           found = true;
           break;
@@ -248,11 +255,11 @@ function rowToWebCableRequests(row: any): Promise<webapi.CableRequest | null> {
       }
     }
     if (!found) {
-      throw new RequestError('ValidationError');
+      throw new RequestError(`Signal Classification is invalid: '${body.signalClassification}'`);
     }
   }
 
-  return Promise.resolve(body);
+  return body;
 }
 
 async function reqToWebCableRequest(req: express.Request): Promise<CableRequest> {
@@ -373,7 +380,7 @@ router.post('/requests/import', ensureAuthc(), ensureAccepts('json'), catchAll(a
     const rows = xlsx.utils.sheet_to_json(sheet);
     for (const row of rows) {
       try {
-        req.body.requests.push(rowToWebCableRequests(row));
+        req.body.requests.push(rowToRawCableRequest(row));
       } catch (err) {
         console.log(err);
       }
