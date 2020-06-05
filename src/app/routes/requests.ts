@@ -15,6 +15,7 @@ import {
 import {
   ensureAuthc,
   getUsername,
+  hasAnyRole,
 } from '../shared/auth';
 
 import {
@@ -22,6 +23,7 @@ import {
   catchAll,
   deleteFormFiles,
   ensureAccepts,
+  findQueryParam,
   HttpStatus,
   parseFormData,
   RequestError,
@@ -33,16 +35,19 @@ import {
   User,
 } from '../model/user';
 
-// import {
-//   CableRequest,
-// } from '../model/request';
+import {
+  CableRequest,
+  ICableRequest,
+} from '../model/request';
 
 import {
   CableType,
 } from '../model/cabletype';
 
 const OK = HttpStatus.OK;
+const CREATED = HttpStatus.CREATED;
 const BAD_REQUEST = HttpStatus.BAD_REQUEST;
+const FORBIDDEN = HttpStatus.FORBIDDEN;
 const SERVER_ERROR = HttpStatus.INTERNAL_SERVER_ERROR;
 
 const debug = Debug('cable:routes:requests');
@@ -398,19 +403,31 @@ router.post('/requests/import', ensureAuthc(), ensureAccepts('json'), catchAll(a
   if (req.is('multipart/form-data')) {
     const { fields, files } = await parseFormData(req);
 
-    let workbook: xlsx.WorkBook;
+    const validated = fields.validated ? [ '1', 'on', 'true' ].includes(fields.validated) : false;
+    if (validated && !hasAnyRole(req, 'validator')) {
+      throw new RequestError('Not permitted to validate cable requests', FORBIDDEN);
+    }
+
+    if (!files.data) {
+      throw new RequestError('Import data file is required', BAD_REQUEST);
+    }
+
+    let buffer: Buffer;
     try {
-      if (!files.data) {
-        throw new RequestError('Import data file is required', BAD_REQUEST);
-      }
-      const buffer = await readFile(files.data.path);
-      workbook = xlsx.read(buffer, { type: 'buffer' /*, dateNF: 'yyyy-mm-dd'*/ });
+      buffer = await readFile(files.data.path);
     } finally {
       try {
         await deleteFormFiles(files);
       } catch (err) {
         warn('Error deleting form files: %s', err);
       }
+    }
+
+    let workbook: xlsx.WorkBook;
+    try {
+      workbook = xlsx.read(buffer, { type: 'buffer' /*, dateNF: 'yyyy-mm-dd'*/ });
+    } catch (err) {
+      throw new RequestError('Import data file is not XLSX', BAD_REQUEST);
     }
 
     let sheetName = 'NEW';
@@ -425,30 +442,79 @@ router.post('/requests/import', ensureAuthc(), ensureAccepts('json'), catchAll(a
       throw new RequestError(`Workbook sheet not found: ${sheetName}`, BAD_REQUEST);
     }
 
+    const rows = xlsx.utils.sheet_to_json(sheet);
+    if (rows.length === 0) {
+      throw new RequestError('Cable Request data is required', BAD_REQUEST);
+    }
+
     req.body = {
       requests: [],
-      validated: fields.validated ? [ 'on' ].includes(fields.validated) : false,
+      validated,
     };
 
-    const rows = xlsx.utils.sheet_to_json(sheet);
     for (const row of rows) {
       req.body.requests.push(rowToRawCableRequest(row));
     }
 
-    await sanitizeRawCableRequest(req, 'requests.*');
+    try {
+      await sanitizeRawCableRequest(req, 'requests.*');
+      await validateWebCableRequest(req, 'requests.*');
+    } catch (err) {
+      if (!(err instanceof RequestError)) {
+        throw err;
+      }
+      // Include converted data in response,
+      // even if there are validation errors.
+      const pkg: webapi.Pkg<ICableRequest[]> = {
+        data: req.body.requests,
+        error: err.details,
+      };
+      res.status(err.status).json(pkg);
+      return;
+    }
+  } else { // req is application/json
+    req.body.validated = (req.body.validated === true);
+    if (req.body.valdiated && !hasAnyRole(req, req.body.valdiated)) {
+      throw new RequestError('Not permitted to validate requests', FORBIDDEN);
+    }
+
+    if (!Array.isArray(req.body.requests) || req.body.requests === 0) {
+      throw new RequestError('Cable Request data is required', BAD_REQUEST);
+    }
+
+    await validateWebCableRequest(req, 'requests.*');
   }
 
-  // const valdiated  = (req.body.valdiated === true);
-
-  if (!Array.isArray(req.body.requests)) {
-    throw new RequestError('Cable Request data is required', BAD_REQUEST);
+  const requests: CableRequest[] = [];
+  for (const request of req.body.requests as ICableRequest[]) {
+    request.status = !req.body.validated ? 1 : 1.5;
+    request.createdBy = username;
+    request.createdOn = new Date();
+    request.submittedBy = username;
+    request.submittedOn = new Date();
+    requests.push(new CableRequest(request));
   }
 
-  await validateWebCableRequest(req, 'requests.*');
+  {
+    const p: Array<Promise<void>> = [];
+    for (const request of requests) {
+      p.push(request.validate());
+    }
+    await Promise.all(p);
+  }
 
-  // dryrun?
+  const dryrun = findQueryParam(req, 'dryrun');
+  if (dryrun !== undefined && dryrun !== 'false') {
+    res.status(OK).json(requests);
+  }
 
-  // const result = await CableRequest.create(requests);
+  {
+    const p: Array<Promise<CableRequest>> = [];
+    for (const request of requests) {
+      p.push(request.save());
+    }
+    await Promise.all(p);
+  }
 
-  res.status(OK).json([]);
+  res.status(CREATED).json(requests);
 }));
