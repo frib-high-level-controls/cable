@@ -3,34 +3,92 @@
  */
 import '../pages/base';
 
-import 'jquery-validation';
+import 'datatables.net-bs4/css/dataTables.bootstrap4.min.css';
+
+// JSZip is a requirement for the 'Excel' button,
+// but it needs to exist of the global (ie window).
+import * as JSZip from 'jszip';
+(window as any).JSZip = JSZip;
+import 'datatables.net-bs4';
+import 'datatables.net-buttons-bs4';
+import 'datatables.net-buttons/js/buttons.html5.min.js';
+import 'datatables.net-buttons/js/buttons.print.min.js';
+
+// import 'jquery-validation';
 
 import * as $ from 'jquery';
 
+import {
+  unwrapPkgErrMsg,
+  wrapCatchAll,
+
+} from '../shared/webutil';
+
 // import * as Binder from '../lib/binder';
 
-
-function readFileToBase64(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = (evt) => {
-      evt.target.abort();
-      reject(evt.target.error);
-    };
-    reader.onload = (evt) => {
-      const result = evt.target.result;
-      if (typeof result !== 'string') {
-        reject(new TypeError(''));
-        return;
-      }
-      resolve(result.slice(result.indexOf(',') + 1));
-    };
-    reader.readAsDataURL(file);
-  });
-}
+import {
+  approvedByColumn,
+  approvedOnColumn,
+  basicColumns,
+  commentsColumn,
+  conduitColumn,
+  createdOnColumn,
+  detailsLinkColumn,
+  editLinkColumn,
+  filterEvent,
+  fnDeselect,
+  fnGetSelected,
+  fnSelectAll,
+  fnSetDeselect,
+  fnUnwrap,
+  fnWrap,
+  fromColumns,
+  highlightedEvent,
+  lengthColumn,
+  numberColumn,
+  ownerProvidedColumn,
+  rejectedByColumn,
+  rejectedOnColumn,
+  sButtons,
+  sDom2InoF,
+  selectColumn,
+  selectEvent,
+  statusColumn,
+  submittedOnColumn,
+  tabShownEvent,
+  toColumns,
+  updatedOnColumn,
+} from '../lib/table';
 
 $(() => {
-  $('#request-import-form').submit(async (evt) => {
+
+  /*saved tab starts*/
+  // tslint:disable-next-line:max-line-length
+  const columns = [/* selectColumn, editLinkColumn, createdOnColumn, updatedOnColumn */].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  // let savedTableWrapped = true;
+
+  const table = $('#request-review-table').DataTable({
+    data: [],
+    autoWidth: false,
+    columns: columns,
+    order: [
+      [2, 'desc'],
+      [3, 'desc'],
+    ],
+    dom: sDom2InoF,
+    buttons: sButtons,
+    // scrollY: '50vh',
+    // scrollCollapse: true,
+    deferRender: true,
+    createdRow(row) {
+      // if (!savedTableWrapped) {
+        $(row).addClass('nowrap');
+      // }
+    },
+  });
+  // dtutil.addFilterHead('#request-import-table', columns);
+
+  $('#request-import-form').submit(wrapCatchAll(async (evt) => {
     evt.preventDefault();
 
     const importFileInput = $('#request-import-file').get(0) as HTMLInputElement;
@@ -38,22 +96,37 @@ $(() => {
       console.log('No file selected!');
       return;
     }
-    //const importFileData = await readFileToBase64(importFileInput.files[0]);
 
     const formData = new FormData(evt.target as HTMLFormElement);
+    $('#request-import-form :input').prop('disabled', true);
 
-    $.ajax({
-      url: window.location.pathname,
-      method: 'POST',
-      data: formData,
-      dataType: 'json',
-      processData: false,
-      contentType: false,
-    });
+    let pkg: webapi.Pkg<webapi.CableRequest[]>;
+    try {
+      pkg = await Promise.resolve($.ajax({
+        url: `${basePath}/requests/import?dryrun=true`,
+        method: 'POST',
+        data: formData,
+        dataType: 'json',
+        processData: false,
+        contentType: false,
+      }));
 
-    // console.log(importFileData);
+    } catch (xhr) {
+      pkg = xhr.responseJSON;
+      if (pkg && !pkg.data) {
+        $('#message').append(
+          '<div class="alert alert-danger">'
+          + '<button type="button" class="close" data-dismiss="alert">x</button>'
+          + 'Import cable requests failed: ' + unwrapPkgErrMsg(xhr)
+          + '</div>');
+        return;
+      }
+    } finally {
+      // TODO: Clear file input!
+      $('#request-import-form :input').prop('disabled', false);
+    }
 
-    // const importValidated = $('#request-import-validated').is(':checked');
-
-  });
+    table.clear().rows.add(pkg.data).draw();
+    $('#request-review').prop('hidden', false);
+  }));
 });

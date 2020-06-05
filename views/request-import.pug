@@ -7,7 +7,7 @@ block head
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
   script(type='text/javascript', src=basePath + '/dist/request-import.js')
 block content
-  .container
+  .container-fluid
     #message
     .modal.hide.fade#modal(tabindex='-1', role='dialog', data-backdrop='static', aria-labelledby='modalLabel', aria-hidden='true')
       .modal-dialog
@@ -17,10 +17,10 @@ block content
           .modal-body
           .modal-footer
             button.btn.btn-primary(type='button', data-dismiss='modal', aria-hidden='true') Return to edit
-    .row.justify-content-md-center
+    .row.m-2
       .card.card-body.bg-light
         form#request-import-form
-          h3 Import Cable Requests
+          h3 New Cable Requests
           .form-group
             //- label(for='request-import-file') Data File
             input.form-control-file#request-import-file(type='file', name='data', accept='.xlsx')
@@ -29,5 +29,10 @@ block content
               input.form-check-input#request-import-validated(type='checkbox', name='validated')
               label.form-check-label(for='request-import-validated') Validated
           .btn-toolbar
-            button.btn.btn-primary.mr-2(type='submit') Submit
-            button.btn.btn-secondary.mr-2(type='button') Cancel
+            button.btn.btn-primary.mr-2#request-import-submit(type='submit') Import
+            //- button.btn.btn-secondary.mr-2#request-import-cancel(type='button') Cancel
+    .row.m-2#request-review(hidden)
+      table.table.table-bordered.table-hover#request-review-table
+      .form-group
+        button.btn.btn-primary.mr-2#request-review-submit(type='submit', disabled) Submit
+        button.btn.btn-secondary.mr-2#request-review-cancel(type='button', disabled) Cancel
