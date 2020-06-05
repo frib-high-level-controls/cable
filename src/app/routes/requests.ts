@@ -6,7 +6,6 @@ import * as util from 'util';
 
 import * as Debug from 'debug';
 import * as express from 'express';
-import * as lodash from 'lodash';
 import * as xlsx from 'xlsx';
 
 import {
@@ -189,43 +188,40 @@ function rowToRawCableRequest(row: any): any {
 async function sanitizeRawCableRequest(req: express.Request, prefix?: string): Promise<void> {
   prefix = prefix ?? 'request';
 
-  const validatedProjects = new Map<string, string>();
-  const validatedCategories = new Map<string, string>();
-  const validatedSubcategories = new Map<string, string>();
-  const validatedSignals = new Map<string, string>();
+  const validationCache = new Map<string, string>();
 
   const checkBasic: Validator<keyof webapi.CableRequest['basic']> = buildValidator('body', `${prefix}.basic`);
 
   await validateAndThrow(req, [
     // validate and convert project title to value
-    checkBasic('project').custom((value, { path }): true => {
+    checkBasic('project').isString().trim().custom((value: string, { path }): true => {
       if (!value) {
         throw new Error('Project is required');
       }
-      const title = String(value).trim().toUpperCase();
+      const title = value.toUpperCase();
       for (const project of projects) {
         if (title === project.title.toUpperCase()) {
-          validatedProjects.set(path, project.value);
+          validationCache.set(path, project.value);
           return true;
         }
       }
       throw new Error(`Project is invalid: '${value}'`);
     })
-    .customSanitizer((value, { path }): string => {
-      return validatedProjects.get(path) ?? value;
+    .customSanitizer((value: string, { path }): string => {
+      return validationCache.get(path) ?? value;
     }),
     // validate and sanitize origin category name to value
-    checkBasic('originCategory').custom((value, { path }): true => {
+    checkBasic('originCategory').isString().trim().custom((value: string, { path }): true => {
       if (!value) {
         throw new Error('Origin Category is required');
       }
-      const project = validatedProjects.get(path.replace('originCategory', 'project'));
+      const project = validationCache.get(path.replace('originCategory', 'project'));
       if (project) {
         const name = value.toUpperCase();
         for (const category of Object.keys(sysSub)) {
           if (sysSub[category]?.projects.includes(project)) {
             if (name === sysSub[category]?.name.toUpperCase()) {
-              validatedCategories.set(path, category);
+              validationCache.set(path, category);
               return true;
             }
           }
@@ -233,22 +229,22 @@ async function sanitizeRawCableRequest(req: express.Request, prefix?: string): P
       }
       throw new Error(`Origin Category is invalid: '${value}'`);
     })
-    .customSanitizer((value, { path }): string => {
-      return validatedCategories.get(path) ?? value;
+    .customSanitizer((value: string, { path }) => {
+      return validationCache.get(path) ?? value;
     }),
     // validate and convert origin subcategory name to value
-    checkBasic('originSubcategory').custom((value, { path }): true => {
+    checkBasic('originSubcategory').isString().trim().custom((value: string, { path }): true => {
       if (!value) {
         throw new Error('Origin Subcategory is required');
       }
-      const category = validatedCategories.get(path.replace('originSubcategory', 'originCategory'));
+      const category = validationCache.get(path.replace('originSubcategory', 'originCategory'));
       if (category) {
         const subcategories = sysSub[category]?.subcategory;
         if (subcategories) {
-          const name = String(value).trim().toUpperCase();
+          const name = value.toUpperCase();
           for (const subcategory of Object.keys(subcategories)) {
             if (name === subcategories[subcategory]?.toUpperCase()) {
-              validatedSubcategories.set(path, subcategory);
+              validationCache.set(path, subcategory);
               return true;
             }
           }
@@ -256,22 +252,22 @@ async function sanitizeRawCableRequest(req: express.Request, prefix?: string): P
       }
       throw new Error(`Origin Subcategory is invalid: '${value}'`);
     })
-    .customSanitizer((value, { path }) => {
-      return validatedSubcategories.get(path) ?? value;
+    .customSanitizer((value: string, { path }): string => {
+      return validationCache.get(path) ?? value;
     }),
     // validate and convert signal classification name to value
-    checkBasic('signalClassification').custom((value, { path }): true => {
+    checkBasic('signalClassification').isString().trim().custom((value, { path }): true => {
       if (!value) {
         throw new Error('Signal Classification is required');
       }
-      const category = validatedCategories.get(path.replace('signalClassification', 'originCategory'));
+      const category = validationCache.get(path.replace('signalClassification', 'originCategory'));
       if (category) {
         const signals = sysSub[category]?.signal;
         if (signals) {
-          const name = String(value).trim().toUpperCase();
+          const name = value.toUpperCase();
           for (const signal of Object.keys(signals)) {
             if (name === signals[signal]?.name.toUpperCase()) {
-              validatedSignals.set(path, signal);
+              validationCache.set(path, signal);
               return true;
             }
           }
@@ -279,8 +275,8 @@ async function sanitizeRawCableRequest(req: express.Request, prefix?: string): P
       }
       throw new Error(`Signal Classification is invalid: '${value}'`);
     })
-    .customSanitizer((value, { path }) => {
-      return validatedSignals.get(path) ?? value;
+    .customSanitizer((value: string, { path }): string => {
+      return validationCache.get(path) ?? value;
     }),
   ]);
 }
@@ -288,7 +284,9 @@ async function sanitizeRawCableRequest(req: express.Request, prefix?: string): P
 async function validateWebCableRequest(req: express.Request, prefix?: string): Promise<void> {
   prefix = prefix ?? 'request';
 
-  // Cache data needed for validation
+  const validationCache = new Map<string, string>();
+
+  // Query data needed for validation
   const [ users, cableTypes ] = await Promise.all([
     User.find().exec(),
     CableType.find().exec(),
@@ -300,55 +298,58 @@ async function validateWebCableRequest(req: express.Request, prefix?: string): P
   const check: Validator<keyof webapi.CableRequest> = buildValidator('body', prefix);
 
   await validateAndThrow(req, [
-    checkBasic('project').trim().custom((value) => {
-      if (!projects.some((p) => (p.value === value))) {
-        throw new Error(`Project is invalid: ${value}`);
+    checkBasic('project').isString().trim().custom((value: string, { path }): true => {
+      if (projects.some((p) => (p.value === value))) {
+        validationCache.set(path, value);
+        return true;
       }
-      return true;
+      throw new Error(`Project is invalid: ${value}`);
     }),
-    checkBasic('wbs').trim().custom((value) => {
-      if (!/^[A-Z]\d{1,5}$/.test(value)) {
-        throw new Error(`WBS is must match /[A-Z]\d{1,5}/: '${value}'`);
+    checkBasic('wbs').isString().trim().custom((value: string): true => {
+      if (/^[A-Z]\d{1,5}$/.test(value)) {
+        return true;
       }
-      return true;
+      throw new Error(`WBS is must match /[A-Z]\d{1,5}/: '${value}'`);
     }),
-    checkBasic('engineer').trim().custom((value) => {
-      for (const user of users) {
-        if (user.name === value) {
-          return true;
-        }
+    checkBasic('engineer').isString().trim().custom((value: string): true => {
+      if (users.some((u) => u.name === value)) {
+        return true;
       }
       throw new Error(`Engineer is invalid: '${value}'`);
     }),
-    checkBasic('originCategory').trim().custom((value) => {
-      if (!Object.keys(sysSub).includes(value)) {
-        throw new Error(`Origin Category is invalid: '$'{value}'`);
+    checkBasic('originCategory').isString().trim().custom((value: string, { path }): true => {
+      const project = validationCache.get(path.replace('originCategory', 'project'));
+      if (Object.keys(sysSub).includes(value)) {
+        if (sysSub[value]?.projects.some((p) => (p === project))) {
+          validationCache.set(path, value);
+          return true;
+        }
       }
-      return true;
+      throw new Error(`Origin Category is invalid: '$'{value}'`);
     }),
-    checkBasic('originSubcategory').trim().custom((value, { path }) => {
-      const category = lodash.get(req.body, path.replace('originSubcategory', 'originCategory'));
-      const subcategories = sysSub[category]?.subcategory ?? {};
-      if (!Object.keys(subcategories).includes(value)) {
-        throw new Error(`Origin Subcategory is invalid: '${value}'`);
+    checkBasic('originSubcategory').isString().trim().custom((value: string, { path }): true => {
+      const category = validationCache.get(path.replace('originSubcategory', 'originCategory'));
+      const subcategories = category ? sysSub[category]?.subcategory : undefined;
+      if (subcategories && Object.keys(subcategories).includes(value)) {
+        return true;
       }
-      return true;
+      throw new Error(`Origin Subcategory is invalid: '${value}'`);
     }),
-    checkBasic('signalClassification').trim().custom((value, { path }) => {
-      const category = lodash.get(req.body, path.replace('originSubcategory', 'originCategory'));
-      const signals = sysSub[category]?.signal ?? {};
-      if (!Object.keys(signals).includes(value)) {
-        throw new Error(`Signal Classification is invalid: '${value}'`);
+    checkBasic('signalClassification').isString().trim().custom((value: string, { path }): true => {
+      const category = validationCache.get(path.replace('originSubcategory', 'originCategory'));
+      const signals = category ? sysSub[category]?.signal : undefined;
+      if (signals && Object.keys(signals).includes(value)) {
+        return true;
       }
-      return true;
+      throw new Error(`Signal Classification is invalid: '${value}'`);
     }),
-    checkBasic('traySection').trim().custom((value) => {
-      if (!traySects.some((s) => (s.value === value))) {
-        throw new Error(`Tray Section is invalid: '${value}'`);
+    checkBasic('traySection').isString().trim().custom((value: string): true => {
+      if (traySects.some((s) => (s.value === value))) {
+        return true;
       }
-      return true;
+      throw new Error(`Tray Section is invalid: '${value}'`);
     }),
-    checkBasic('cableType').trim().custom((value) => {
+    checkBasic('cableType').isString().trim().custom((value: string): true => {
       for (const cableType of cableTypes) {
         if (cableType.name === value) {
           if (cableType.obsolete === true) {
@@ -359,25 +360,25 @@ async function validateWebCableRequest(req: express.Request, prefix?: string): P
       }
       throw new Error(`Cable Type is invalid: '${value}'`);
     }),
-    checkBasic('service').optional().trim().isString(),
-    checkBasic('tags').optional().trim().isString(),
-    checkBasic('quantity').trim().isNumeric().toInt(),
-    check('ownerProvided').trim().isBoolean().toBoolean(),
+    checkBasic('service').optional().isString().trim(),
+    checkBasic('tags').optional().isString().trim(),
+    checkBasic('quantity').toInt().isInt({ min: 1 }),
+    check('ownerProvided').toBoolean(true),
     // from
-    checkFrom('rack').optional().trim().isString(),
-    checkFrom('terminationDevice').optional().trim().isString(),
-    checkFrom('terminationType').optional().trim().isString(),
-    checkFrom('wiringDrawing').optional().trim().isString(),
+    checkFrom('rack').optional().isString().trim(),
+    checkFrom('terminationDevice').optional().isString().trim(),
+    checkFrom('terminationType').optional().isString().trim(),
+    checkFrom('wiringDrawing').optional().isString().trim(),
     // to
-    checkTo('rack').optional().trim().isString(),
-    checkTo('terminationDevice').optional().trim().isString(),
-    checkTo('terminationType').optional().trim().isString(),
-    checkTo('wiringDrawing').optional().trim().isString(),
+    checkTo('rack').optional().isString().trim(),
+    checkTo('terminationDevice').optional().isString().trim(),
+    checkTo('terminationType').optional().isString().trim(),
+    checkTo('wiringDrawing').optional().isString().trim(),
     // routing
-    check('length').optional({checkFalsy: true}).trim().isDecimal().toFloat(),
-    check('conduit').optional().trim().isString(),
+    check('length').optional({checkFalsy: true}).toFloat().isFloat({ min: 0.0 }),
+    check('conduit').optional().isString().trim(),
     // other
-    check('comments').optional().trim().isString(),
+    check('comments').optional().isString().trim(),
   ]);
 }
 
