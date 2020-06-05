@@ -458,8 +458,11 @@ export type FormFile = formidable.File;
 
 type ParseFormDataResult = Promise<{ fields: FormFields; files: FormFiles }>;
 
+/**
+ * Parse multipart form data from the provided request.
+ */
 export function parseFormData(req: Request, opts?: ParseFormOptions): ParseFormDataResult {
-  // TODO
+  // @types/formidable (v1.0.31) does not include a constructor with an options parameter!
   const form = new (formidable.IncomingForm as any)(opts);
   return new Promise((resolve, reject) => {
     form.parse(req, (err: any, fields: FormFields, files: FormFiles) => {
@@ -472,9 +475,9 @@ export function parseFormData(req: Request, opts?: ParseFormOptions): ParseFormD
   });
 }
 
-
-
-
+/**
+ * Convenience function to delete all files created by calls to parseFormData().
+ */
 export async function deleteFormFiles(files: FormFiles): Promise<void> {
   const ps: Array<Promise<void>> = [];
   for (const key of Object.keys(files)) {
@@ -491,7 +494,7 @@ export async function deleteFormFiles(files: FormFiles): Promise<void> {
     }
   }
   // Simplifed using Promise.allSettled(),
-  // but only available in Node v12.
+  // but it is only available in Node v12.
   let e: any;
   for (const p of ps) {
     try {
