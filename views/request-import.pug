@@ -32,7 +32,8 @@ block content
             button.btn.btn-primary.mr-2#request-import-submit(type='submit') Import
             //- button.btn.btn-secondary.mr-2#request-import-cancel(type='button') Cancel
     .row.m-2#request-review(hidden)
-      table.table.table-bordered.table-hover#request-review-table
+      .table-overflow
+        table.table.table-bordered.table-hover#request-review-table
       .form-group
         button.btn.btn-primary.mr-2#request-review-submit(type='submit', disabled) Submit
         button.btn.btn-secondary.mr-2#request-review-cancel(type='button', disabled) Cancel
