@@ -330,7 +330,7 @@ const idColumn: ColumnSettings = {
 };
 
 export const editLinkColumn: ColumnSettings = {
-  title: '',
+  title: '<i class="fa fa-edit fa-lg text-muted"></i>',
   data: '_id',
   render: (data, type, full) => {
     return '<a href="' + basePath + '/requests/' + data + '" target="_blank"><i class="fa fa-edit fa-lg"></i></a>';
@@ -339,7 +339,7 @@ export const editLinkColumn: ColumnSettings = {
 };
 
 export const detailsLinkColumn: ColumnSettings = {
-  title: '',
+  title: '<i class="fa fa-file-alt fa-lg text-muted"></i>',
   data: '_id',
   render: (data, type, full) => {
     return '<a href="' + basePath + '/requests/' + data + '/details" target="_blank"><i class="fa fa-file-alt fa-lg"></i></a>';
