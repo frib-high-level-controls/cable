@@ -280,8 +280,8 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    // sScrollY: '50vh',
-    // bScrollCollapse: true,
+    scrollY: '50vh',
+    scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
       if (!approvingTableWrapped) {
@@ -345,8 +345,8 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    // sScrollY: '50vh',
-    // bScrollCollapse: true,
+    scrollY: '50vh',
+    scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
       if (!approvingTableWrapped) {
@@ -412,8 +412,8 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    // sScrollY: '50vh',
-    // bScrollCollapse: true,
+    scrollY: '50vh',
+    scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
       if (!rejectedTableWrapped) {
@@ -463,8 +463,8 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    // sScrollY: '50vh',
-    // bScrollCollapse: true,
+    scrollY: '50vh',
+    scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
       if (!approvedTableWrapped) {

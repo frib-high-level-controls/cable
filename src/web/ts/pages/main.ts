@@ -417,8 +417,8 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    // scrollY: '50vh',
-    // scrollCollapse: true,
+    scrollY: '50vh',
+    scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
       if (!savedTableWrapped) {
@@ -470,8 +470,8 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    // scrollY: '50vh',
-    // scrollCollapse: true,
+    scrollY: '50vh',
+    scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
       if (!submittedTableWrapped) {
@@ -520,8 +520,8 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    // scrollY: '50vh',
-    // scrollCollapse: true,
+    scrollY: '50vh',
+    scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
       if (!rejectedTableWrapped) {
@@ -569,8 +569,8 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    // scrollY: '50vh',
-    // scrollCollapse: true,
+    scrollY: '50vh',
+    scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
       if (!approvedTableWrapped) {
@@ -614,8 +614,8 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    // scrollY: '50vh',
-    // scrollCollapse: true,
+    scrollY: '50vh',
+    scrollCollapse: true,
     createdRow(row) {
       if (!cablesTableWrapped) {
         $(row).addClass('nowrap');

@@ -486,8 +486,8 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    // scrollY: '100%',
-    // scrollCollapse: true,
+    scrollY: '50vh',
+    scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
       if (!procuringTableWrapped) {
@@ -572,8 +572,8 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    // scrollY: '50vh',
-    // scrollCollapse: true,
+    scrollY: '50vh',
+    scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
       if (!installingTableWrapped) {
@@ -681,8 +681,8 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    // scrollY: '50vh',
-    // scrollCollapse: true
+    scrollY: '50vh',
+    scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
       if (!installedTableWrapped) {
@@ -738,8 +738,8 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
-    // scrollY: '50vh',
-    // scrollCollapse: true,
+    scrollY: '50vh',
+    scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
       if (!obsoletedTableWrapped) {

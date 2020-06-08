@@ -85,6 +85,8 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
+    scrollY: '50vh',
+    scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
       if (!allTableWrapped) {
