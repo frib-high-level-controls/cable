@@ -486,6 +486,7 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
+    scrollX: true,
     scrollY: '50vh',
     scrollCollapse: true,
     deferRender: true,
@@ -496,6 +497,11 @@ $(() => {
     },
   });
   dtutil.addFilterHead('#procuring-table', procuringAoColumns);
+
+  $('a.nav-link[href="#procuring"]').one('shown.bs.tab', (evt) => {
+    // ensure table headers are aligned with table body
+    procuringTable.columns.adjust();
+  });
 
   $('#procuring-table').on('init.dt', () => {
     // tslint:disable-next-line:no-console
@@ -572,6 +578,7 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
+    scrollX: true,
     scrollY: '50vh',
     scrollCollapse: true,
     deferRender: true,
@@ -582,6 +589,11 @@ $(() => {
     },
   });
   dtutil.addFilterHead('#installing-table', installingAoColumns);
+
+  $('a.nav-link[href="#installing"]').one('shown.bs.tab', (evt) => {
+    // ensure table headers are aligned with table body
+    installingTable.columns.adjust();
+  });
 
   $('#installing-table').on('init.dt', () => {
     // tslint:disable-next-line:no-console
@@ -681,6 +693,7 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
+    scrollX: true,
     scrollY: '50vh',
     scrollCollapse: true,
     deferRender: true,
@@ -691,6 +704,11 @@ $(() => {
     },
   });
   dtutil.addFilterHead('#installed-table', installedAoColumns);
+
+  $('a.nav-link[href="#installed"]').one('shown.bs.tab', (evt) => {
+    // ensure table headers are aligned with table body
+    installedTable.columns.adjust();
+  });
 
   $('#installed-table').on('init.dt', () => {
     // tslint:disable-next-line:no-console
@@ -738,6 +756,7 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
+    scrollX: true,
     scrollY: '50vh',
     scrollCollapse: true,
     deferRender: true,
@@ -748,6 +767,11 @@ $(() => {
     },
   });
   dtutil.addFilterHead('#obsoleted-table', obsoletedAoColumns);
+
+  $('a.nav-link[href="#obsoleted"]').one('shown.bs.tab', (evt) => {
+    // ensure table headers are aligned with table body
+    obsoletedTable.columns.adjust();
+  });
 
   $('#obsoleted-table').on('init.dt', () => {
     // tslint:disable-next-line:no-console

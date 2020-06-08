@@ -85,6 +85,7 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
+    scrollX: true,
     scrollY: '50vh',
     scrollCollapse: true,
     deferRender: true,

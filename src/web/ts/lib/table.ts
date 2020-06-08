@@ -148,12 +148,14 @@ export function fnWrap(oTableLocal: DTAPI): void {
   $(oTableLocal.rows().nodes()).each((idx, row) => {
     $(row).removeClass('nowrap');
   });
+  oTableLocal.columns.adjust();
 }
 
 export function fnUnwrap(oTableLocal: DTAPI): void {
   $(oTableLocal.rows().nodes()).each((idx, cell) => {
     $(cell).addClass('nowrap');
   });
+  oTableLocal.columns.adjust();
 }
 
 

@@ -417,6 +417,7 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
+    scrollX: true,
     scrollY: '50vh',
     scrollCollapse: true,
     deferRender: true,
@@ -427,6 +428,11 @@ $(() => {
     },
   });
   dtutil.addFilterHead('#saved-table', savedAoColumns);
+
+  $('a.nav-link[href="#saved"]').one('shown.bs.tab', (evt) => {
+    // ensure table headers are aligned with table body
+    savedTable.columns.adjust();
+  });
 
   $('#saved-wrap').click(() => {
     savedTableWrapped = true;
@@ -470,6 +476,7 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
+    scrollX: true,
     scrollY: '50vh',
     scrollCollapse: true,
     deferRender: true,
@@ -480,6 +487,11 @@ $(() => {
     },
   });
   dtutil.addFilterHead('#submitted-table', submittedAoColumns);
+
+  $('a.nav-link[href="#submitted"]').one('shown.bs.tab', (evt) => {
+    // ensure table headers are aligned with table body
+    submittedTable.columns.adjust();
+  });
 
   $('#submitted-wrap').click(() => {
     submittedTableWrapped = true;
@@ -520,6 +532,7 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
+    scrollX: true,
     scrollY: '50vh',
     scrollCollapse: true,
     deferRender: true,
@@ -530,6 +543,11 @@ $(() => {
     },
   });
   dtutil.addFilterHead('#rejected-table', rejectedAoColumns);
+
+  $('a.nav-link[href="#rejected"]').one('shown.bs.tab', (evt) => {
+    // ensure table headers are aligned with table body
+    rejectedTable.columns.adjust();
+  });
 
   $('#rejected-wrap').click(() => {
     rejectedTableWrapped = true;
@@ -569,6 +587,7 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
+    scrollX: true,
     scrollY: '50vh',
     scrollCollapse: true,
     deferRender: true,
@@ -579,6 +598,11 @@ $(() => {
     },
   });
   dtutil.addFilterHead('#approved-table', approvedAoColumns);
+
+  $('a.nav-link[href="#approved"]').one('shown.bs.tab', (evt) => {
+    // ensure table headers are aligned with table body
+    approvedTable.columns.adjust();
+  });
 
   $('#approved-select-all').click(() => {
     fnSelectAll(approvedTable, 'row-selected', 'select-row', true);
@@ -614,6 +638,7 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
+    scrollX: true,
     scrollY: '50vh',
     scrollCollapse: true,
     createdRow(row) {
@@ -623,6 +648,11 @@ $(() => {
     },
   });
   dtutil.addFilterHead('#cables-table', cableAoCulumns);
+
+  $('a.nav-link[href="#cables"]').one('shown.bs.tab', (evt) => {
+    // ensure table headers are aligned with table body
+    cablesTable.columns.adjust();
+  });
 
   $('#cables-wrap').click(() => {
     cablesTableWrapped = true;

@@ -280,6 +280,7 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
+    scrollX: true,
     scrollY: '50vh',
     scrollCollapse: true,
     deferRender: true,
@@ -290,6 +291,11 @@ $(() => {
     },
   });
   dtutil.addFilterHead('#validating-table', validatingAoColumns);
+
+  $('a.nav-link[href="#validating"]').one('shown.bs.tab', (evt) => {
+    // ensure table headers are aligned with table body
+    validatingTable.columns.adjust();
+  });
 
   $('#validating-table').on('init.dt', () => {
     // tslint:disable-next-line:no-console
@@ -345,6 +351,7 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
+    scrollX: true,
     scrollY: '50vh',
     scrollCollapse: true,
     deferRender: true,
@@ -355,6 +362,11 @@ $(() => {
     },
   });
   dtutil.addFilterHead('#approving-table', approvingAoCulumns);
+
+  $('a.nav-link[href="#approving"]').one('shown.bs.tab', (evt) => {
+    // ensure table headers are aligned with table body
+    approvingTable.columns.adjust();
+  });
 
   $('#approving-table').on('init.dt', () => {
     // tslint:disable-next-line:no-console
@@ -412,6 +424,7 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
+    scrollX: true,
     scrollY: '50vh',
     scrollCollapse: true,
     deferRender: true,
@@ -422,6 +435,11 @@ $(() => {
     },
   });
   dtutil.addFilterHead('#rejected-table', rejectedAoColumns);
+
+  $('a.nav-link[href="#rejected"]').one('shown.bs.tab', (evt) => {
+    // ensure table headers are aligned with table body
+    rejectedTable.columns.adjust();
+  });
 
   $('#rejected-table').on('init.dt', () => {
     // tslint:disable-next-line:no-console
@@ -463,6 +481,7 @@ $(() => {
     ],
     dom: sDom2InoF,
     buttons: sButtons,
+    scrollX: true,
     scrollY: '50vh',
     scrollCollapse: true,
     deferRender: true,
@@ -473,6 +492,11 @@ $(() => {
     },
   });
   dtutil.addFilterHead('#approved-table', approvedAoColumns);
+
+  $('a.nav-link[href="#approved"]').one('shown.bs.tab', (evt) => {
+    // ensure table headers are aligned with table body
+    approvedTable.columns.adjust();
+  });
 
   $('#approved-table').on('init.dt', () => {
     // tslint:disable-next-line:no-console
