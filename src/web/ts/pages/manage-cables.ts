@@ -487,7 +487,7 @@ $(() => {
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
-    scrollY: '50vh',
+    scrollY: '55vh',
     scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
@@ -579,7 +579,7 @@ $(() => {
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
-    scrollY: '50vh',
+    scrollY: '55vh',
     scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
@@ -694,7 +694,7 @@ $(() => {
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
-    scrollY: '50vh',
+    scrollY: '55vh',
     scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
@@ -757,7 +757,7 @@ $(() => {
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
-    scrollY: '50vh',
+    scrollY: '55vh',
     scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
