@@ -276,9 +276,8 @@ $(() => {
     },
     columns: validatingAoColumns,
     order: [
-      [1, 'desc'],
       [2, 'desc'],
-      [3, 'desc'],
+      [6, 'desc'],
     ],
     orderCellsTop: true,
     dom: sDom2InoF,
