@@ -262,6 +262,8 @@ $(() => {
   const validatingAoColumns = [selectColumn, editLinkColumn, submittedOnLongColumn, submittedByColumn, statusColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let validatingTableWrapped = true;
 
+  dtutil.addTitleHead('#validating-table', validatingAoColumns);
+  dtutil.addFilterHead('#validating-table', validatingAoColumns);
   const validatingTable = $('#validating-table').DataTable({
     ajax: {
       url: basePath + '/requests/statuses/1/json?validated=false',
@@ -278,6 +280,7 @@ $(() => {
       [2, 'desc'],
       [3, 'desc'],
     ],
+    orderCellsTop: true,
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
@@ -290,7 +293,6 @@ $(() => {
       }
     },
   });
-  dtutil.addFilterHead('#validating-table', validatingAoColumns);
 
   $('a.nav-link[href="#validating"]').one('shown.bs.tab', (evt) => {
     // ensure table headers are aligned with table body
@@ -334,6 +336,8 @@ $(() => {
   const approvingAoCulumns = [selectColumn, editLinkColumn, submittedOnLongColumn, submittedByColumn, statusColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let approvingTableWrapped = true;
 
+  dtutil.addTitleHead('#approving-table', approvingAoCulumns);
+  dtutil.addFilterHead('#approving-table', approvingAoCulumns);
   const approvingTable = $('#approving-table').DataTable({
     ajax: {
       url: basePath + '/requests/statuses/1/json?approved=false&disp=manager',
@@ -349,6 +353,7 @@ $(() => {
       [2, 'desc'],
       [6, 'desc'],
     ],
+    orderCellsTop: true,
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
@@ -361,7 +366,6 @@ $(() => {
       }
     },
   });
-  dtutil.addFilterHead('#approving-table', approvingAoCulumns);
 
   $('a.nav-link[href="#approving"]').one('shown.bs.tab', (evt) => {
     // ensure table headers are aligned with table body
@@ -406,6 +410,8 @@ $(() => {
   const rejectedAoColumns = [detailsLinkColumn, rejectedOnLongColumn, submittedOnLongColumn, submittedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let rejectedTableWrapped = true;
 
+  dtutil.addTitleHead('#rejected-table', rejectedAoColumns);
+  dtutil.addFilterHead('#rejected-table', rejectedAoColumns);
   const rejectedTable = $('#rejected-table').DataTable({
     ajax: {
       url: basePath + '/requests/statuses/3/json',
@@ -422,6 +428,7 @@ $(() => {
       [2, 'desc'],
       [3, 'desc'],
     ],
+    orderCellsTop: true,
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
@@ -434,7 +441,6 @@ $(() => {
       }
     },
   });
-  dtutil.addFilterHead('#rejected-table', rejectedAoColumns);
 
   $('a.nav-link[href="#rejected"]').one('shown.bs.tab', (evt) => {
     // ensure table headers are aligned with table body
@@ -463,6 +469,8 @@ $(() => {
   const approvedAoColumns = [detailsLinkColumn, approvedOnLongColumn, submittedOnLongColumn, submittedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let approvedTableWrapped = true;
 
+  dtutil.addTitleHead('#approved-table', approvedAoColumns);
+  dtutil.addFilterHead('#approved-table', approvedAoColumns);
   const approvedTable = $('#approved-table').DataTable({
     ajax: {
       url: basePath + '/requests/statuses/2/json',
@@ -479,6 +487,7 @@ $(() => {
       [2, 'desc'],
       [3, 'desc'],
     ],
+    orderCellsTop: true,
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
@@ -491,7 +500,6 @@ $(() => {
       }
     },
   });
-  dtutil.addFilterHead('#approved-table', approvedAoColumns);
 
   $('a.nav-link[href="#approved"]').one('shown.bs.tab', (evt) => {
     // ensure table headers are aligned with table body

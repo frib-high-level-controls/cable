@@ -468,6 +468,8 @@ $(() => {
   const procuringAoColumns = [selectColumn, numberColumn, requestNumberColumn, statusColumn, versionColumn, updatedOnLongColumn, approvedOnLongColumn, approvedByColumn, submittedByColumn].concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), ownerProvidedColumn, fromColumns, toColumns).concat(conduitColumn, lengthColumn, commentsColumn);
   let procuringTableWrapped = true;
 
+  dtutil.addTitleHead('#procuring-table', procuringAoColumns);
+  dtutil.addFilterHead('#procuring-table', procuringAoColumns);
   const procuringTable = $('#procuring-table').DataTable({
     ajax: {
       url: basePath + '/cables/statuses/1/json',
@@ -484,6 +486,7 @@ $(() => {
       [6, 'desc'],
       [1, 'desc'],
     ],
+    orderCellsTop: true,
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
@@ -496,7 +499,6 @@ $(() => {
       }
     },
   });
-  dtutil.addFilterHead('#procuring-table', procuringAoColumns);
 
   $('a.nav-link[href="#procuring"]').one('shown.bs.tab', (evt) => {
     // ensure table headers are aligned with table body
@@ -561,6 +563,8 @@ $(() => {
   const installingAoColumns = [selectColumn, numberColumn, statusColumn, versionColumn, updatedOnLongColumn, submittedByColumn, requiredColumn].concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let installingTableWrapped = true;
 
+  dtutil.addTitleHead('#installing-table', installingAoColumns);
+  dtutil.addFilterHead('#installing-table', installingAoColumns);
   const installingTable = $('#installing-table').DataTable({
     ajax: {
       url: basePath + '/cables/statuses/2/json',
@@ -576,6 +580,7 @@ $(() => {
       [4, 'desc'],
       [1, 'desc'],
     ],
+    orderCellsTop: true,
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
@@ -588,7 +593,6 @@ $(() => {
       }
     },
   });
-  dtutil.addFilterHead('#installing-table', installingAoColumns);
 
   $('a.nav-link[href="#installing"]').one('shown.bs.tab', (evt) => {
     // ensure table headers are aligned with table body
@@ -676,6 +680,8 @@ $(() => {
   const installedAoColumns = [selectColumn, numberColumn, statusColumn, versionColumn, updatedOnLongColumn, submittedByColumn].concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let installedTableWrapped = true;
 
+  dtutil.addTitleHead('#installed-table', installedAoColumns);
+  dtutil.addFilterHead('#installed-table', installedAoColumns);
   const installedTable = $('#installed-table').DataTable({
     ajax: {
       url: basePath + '/cables/statuses/3/json',
@@ -691,6 +697,7 @@ $(() => {
       [4, 'desc'],
       [1, 'desc'],
     ],
+    orderCellsTop: true,
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
@@ -703,7 +710,6 @@ $(() => {
       }
     },
   });
-  dtutil.addFilterHead('#installed-table', installedAoColumns);
 
   $('a.nav-link[href="#installed"]').one('shown.bs.tab', (evt) => {
     // ensure table headers are aligned with table body
@@ -739,6 +745,8 @@ $(() => {
   const obsoletedAoColumns = [selectColumn, numberColumn, requestNumberColumn, statusColumn, versionColumn, obsoletedOnLongColumn, obsoletedByColumn, submittedByColumn].concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let obsoletedTableWrapped = true;
 
+  dtutil.addTitleHead('#obsoleted-table', obsoletedAoColumns);
+  dtutil.addFilterHead('#obsoleted-table', obsoletedAoColumns);
   const obsoletedTable = $('#obsoleted-table').DataTable({
     ajax: {
       url: basePath + '/cables/statuses/5/json',
@@ -754,6 +762,7 @@ $(() => {
       [5, 'desc'],
       [1, 'desc'],
     ],
+    orderCellsTop: true,
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
@@ -766,7 +775,6 @@ $(() => {
       }
     },
   });
-  dtutil.addFilterHead('#obsoleted-table', obsoletedAoColumns);
 
   $('a.nav-link[href="#obsoleted"]').one('shown.bs.tab', (evt) => {
     // ensure table headers are aligned with table body

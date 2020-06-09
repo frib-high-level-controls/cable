@@ -63,6 +63,8 @@ $(() => {
   const allAoColumns = [numberColumn, requestNumberColumn, statusColumn, versionColumn, updatedOnLongColumn, approvedOnLongColumn, submittedByColumn].concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let allTableWrapped = true;
 
+  dtutil.addTitleHead('#all-cable', allAoColumns);
+  dtutil.addFilterHead('#all-cable', allAoColumns);
   const allTable = $('#all-cable').DataTable({
     ajax: {
       url: basePath + '/allcables/json',
@@ -83,6 +85,7 @@ $(() => {
       [5, 'desc'],
       [0, 'desc'],
     ],
+    orderCellsTop: true,
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
@@ -95,8 +98,6 @@ $(() => {
       }
     },
   });
-
-  dtutil.addFilterHead('#all-cable', allAoColumns);
 
   $('#all-cable').on('init.dt', () => {
     // tslint:disable:no-console

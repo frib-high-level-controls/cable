@@ -407,6 +407,8 @@ $(() => {
   const savedAoColumns = [selectColumn, editLinkColumn, createdOnColumn, updatedOnColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let savedTableWrapped = true;
 
+  dtutil.addTitleHead('#saved-table', savedAoColumns);
+  dtutil.addFilterHead('#saved-table', savedAoColumns);
   const savedTable = $('#saved-table').DataTable({
     data: [],
     autoWidth: false,
@@ -415,6 +417,7 @@ $(() => {
       [2, 'desc'],
       [3, 'desc'],
     ],
+    orderCellsTop: true,
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
@@ -427,7 +430,6 @@ $(() => {
       }
     },
   });
-  dtutil.addFilterHead('#saved-table', savedAoColumns);
 
   $('a.nav-link[href="#saved"]').one('shown.bs.tab', (evt) => {
     // ensure table headers are aligned with table body
@@ -466,6 +468,8 @@ $(() => {
   const submittedAoColumns = [selectColumn, detailsLinkColumn, submittedOnColumn, updatedOnColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let submittedTableWrapped = true;
 
+  dtutil.addTitleHead('#submitted-table', submittedAoColumns);
+  dtutil.addFilterHead('#submitted-table', submittedAoColumns);
   const submittedTable = $('#submitted-table').DataTable({
     data: [],
     autoWidth: false,
@@ -474,6 +478,7 @@ $(() => {
       [2, 'desc'],
       [3, 'desc'],
     ],
+    orderCellsTop: true,
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
@@ -486,7 +491,6 @@ $(() => {
       }
     },
   });
-  dtutil.addFilterHead('#submitted-table', submittedAoColumns);
 
   $('a.nav-link[href="#submitted"]').one('shown.bs.tab', (evt) => {
     // ensure table headers are aligned with table body
@@ -522,6 +526,8 @@ $(() => {
   const rejectedAoColumns = [selectColumn, detailsLinkColumn, rejectedOnColumn, submittedOnColumn, rejectedByColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let rejectedTableWrapped = true;
 
+  dtutil.addTitleHead('#rejected-table', rejectedAoColumns);
+  dtutil.addFilterHead('#rejected-table', rejectedAoColumns);
   const rejectedTable = $('#rejected-table').DataTable({
     data: [],
     autoWidth: false,
@@ -530,6 +536,7 @@ $(() => {
       [2, 'desc'],
       [3, 'desc'],
     ],
+    orderCellsTop: true,
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
@@ -542,7 +549,6 @@ $(() => {
       }
     },
   });
-  dtutil.addFilterHead('#rejected-table', rejectedAoColumns);
 
   $('a.nav-link[href="#rejected"]').one('shown.bs.tab', (evt) => {
     // ensure table headers are aligned with table body
@@ -577,6 +583,8 @@ $(() => {
   const approvedAoColumns = [selectColumn, detailsLinkColumn, approvedOnColumn, approvedByColumn, submittedOnColumn].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let approvedTableWrapped = true;
 
+  dtutil.addTitleHead('#approved-table', approvedAoColumns);
+  dtutil.addFilterHead('#approved-table', approvedAoColumns);
   const approvedTable = $('#approved-table').DataTable({
     data: [],
     autoWidth: false,
@@ -585,6 +593,7 @@ $(() => {
       [2, 'desc'],
       [3, 'desc'],
     ],
+    orderCellsTop: true,
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
@@ -597,7 +606,6 @@ $(() => {
       }
     },
   });
-  dtutil.addFilterHead('#approved-table', approvedAoColumns);
 
   $('a.nav-link[href="#approved"]').one('shown.bs.tab', (evt) => {
     // ensure table headers are aligned with table body
@@ -628,6 +636,8 @@ $(() => {
   const cableAoCulumns = [selectColumn, numberColumn, statusColumn, updatedOnColumn].concat(basicColumns.slice(0, 2), basicColumns.slice(3, 8), ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   let cablesTableWrapped = true;
 
+  dtutil.addTitleHead('#cables-table', cableAoCulumns);
+  dtutil.addFilterHead('#cables-table', cableAoCulumns);
   const cablesTable = $('#cables-table').DataTable({
     data: [],
     autoWidth: false,
@@ -636,6 +646,7 @@ $(() => {
       [3, 'desc'],
       [1, 'desc'],
     ],
+    orderCellsTop: true,
     dom: sDom2InoF,
     buttons: sButtons,
     scrollX: true,
@@ -647,7 +658,6 @@ $(() => {
       }
     },
   });
-  dtutil.addFilterHead('#cables-table', cableAoCulumns);
 
   $('a.nav-link[href="#cables"]').one('shown.bs.tab', (evt) => {
     // ensure table headers are aligned with table body
