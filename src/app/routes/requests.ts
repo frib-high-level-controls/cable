@@ -389,7 +389,9 @@ async function validateWebCableRequest(req: express.Request, prefix?: string): P
 
 
 router.get('/requests/import', ensureAuthc(), (req, res) => {
-  res.render('request-import');
+  res.render('request-import', {
+    categories: sysSub,
+  });
 });
 
 router.post('/requests/import', ensureAuthc(), ensureAccepts('json'), catchAll(async (req, res) => {

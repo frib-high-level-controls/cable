@@ -62,11 +62,37 @@ import {
   updatedOnColumn,
 } from '../lib/table';
 
+type CableRequest = webapi.CableRequest;
+
+const categories = (global as any).categories;
+
+let errors: webapi.PkgErrorDetail[] = [];
+
+const categoryColumn: dtutil.ColumnSettings = {
+  title: 'Origin Category',
+  data: 'basic.originCategory',
+  render: (value: CableRequest['basic']['originCategory'], type: string, row: CableRequest, meta): string => {
+    const location = `requests[${meta.row}].basic.originCategory`;
+    // tslint:disable-next-line:prefer-for-of // Support IE!
+    for (let idx = 0; idx < errors.length;  idx++) {
+      const error = errors[idx];
+      if (error.location === location && error.reason === 'ValidationError') {
+        return `<span class="text-danger">${error.message}</span>`;
+      }
+    }
+    if (!categories[value] || !categories[value].name) {
+      return `<span class="text-danger">ERROR</span>`;
+    }
+    return categories[value].name;
+  },
+  searchable: true,
+};
+
 $(() => {
 
   /*saved tab starts*/
   // tslint:disable-next-line:max-line-length
-  const columns = [/* selectColumn, editLinkColumn, createdOnColumn, updatedOnColumn */].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
+  const columns = [ categoryColumn /* selectColumn, editLinkColumn, createdOnColumn, updatedOnColumn */].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   // let savedTableWrapped = true;
 
   dtutil.addTitleHead('#request-review-table', columns);
@@ -125,6 +151,8 @@ $(() => {
           + '</div>');
         return;
       }
+      // expecting the validation errors
+      errors = pkg?.error?.errors || [];
     } finally {
       // Clear file input to avoid problem with form re-submission
       $('#request-import-file').val('');
