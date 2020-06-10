@@ -24,6 +24,8 @@ import {
 
 } from '../shared/webutil';
 
+import * as dtutil from '../shared/datatablesutil';
+
 // import * as Binder from '../lib/binder';
 
 import {
@@ -67,6 +69,8 @@ $(() => {
   const columns = [/* selectColumn, editLinkColumn, createdOnColumn, updatedOnColumn */].concat(basicColumns, ownerProvidedColumn, fromColumns, toColumns).concat([conduitColumn, lengthColumn, commentsColumn]);
   // let savedTableWrapped = true;
 
+  dtutil.addTitleHead('#request-review-table', columns);
+  dtutil.addFilterHead('#request-review-table', columns);
   const table = $('#request-review-table').DataTable({
     data: [],
     autoWidth: false,
@@ -75,10 +79,12 @@ $(() => {
       [2, 'desc'],
       [3, 'desc'],
     ],
+    orderCellsTop: true,
     dom: sDom2InoF,
     buttons: sButtons,
-    // scrollY: '50vh',
-    // scrollCollapse: true,
+    scrollX: true,
+    scrollY: '50vh',
+    scrollCollapse: true,
     deferRender: true,
     createdRow(row) {
       // if (!savedTableWrapped) {
@@ -86,7 +92,6 @@ $(() => {
       // }
     },
   });
-  // dtutil.addFilterHead('#request-import-table', columns);
 
   $('#request-import-form').submit(wrapCatchAll(async (evt) => {
     evt.preventDefault();
@@ -126,7 +131,9 @@ $(() => {
       $('#request-import-form :input').prop('disabled', false);
     }
 
-    table.clear().rows.add(pkg.data).draw();
+    table.clear();
+    table.rows.add(pkg.data);
     $('#request-review').prop('hidden', false);
+    table.columns.adjust().draw();
   }));
 });
