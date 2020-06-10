@@ -19,13 +19,14 @@ block content
             button.btn.btn-primary(type='button', data-dismiss='modal', aria-hidden='true') Return to edit
     .row.m-2
       .card.card-body.bg-light
-        form#request-import-form
-          h3 New Cable Requests
-          .form-group
+        h3 New Cable Requests
+        span Select a data file (Please use this <a href='#{basePath}/docs/Cable_Requests.xlsx'>template</a>)
+        form.form-inline#request-import-form
+          .form-group.mr-3
             //- label(for='request-import-file') Data File
-            input.form-control-file#request-import-file(type='file', name='data', accept='.xlsx')
+            input.form-control-file#request-import-file(type='file', name='data', accept='.xlsx', required)
           if auth && auth.hasAnyRole('validator')
-            .form-group.form-check
+            .form-group.form-check.mr-2
               input.form-check-input#request-import-validated(type='checkbox', name='validated')
               label.form-check-label(for='request-import-validated') Validated
           .btn-toolbar
@@ -36,4 +37,4 @@ block content
         table.table.table-bordered.table-hover#request-review-table
       .form-group
         button.btn.btn-primary.mr-2#request-review-submit(type='submit', disabled) Submit
-        button.btn.btn-secondary.mr-2#request-review-cancel(type='button', disabled) Cancel
+        button.btn.btn-secondary.mr-2#request-review-cancel(type='button') Cancel

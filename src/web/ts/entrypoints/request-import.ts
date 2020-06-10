@@ -93,14 +93,13 @@ $(() => {
     },
   });
 
+  $('#request-review-cancel').click((evt) => {
+    $('#request-review').prop('hidden', true);
+    table.clear();
+  });
+
   $('#request-import-form').submit(wrapCatchAll(async (evt) => {
     evt.preventDefault();
-
-    const importFileInput = $('#request-import-file').get(0) as HTMLInputElement;
-    if (importFileInput.files.length === 0) {
-      console.log('No file selected!');
-      return;
-    }
 
     const formData = new FormData(evt.target as HTMLFormElement);
     $('#request-import-form :input').prop('disabled', true);
@@ -127,7 +126,8 @@ $(() => {
         return;
       }
     } finally {
-      // TODO: Clear file input!
+      // Clear file input to avoid problem with form re-submission
+      $('#request-import-file').val('');
       $('#request-import-form :input').prop('disabled', false);
     }
 
