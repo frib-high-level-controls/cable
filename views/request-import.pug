@@ -5,7 +5,9 @@ block head
   title Import Requests :: Cable
   meta(name='viewport', content='width=device-width, initial-scale=1.0')
   link(rel='stylesheet', href=basePath + '/stylesheets/style.css')
+  script var projects = !{JSON.stringify(projects)};
   script var categories = !{JSON.stringify(categories)};
+  script var traySections = !{JSON.stringify(traySections)};
   script(type='text/javascript', src=basePath + '/dist/request-import.js')
 block content
   .container-fluid
