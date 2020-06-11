@@ -15,7 +15,7 @@ export interface ColumnSettings extends DataTables.ColumnSettings {
 export function addTitleHead(tableQuery: string, columns: ColumnSettings[]): void {
   const t = $(tableQuery);
   let thead = t.find<HTMLElement>('thead').first();
-  if (thead.empty()) {
+  if (thead.length === 0) {
     thead = $('<thead/>').appendTo(t);
   }
   const tr = $('<tr/>').appendTo(thead);
@@ -30,7 +30,7 @@ export function addTitleHead(tableQuery: string, columns: ColumnSettings[]): voi
 export function addFilterHead(tableQuery: string, columns: ColumnSettings[]): void {
   const t = $(tableQuery);
   let thead = t.find<HTMLElement>('thead').first();
-  if (thead.empty()) {
+  if (thead.length === 0) {
     thead = $('<thead/>').appendTo(t);
   }
   const tr = $('<tr/>').appendTo(thead);
