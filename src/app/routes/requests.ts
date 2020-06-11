@@ -54,55 +54,23 @@ const debug = Debug('cable:routes:requests');
 
 const readFile = util.promisify(fs.readFile);
 
-interface CableTraySection {
-  value: string;
-  title: string;
-}
 
-interface CableProject {
-  value: string;
-  title: string;
-}
 
-interface CableSignal {
-  name: string;
-  desc?: string;
-}
+let sysSub: webapi.CableCategories;
 
-interface CableSignals {
-  [key: string]: CableSignal | undefined;
-}
-
-interface CableSubcategories {
-  [key: string]: string | undefined;
-}
-
-interface CableCategory {
-  name: string;
-  projects: string[];
-  subcategory: CableSubcategories;
-  signal: CableSignals;
-}
-
-interface CableCategories {
-  [key: string]: CableCategory | undefined;
-}
-
-let sysSub: CableCategories;
-
-export function setSysSubData(data: CableCategories) {
+export function setSysSubData(data: webapi.CableCategories) {
   sysSub = data;
 }
 
-let projects: CableProject[];
+let projects: webapi.CableProject[];
 
-export function setProjects(data: CableProject[]) {
+export function setProjects(data: webapi.CableProject[]) {
   projects = data;
 }
 
-let traySects: CableTraySection[];
+let traySects: webapi.CableTraySection[];
 
-export function setTraySections(data: CableTraySection[]) {
+export function setTraySections(data: webapi.CableTraySection[]) {
   traySects = data;
 }
 

@@ -229,4 +229,39 @@ declare namespace webapi {
     updatedBy?: string;
     updatedOn?: string;
   }
+
+  // Metadata types defined below
+  interface CableTraySection {
+    value: string;
+    title: string;
+  }
+  
+  interface CableProject {
+    value: string;
+    title: string;
+  }
+  
+  interface CableSignal {
+    name: string;
+    desc?: string;
+  }
+  
+  interface CableSignals {
+    [key: string]: CableSignal | undefined;
+  }
+  
+  interface CableSubcategories {
+    [key: string]: string | undefined;
+  }
+  
+  interface CableCategory {
+    name: string;
+    projects: string[];
+    subcategory: CableSubcategories;
+    signal: CableSignals;
+  }
+  
+  interface CableCategories {
+    [key: string]: CableCategory | undefined;
+  }
 }
