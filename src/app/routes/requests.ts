@@ -163,11 +163,12 @@ async function sanitizeRawCableRequest(req: express.Request, prefix?: string): P
 
   const validationCache = new Map<string, string>();
 
+  const check: Validator<keyof webapi.CableRequest> = buildValidator('body', prefix);
   const checkBasic: Validator<keyof webapi.CableRequest['basic']> = buildValidator('body', `${prefix}.basic`);
 
   await validateAndThrow(req, [
     // validate and convert project title to value
-    checkBasic('project').isString().trim().custom((value: string, { path }): true => {
+    checkBasic('project').optional().isString().trim().custom((value: string, { path }): true => {
       if (!value) {
         throw new Error('Project is required');
       }
@@ -184,7 +185,7 @@ async function sanitizeRawCableRequest(req: express.Request, prefix?: string): P
       return validationCache.get(path) ?? value;
     }),
     // validate and sanitize origin category name to value
-    checkBasic('originCategory').isString().trim().custom((value: string, { path }): true => {
+    checkBasic('originCategory').optional().isString().trim().custom((value: string, { path }): true => {
       if (!value) {
         throw new Error('Origin Category is required');
       }
@@ -206,7 +207,7 @@ async function sanitizeRawCableRequest(req: express.Request, prefix?: string): P
       return validationCache.get(path) ?? value;
     }),
     // validate and convert origin subcategory name to value
-    checkBasic('originSubcategory').isString().trim().custom((value: string, { path }): true => {
+    checkBasic('originSubcategory').optional().isString().trim().custom((value: string, { path }): true => {
       if (!value) {
         throw new Error('Origin Subcategory is required');
       }
@@ -229,7 +230,7 @@ async function sanitizeRawCableRequest(req: express.Request, prefix?: string): P
       return validationCache.get(path) ?? value;
     }),
     // validate and convert signal classification name to value
-    checkBasic('signalClassification').isString().trim().custom((value, { path }): true => {
+    checkBasic('signalClassification').optional().isString().trim().custom((value, { path }): true => {
       if (!value) {
         throw new Error('Signal Classification is required');
       }
@@ -251,6 +252,19 @@ async function sanitizeRawCableRequest(req: express.Request, prefix?: string): P
     .customSanitizer((value: string, { path }): string => {
       return validationCache.get(path) ?? value;
     }),
+    check('ownerProvided').optional().isString().trim().custom((value: string): boolean => {
+      if ([ 'YES', 'NO' ].includes(value.toUpperCase())) {
+        return true;
+      }
+      throw new Error('Owner Provided must be YES/NO');
+    })
+    .customSanitizer((value: string): boolean => {
+      if (value.toUpperCase() === 'YES') {
+        return true;
+      } else {
+        return false;
+      }
+    }),
   ]);
 }
 
@@ -271,72 +285,80 @@ async function validateWebCableRequest(req: express.Request, prefix?: string): P
   const check: Validator<keyof webapi.CableRequest> = buildValidator('body', prefix);
 
   await validateAndThrow(req, [
-    checkBasic('project').isString().trim().custom((value: string, { path }): true => {
-      if (projects.some((p) => (p.value === value))) {
-        validationCache.set(path, value);
-        return true;
-      }
-      throw new Error(`Project is invalid: ${value}`);
-    }),
-    checkBasic('wbs').isString().trim().custom((value: string): true => {
-      if (/^[A-Z]\d{1,5}$/.test(value)) {
-        return true;
-      }
-      throw new Error(`WBS is must match /[A-Z]\d{1,5}/: '${value}'`);
-    }),
-    checkBasic('engineer').isString().trim().custom((value: string): true => {
-      if (users.some((u) => u.name === value)) {
-        return true;
-      }
-      throw new Error(`Engineer is invalid: '${value}'`);
-    }),
-    checkBasic('originCategory').isString().trim().custom((value: string, { path }): true => {
-      const project = validationCache.get(path.replace('originCategory', 'project'));
-      if (Object.keys(sysSub).includes(value)) {
-        if (sysSub[value]?.projects.some((p) => (p === project))) {
+    checkBasic('project').isString().trim().withMessage('Project is required')
+      .custom((value: string, { path }): true => {
+        if (projects.some((p) => (p.value === value))) {
           validationCache.set(path, value);
           return true;
         }
-      }
-      throw new Error(`Origin Category is invalid: '$'{value}'`);
-    }),
-    checkBasic('originSubcategory').isString().trim().custom((value: string, { path }): true => {
-      const category = validationCache.get(path.replace('originSubcategory', 'originCategory'));
-      const subcategories = category ? sysSub[category]?.subcategory : undefined;
-      if (subcategories && Object.keys(subcategories).includes(value)) {
-        return true;
-      }
-      throw new Error(`Origin Subcategory is invalid: '${value}'`);
-    }),
-    checkBasic('signalClassification').isString().trim().custom((value: string, { path }): true => {
-      const category = validationCache.get(path.replace('signalClassification', 'originCategory'));
-      const signals = category ? sysSub[category]?.signal : undefined;
-      if (signals && Object.keys(signals).includes(value)) {
-        return true;
-      }
-      throw new Error(`Signal Classification is invalid: '${value}'`);
-    }),
-    checkBasic('traySection').isString().trim().custom((value: string): true => {
-      if (traySects.some((s) => (s.value === value))) {
-        return true;
-      }
-      throw new Error(`Tray Section is invalid: '${value}'`);
-    }),
-    checkBasic('cableType').isString().trim().custom((value: string): true => {
-      for (const cableType of cableTypes) {
-        if (cableType.name === value) {
-          if (cableType.obsolete === true) {
-            throw new Error(`Cable Type is obsolete: '${value}'`);
-          }
+        throw new Error(`Project is invalid: ${value}`);
+      }),
+    checkBasic('wbs').isString().trim().withMessage('WBS is required')
+      .custom((value: string): true => {
+        if (/^[A-Z]\d{1,5}$/.test(value)) {
           return true;
         }
-      }
-      throw new Error(`Cable Type is invalid: '${value}'`);
-    }),
+        throw new Error(`WBS is must match /[A-Z]\d{1,5}/: '${value}'`);
+      }),
+    checkBasic('engineer').isString().trim().notEmpty().withMessage('Engineer is required')
+      .custom((value: string): true => {
+        if (users.some((u) => u.name === value)) {
+          return true;
+        }
+        throw new Error(`Engineer is invalid: '${value}'`);
+      }),
+    checkBasic('originCategory').isString().trim().withMessage('Origin Category is required')
+      .custom((value: string, { path }): true => {
+        const project = validationCache.get(path.replace('originCategory', 'project'));
+        if (Object.keys(sysSub).includes(value)) {
+          if (sysSub[value]?.projects.some((p) => (p === project))) {
+            validationCache.set(path, value);
+            return true;
+          }
+        }
+        throw new Error(`Origin Category is invalid: '$'{value}'`);
+      }),
+    checkBasic('originSubcategory').isString().trim().withMessage('Origin Subcategory is required')
+      .custom((value: string, { path }): true => {
+        const category = validationCache.get(path.replace('originSubcategory', 'originCategory'));
+        const subcategories = category ? sysSub[category]?.subcategory : undefined;
+        if (subcategories && Object.keys(subcategories).includes(value)) {
+          return true;
+        }
+        throw new Error(`Origin Subcategory is invalid: '${value}'`);
+      }),
+    checkBasic('signalClassification').isString().trim().withMessage('Signal Classification is required')
+      .custom((value: string, { path }): true => {
+        const category = validationCache.get(path.replace('signalClassification', 'originCategory'));
+        const signals = category ? sysSub[category]?.signal : undefined;
+        if (signals && Object.keys(signals).includes(value)) {
+          return true;
+        }
+        throw new Error(`Signal Classification is invalid: '${value}'`);
+      }),
+    checkBasic('traySection').isString().trim().withMessage('Tray Section is required')
+      .custom((value: string): true => {
+        if (traySects.some((s) => (s.value === value))) {
+          return true;
+        }
+        throw new Error(`Tray Section is invalid: '${value}'`);
+      }),
+    checkBasic('cableType').isString().trim().notEmpty().withMessage('Cable Type is Required')
+      .custom((value: string): true => {
+        for (const cableType of cableTypes) {
+          if (cableType.name === value) {
+            if (cableType.obsolete === true) {
+              throw new Error(`Cable Type is obsolete: '${value}'`);
+            }
+            return true;
+          }
+        }
+        throw new Error(`Cable Type is invalid: '${value}'`);
+      }),
     checkBasic('service').optional().isString().trim(),
     checkBasic('tags').optional().isString().trim(),
-    checkBasic('quantity').toInt().isInt({ min: 1 }),
-    check('ownerProvided').toBoolean(true),
+    checkBasic('quantity').toInt().isInt({ min: 1 }).withMessage('Quanity must be >= 1'),
+    check('ownerProvided').isBoolean().withMessage('Owner Provided is Required'),
     // from
     checkFrom('rack').optional().isString().trim(),
     checkFrom('terminationDevice').optional().isString().trim(),
@@ -348,7 +370,7 @@ async function validateWebCableRequest(req: express.Request, prefix?: string): P
     checkTo('terminationType').optional().isString().trim(),
     checkTo('wiringDrawing').optional().isString().trim(),
     // routing
-    check('length').optional({checkFalsy: true}).toFloat().isFloat({ min: 0.0 }),
+    check('length').optional({checkFalsy: true}).toFloat().isFloat({ gt: 0.0 }).withMessage('Length must be > 0'),
     check('conduit').optional().isString().trim(),
     // other
     check('comments').optional().isString().trim(),
@@ -414,7 +436,7 @@ router.post('/requests/import', ensureAuthc(), ensureAccepts('json'), catchAll(a
       throw new RequestError(`Workbook sheet not found: ${sheetName}`, BAD_REQUEST);
     }
 
-    const rows = xlsx.utils.sheet_to_json(sheet);
+    const rows = xlsx.utils.sheet_to_json(sheet, { raw: false });
     if (rows.length === 0) {
       throw new RequestError('Cable Request data is required', BAD_REQUEST);
     }
