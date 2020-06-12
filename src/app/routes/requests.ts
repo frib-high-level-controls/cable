@@ -380,13 +380,13 @@ router.post('/requests/import', ensureAuthc(), ensureAccepts('json'), catchAll(a
       throw new RequestError('Not permitted to validate cable requests', FORBIDDEN);
     }
 
-    if (!files.data) {
+    if (!files.requests) {
       throw new RequestError('Import data file is required', BAD_REQUEST);
     }
 
     let buffer: Buffer;
     try {
-      buffer = await readFile(files.data.path);
+      buffer = await readFile(files.requests.path);
     } finally {
       try {
         await deleteFormFiles(files);

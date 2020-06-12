@@ -27,7 +27,7 @@ block content
         form.form-inline#request-import-form
           .form-group.mr-3
             //- label(for='request-import-file') Data File
-            input.form-control-file#request-import-file(type='file', name='data', accept='.xlsx', required)
+            input.form-control-file#request-import-file(type='file', name='requests', accept='.xlsx', required)
           if auth && auth.hasAnyRole('validator')
             .form-group.form-check.mr-2
               input.form-check-input#request-import-validated(type='checkbox', name='validated')
