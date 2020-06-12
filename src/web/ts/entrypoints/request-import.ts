@@ -68,6 +68,9 @@ function simpleColumn(title: string, path: string): dtutil.ColumnSettings {
       if (error) {
         return `<span class="text-danger">${error.message}</span>`;
       }
+      if (value === undefined) {
+        return '';
+      }
       if (Array.isArray(value)) {
         return value.join(', ');
       }
