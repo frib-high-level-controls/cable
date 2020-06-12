@@ -252,6 +252,8 @@ async function sanitizeRawCableRequest(req: express.Request, prefix?: string): P
     .customSanitizer((value: string, { path }): string => {
       return validationCache.get(path) ?? value;
     }),
+    checkBasic('quantity').optional().isString().trim()
+      .isNumeric().withMessage('Quantity must be an integer'),
     check('ownerProvided').optional().isString().trim().custom((value: string): boolean => {
       if ([ 'YES', 'NO' ].includes(value.toUpperCase())) {
         return true;
@@ -357,7 +359,7 @@ async function validateWebCableRequest(req: express.Request, prefix?: string): P
       }),
     checkBasic('service').optional().isString().trim(),
     checkBasic('tags').optional().isString().trim(),
-    checkBasic('quantity').toInt().isInt({ min: 1 }).withMessage('Quanity must be >= 1'),
+    checkBasic('quantity').isInt({ min: 1 }).withMessage('Quanity must be >= 1'),
     check('ownerProvided').isBoolean().withMessage('Owner Provided is Required'),
     // from
     checkFrom('rack').optional().isString().trim(),
