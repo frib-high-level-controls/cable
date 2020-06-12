@@ -429,14 +429,19 @@ router.post('/requests/import', ensureAuthc(), ensureAccepts('json'), catchAll(a
     }
 
     try {
-      await sanitizeRawCableRequest(req, 'requests.*');
-      await validateWebCableRequest(req, 'requests.*');
+      // Always exectute validation even if sanitization fails!
+      try {
+        await sanitizeRawCableRequest(req, 'requests.*');
+      } finally {
+        await validateWebCableRequest(req, 'requests.*');
+      }
     } catch (err) {
       if (!(err instanceof RequestError)) {
         throw err;
       }
-      // Include converted data in response,
-      // even if there are validation errors.
+      // Need special logic to include
+      // the converted data in response
+      // along with the are validation errors.
       const pkg: webapi.Pkg<ICableRequest[]> = {
         data: req.body.requests,
         error: err.details,
