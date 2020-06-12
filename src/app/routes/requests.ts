@@ -309,7 +309,7 @@ async function validateWebCableRequest(req: express.Request, prefix?: string): P
       throw new Error(`Origin Subcategory is invalid: '${value}'`);
     }),
     checkBasic('signalClassification').isString().trim().custom((value: string, { path }): true => {
-      const category = validationCache.get(path.replace('originSubcategory', 'originCategory'));
+      const category = validationCache.get(path.replace('signalClassification', 'originCategory'));
       const signals = category ? sysSub[category]?.signal : undefined;
       if (signals && Object.keys(signals).includes(value)) {
         return true;
