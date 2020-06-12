@@ -478,6 +478,7 @@ router.post('/requests/import', ensureAuthc(), ensureAccepts('json'), catchAll(a
   const dryrun = findQueryParam(req, 'dryrun');
   if (dryrun !== undefined && dryrun !== 'false') {
     res.status(OK).json(requests);
+    return;
   }
 
   {
