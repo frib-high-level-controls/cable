@@ -345,7 +345,7 @@ async function validateWebCableRequest(req: express.Request, prefix?: string): P
         }
         throw new Error(`Tray Section is invalid: '${value}'`);
       }),
-    checkBasic('cableType').isString().trim().notEmpty().withMessage('Cable Type is Required')
+    checkBasic('cableType').isString().trim().withMessage('Cable Type is required')
       .custom((value: string): true => {
         for (const cableType of cableTypes) {
           if (cableType.name === value) {
