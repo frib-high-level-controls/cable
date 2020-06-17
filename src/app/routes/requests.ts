@@ -256,6 +256,11 @@ async function sanitizeRawCableRequest(req: express.Request, prefix?: string): P
       .isString().withMessage('Quantity must be a string')
       .trim().notEmpty().withMessage('Quantity is empty')
       .isInt().withMessage('Quantity must be an integer').toInt(), // convert to number!
+    checkBasic('tags').optional()
+      .isString().withMessage('Tags must be a string')
+      .customSanitizer((value: string): string[] => {
+        return value.split(',').map((t) => t.trim()).filter((t) => (t !== '')); // convert to array!
+      }),
     check('ownerProvided').optional()
       .isString().withMessage('Owner Provided must be a string')
       .trim().notEmpty().withMessage('Owner Provided is empty')
@@ -265,8 +270,8 @@ async function sanitizeRawCableRequest(req: express.Request, prefix?: string): P
         }
         throw new Error('Owner Provided must be YES/NO');
       })
-      .customSanitizer((value: string): boolean => { // convert to boolean!
-        return (value.toUpperCase() === 'YES');
+      .customSanitizer((value: string): boolean => {
+        return (value.toUpperCase() === 'YES'); // convert to boolean!
       }),
     check('length').optional()
       .isString().withMessage('Length must be a string')
@@ -379,22 +384,36 @@ async function validateWebCableRequest(req: express.Request, prefix?: string): P
       }),
     checkBasic('service').optional()
       .isString().withMessage('Service must be a string').trim(),
-    checkBasic('tags').optional().isString().trim(),
+    checkBasic('tags').optional()
+      .isArray().withMessage('Tags must be an array')
+      .customSanitizer((value: any[]): string[] => {
+        // ensure tags is an array of non-empty strings
+        return value.map((t) => String(t).trim()).filter((t) => (t !== ''));
+      }),
     checkBasic('quantity')
       .exists().withMessage('Quantity is required')
       .isInt({ min: 1 }).withMessage('Quanity must be >= 1').toInt(),
     check('ownerProvided')
       .exists().withMessage('Owner Provided is required')
       .isBoolean().withMessage('Owner Provided must be true/false').toBoolean(),
-    checkFrom('rack').optional().isString().trim(),
-    checkFrom('terminationDevice').optional().isString().trim(),
-    checkFrom('terminationType').optional().isString().trim(),
-    checkFrom('wiringDrawing').optional().isString().trim(),
+    // from
+    checkFrom('rack').optional()
+      .isString().withMessage('From Location must be a string').trim(),
+    checkFrom('terminationDevice').optional()
+      .isString().withMessage('From Termination Device must be a string').trim(),
+    checkFrom('terminationType').optional()
+      .isString().withMessage('From Termination Type must be a string').trim(),
+    checkFrom('wiringDrawing').optional()
+      .isString().withMessage('From Wiring Drawing must be a string').trim(),
     // to
-    checkTo('rack').optional().isString().trim(),
-    checkTo('terminationDevice').optional().isString().trim(),
-    checkTo('terminationType').optional().isString().trim(),
-    checkTo('wiringDrawing').optional().isString().trim(),
+    checkTo('rack').optional()
+      .isString().withMessage('To Location must be a string').trim(),
+    checkTo('terminationDevice').optional()
+      .isString().withMessage('To Termination Device must be a string').trim(),
+    checkTo('terminationType').optional()
+      .isString().withMessage('To Termination Type must be a string').trim(),
+    checkTo('wiringDrawing').optional()
+      .isString().withMessage('To Wiring Drawing must be a string').trim(),
     // routing
     check('length').optional()
       .isFloat({ gt: 0.0 }).withMessage('Length must be > 0').toFloat(),
