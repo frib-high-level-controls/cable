@@ -76,7 +76,7 @@ function simpleColumn(title: string, path: string): dtutil.ColumnSettings {
       }
       return String(value);
     },
-    searchable: true,
+    searching: true,
   };
 }
 
@@ -99,7 +99,7 @@ export const reviewTableColumns: dtutil.ColumnSettings[] = [
     }
     return project.title;
   },
-  searchable: true,
+  searching: true,
 },
   simpleColumn('WBS', 'basic.wbs'),
   simpleColumn('Engineer', 'basic.engineer'),
@@ -117,7 +117,7 @@ export const reviewTableColumns: dtutil.ColumnSettings[] = [
     }
     return categories[value].name;
   },
-  searchable: true,
+  searching: true,
 }, {
   title: 'Origin Subcategory',
   data: 'basic.originSubcategory',
@@ -133,7 +133,7 @@ export const reviewTableColumns: dtutil.ColumnSettings[] = [
     }
     return category.subcategory[value];
   },
-  searchable: true,
+  searching: true,
 }, {
   title: 'Signal Classification',
   data: 'basic.signalClassification',
@@ -149,7 +149,7 @@ export const reviewTableColumns: dtutil.ColumnSettings[] = [
     }
     return category.signal[value].name;
   },
-  searchable: true,
+  searching: true,
 }, {
   title: 'Tray section',
   data: 'basic.traySection',
@@ -165,7 +165,7 @@ export const reviewTableColumns: dtutil.ColumnSettings[] = [
     }
     return traySection.title;
   },
-  searchable: true,
+  searching: true,
 },
   simpleColumn('Cable Type', 'basic.cableType'),
 {
@@ -182,7 +182,7 @@ export const reviewTableColumns: dtutil.ColumnSettings[] = [
     }
     return 'YES';
   },
-  searchable: true,
+  searching: true,
 },
   simpleColumn('Function', 'basic.service'),
   simpleColumn('Tags', 'basic.tags'),
