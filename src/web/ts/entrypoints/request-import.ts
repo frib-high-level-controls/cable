@@ -102,6 +102,7 @@ export const reviewTableColumns: dtutil.ColumnSettings[] = [
   searchable: true,
 },
   simpleColumn('WBS', 'basic.wbs'),
+  simpleColumn('Engineer', 'basic.engineer'),
 {
   title: 'Origin Category',
   data: 'basic.originCategory',
@@ -167,11 +168,10 @@ export const reviewTableColumns: dtutil.ColumnSettings[] = [
   searchable: true,
 },
   simpleColumn('Cable Type', 'basic.cableType'),
-  simpleColumn('Engineer', 'basic.engineer'),
+  simpleColumn('Owner Provided', 'ownerProvided'),
   simpleColumn('Function', 'basic.service'),
   simpleColumn('Tags', 'basic.tags'),
   simpleColumn('Quantity', 'basic.quantity'),
-  simpleColumn('Owner provided', 'ownerProvided'),
   // FROM
   simpleColumn('From Location', 'from.rack'),
   simpleColumn('From Termination Device', 'from.terminationDevice'),
