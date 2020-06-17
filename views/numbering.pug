@@ -59,7 +59,7 @@ block content
     div(style='text-align:center;')
       h2 Cable Number Specification
     .row.justify-content-center
-      .col-8
+      .col-10
         table.specification
           thead
             tr
@@ -76,7 +76,7 @@ block content
 
     .container
       .row.justify-content-center
-        .col-8
+        .col-10
           table.table.table-bordered
             thead
               tr
@@ -90,12 +90,16 @@ block content
           table.table.table-bordered.table-striped
             thead
               tr
+                th Projects
                 th.category-border-left    Category
                 th.subcategory-border-left Subcategory
                 th.signal-border-left      Signal Classification
             tbody
               for cat, catkey in sysSub
                 tr
+                  td
+                    for project in cat.projects
+                      div(style='font-weight:bold;')= project
                   td.category-border-left
                     a.target(id='category' + catkey)
                     strong #{catkey}:&nbsp;
