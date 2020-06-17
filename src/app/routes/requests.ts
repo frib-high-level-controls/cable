@@ -194,7 +194,7 @@ async function sanitizeRawCableRequest(req: express.Request, prefix?: string): P
           const name = value.toUpperCase();
           for (const category of Object.keys(sysSub)) {
             if (sysSub[category]?.projects.includes(project)) {
-              if (name === sysSub[category]?.name.toUpperCase()) {
+              if (name === category || name === sysSub[category]?.name.toUpperCase()) {
                 validationCache.set(path, category);
                 return true;
               }
@@ -217,7 +217,7 @@ async function sanitizeRawCableRequest(req: express.Request, prefix?: string): P
           if (subcategories) {
             const name = value.toUpperCase();
             for (const subcategory of Object.keys(subcategories)) {
-              if (name === subcategories[subcategory]?.toUpperCase()) {
+              if (name === subcategory || name === subcategories[subcategory]?.toUpperCase()) {
                 validationCache.set(path, subcategory);
                 return true;
               }
@@ -240,7 +240,7 @@ async function sanitizeRawCableRequest(req: express.Request, prefix?: string): P
           if (signals) {
             const name = value.toUpperCase();
             for (const signal of Object.keys(signals)) {
-              if (name === signals[signal]?.name.toUpperCase()) {
+              if (name === signal || name === signals[signal]?.name.toUpperCase()) {
                 validationCache.set(path, signal);
                 return true;
               }
