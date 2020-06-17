@@ -168,7 +168,22 @@ export const reviewTableColumns: dtutil.ColumnSettings[] = [
   searchable: true,
 },
   simpleColumn('Cable Type', 'basic.cableType'),
-  simpleColumn('Owner Provided', 'ownerProvided'),
+{
+  title: 'Owner Provided',
+  data: 'ownerProvided',
+  defaultContent: '',
+  render: (value: any, type: string, row: CableRequest, meta): string => {
+    const error = findErrorWithLocation(meta.row, 'ownerProvided');
+    if (error) {
+      return `<span class="text-danger">${error.message}</span>`;
+    }
+    if (value !== true) {
+      return 'NO';
+    }
+    return 'YES';
+  },
+  searchable: true,
+},
   simpleColumn('Function', 'basic.service'),
   simpleColumn('Tags', 'basic.tags'),
   simpleColumn('Quantity', 'basic.quantity'),
