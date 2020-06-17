@@ -42,7 +42,7 @@ import {
 
 import {
   CableType,
-} from '../model/cabletype';
+} from '../model/meta';
 
 const OK = HttpStatus.OK;
 const CREATED = HttpStatus.CREATED;
@@ -374,9 +374,10 @@ async function validateWebCableRequest(req: express.Request, prefix?: string): P
       .trim().custom((value: string): true => {
         for (const cableType of cableTypes) {
           if (cableType.name === value) {
-            if (cableType.obsolete === true) {
-              throw new Error(`Cable Type is obsolete: '${value}'`);
-            }
+            // TODO: check if obsolete when available!
+            // if (cableType.obsolete === true) {
+            //   throw new Error(`Cable Type is obsolete: '${value}'`);
+            // }
             return true;
           }
         }
