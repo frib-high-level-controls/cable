@@ -274,10 +274,13 @@ $(() => {
       requests = pkg.data;
       // expecting validation errors
       errors = pkg?.error?.errors || [];
+      // count the number of errors with unique locations
+      const nerrors = new Set<string>(errors.map((e) => e.location)).size;
+
       $('#message').append(
         '<div class="alert alert-danger">'
         + '<button type="button" class="close" data-dismiss="alert">x</button>'
-        + 'Imported cable requests contain ' + errors.length + ' validation error(s)'
+        + 'Imported cable requests contain ' + nerrors + ' validation error(s)'
         + '</div>');
     } finally {
       // Clear file input to avoid problem with form re-submission
