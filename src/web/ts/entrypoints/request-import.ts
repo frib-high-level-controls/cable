@@ -258,7 +258,16 @@ $(() => {
         contentType: false,
       }));
     } catch (xhr) {
-      // response is expected to contain package only on error
+      // handle CORS error cause by redirect to CAS server, usually after when the user session has expires!
+      if (xhr.status === 0) {
+        $('#message').append(
+          '<div class="alert alert-danger">'
+          + '<button type="button" class="close" data-dismiss="alert">x</button>'
+          + 'An unknown error has occurred. Please <a href="#" onclick="window.location.reload(); return false;">reload</a> the page and try again.'
+          + '</div>');
+        return;
+      }
+      // response is expected to contain package on error only
       const pkg: webapi.Pkg<webapi.CableRequest[]> = xhr.responseJSON;
       if (!pkg?.data) {
         errors = pkg?.error?.errors || [];
@@ -329,6 +338,15 @@ $(() => {
         contentType: 'application/json',
       }));
     } catch (xhr) {
+      // handle CORS error cause by redirect to CAS server, usually after when the user session has expires!
+      if (xhr.status === 0) {
+        $('#message').append(
+          '<div class="alert alert-danger">'
+          + '<button type="button" class="close" data-dismiss="alert">x</button>'
+          + 'An unknown error has occurred. Please <a href="#" onclick="window.location.reload(); return false;">reload</a> the page and try again.'
+          + '</div>');
+        return;
+      }
       $('#message').append(
         '<div class="alert alert-danger">'
         + '<button type="button" class="close" data-dismiss="alert">x</button>'
