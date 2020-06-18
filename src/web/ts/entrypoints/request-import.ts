@@ -291,6 +291,12 @@ $(() => {
       $('#request-review-submit').prop('disabled', false);
     }
 
+    if (validated) {
+      $('#request-review-submit').text('Submit and Validate');
+    } else {
+      $('#request-review-submit').text('Submit');
+    }
+
     reviewTable.clear();
     reviewTable.rows.add(requests);
     $('#request-review').prop('hidden', false);
