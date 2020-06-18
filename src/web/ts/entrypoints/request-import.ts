@@ -242,7 +242,7 @@ $(() => {
   $('#request-import-form').submit(wrapCatchAll(async (evt) => {
     evt.preventDefault();
 
-    $('#message').empty();
+    cancel();
 
     validated = $('#request-import-validated').is(':checked');
     const formData = new FormData(evt.target as HTMLFormElement);
@@ -257,12 +257,10 @@ $(() => {
         processData: false,
         contentType: false,
       }));
-      errors = [];
     } catch (xhr) {
       // response is expected to contain package only on error
       const pkg: webapi.Pkg<webapi.CableRequest[]> = xhr.responseJSON;
       if (!pkg?.data) {
-        requests = [];
         errors = pkg?.error?.errors || [];
         $('#message').append(
           '<div class="alert alert-danger">'
@@ -300,7 +298,6 @@ $(() => {
       $('#request-review-submit').text('Submit');
     }
 
-    reviewTable.clear();
     reviewTable.rows.add(requests);
     $('#request-review').prop('hidden', false);
     reviewTable.columns.adjust().draw();
