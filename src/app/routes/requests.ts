@@ -496,6 +496,21 @@ router.post('/requests/import', ensureAuthc(), ensureAccepts('json'), catchAll(a
       throw new RequestError(`Workbook sheet not found: ${sheetName}`, BAD_REQUEST);
     }
 
+    const sheetRef = sheet['!ref'];
+    if (!sheetRef) {
+      throw new RequestError(`Workbook sheet, "${sheetName}", is empty`, BAD_REQUEST);
+    }
+
+    const sheetRange = xlsx.utils.decode_range(sheetRef);
+    const nrows = sheetRange.e.r - sheetRange.s.r;
+    if (isNaN(nrows) || nrows > 10000) {
+      throw new RequestError(`Workbook sheet, "${sheetName}", is too large (>10000 rows)`, BAD_REQUEST);
+    }
+    const ncol = sheetRange.e.c - sheetRange.s.c;
+    if (isNaN(ncol) || ncol > 100) {
+      throw new RequestError(`Workbook sheet, "${sheetName}", is too large (>100 columns)`, BAD_REQUEST);
+    }
+
     const rows = xlsx.utils.sheet_to_json(sheet, { raw: false });
     if (rows.length === 0) {
       throw new RequestError('Cable Request data is required', BAD_REQUEST);
