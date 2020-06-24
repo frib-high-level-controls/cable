@@ -442,7 +442,7 @@ export interface ParseFormOptions {
   maxFileSize?: number;
   maxFieldsSize?: number;
   maxFields?: number;
-  hash: boolean;
+  hash?: boolean;
   // multiples: boolean; // Do not support for this wrapper function!
 }
 
