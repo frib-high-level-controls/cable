@@ -24,6 +24,8 @@ import {
   deleteFormFiles,
   ensureAccepts,
   findQueryParam,
+  FormFields,
+  FormFiles,
   HttpStatus,
   parseFormData,
   RequestError,
@@ -444,7 +446,16 @@ router.post('/requests/import', ensureAuthc(), ensureAccepts('json'), catchAll(a
   }
 
   if (req.is('multipart/form-data')) {
-    const { fields, files } = await parseFormData(req);
+
+    let fields: FormFields;
+    let files: FormFiles;
+    try {
+      ({ fields, files } = await parseFormData(req, {
+        maxFileSize: 20 * 1024 * 1024, // 20MB
+      }));
+    } catch (err) {
+      throw new RequestError(`Error parsing form data: ${err.message}`, BAD_REQUEST);
+    }
 
     const validated = fields.validated ? [ '1', 'on', 'true' ].includes(fields.validated) : false;
     if (validated && !hasAnyRole(req, 'validator')) {
